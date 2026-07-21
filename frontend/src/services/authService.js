@@ -1,28 +1,38 @@
-import api from "./api";
+// =============================================
+// File : src/services/authService.js
+// =============================================
 
-export async function login(username, password) {
-  const response = await api.post("/auth/login", { username, password });
-  const { token, user } = response.data;
-  localStorage.setItem("simola_token", token);
-  localStorage.setItem("simola_user", JSON.stringify(user));
-  return user;
-}
+import api from "../api/axios";
 
-export async function logout() {
-  try {
-    await api.post("/auth/logout");
-  } catch (e) {
-    // token mungkin sudah invalid — tetap lanjut bersihkan sisi client
-  }
-  localStorage.removeItem("simola_token");
-  localStorage.removeItem("simola_user");
-}
+const authService = {
 
-export function getCurrentUser() {
-  const raw = localStorage.getItem("simola_user");
-  return raw ? JSON.parse(raw) : null;
-}
+    /**
+     * Login
+     */
+    async login(credentials) {
+        const response = await api.post("/auth/login", credentials);
 
-export function isAuthenticated() {
-  return !!localStorage.getItem("simola_token");
-}
+        return response.data;
+    },
+
+    /**
+     * Logout
+     */
+    async logout() {
+        const response = await api.post("/auth/logout");
+
+        return response.data;
+    },
+
+    /**
+     * Get User Login
+     */
+    async me() {
+        const response = await api.get("/auth/me");
+
+        return response.data;
+    },
+
+};
+
+export default authService;

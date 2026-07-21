@@ -1,16 +1,31 @@
-import { Navigate } from "react-router-dom";
+// =============================================
+// File : src/components/ProtectedRoute.jsx
+// =============================================
+
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Loading from "./common/Loading";
 
-export default function ProtectedRoute({ children, role }) {
-  const { user, isAuthenticated } = useAuth();
+function ProtectedRoute() {
+    const { loading, isAuthenticated } = useAuth();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+    // Menunggu pengecekan autentikasi
+    if (loading) {
+        return (
+            <Loading
+                fullScreen={true}
+                text="Memverifikasi sesi..."
+            />
+        );
+    }
 
-  if (role && user?.role !== role) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+    // Jika belum login, arahkan ke halaman login
+    if (!isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
 
-  return children;
+    // Jika sudah login, tampilkan halaman yang diminta
+    return <Outlet />;
 }
+
+export default ProtectedRoute;
