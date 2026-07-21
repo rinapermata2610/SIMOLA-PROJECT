@@ -1,31 +1,129 @@
-import { createContext, useContext, useState } from "react";
-import { getCurrentUser, login as loginService, logout as logoutService } from "../services/authService";
+// =============================================
+// File : src/context/AuthContext.jsx
+// =============================================
 
-const AuthContext = createContext(null);
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(getCurrentUser());
+import authService from "../services/authService";
 
-  async function login(username, password) {
-    const loggedInUser = await loginService(username, password);
-    setUser(loggedInUser);
-    return loggedInUser;
-  }
+const AuthContext = createContext();
 
-  async function logout() {
-    await logoutService();
-    setUser(null);
-  }
+export const AuthProvider = ({ children }) => {
+    const navigate = useNavigate();
 
-  const value = { user, login, logout, isAuthenticated: !!user };
+    const [user, setUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem("token"));
+    const [loading, setLoading] = useState(true);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+    /**
+     * Mengecek user yang sedang login
+     */
+    const loadUser = async () => {
+        try {
+            if (!token) {
+                setLoading(false);
+                return;
+            }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth harus dipakai di dalam <AuthProvider>");
-  }
-  return context;
-}
+            const response = await authService.me();
+
+            setUser(response.data);
+        } catch (error) {
+            console.error(error);
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            setUser(null);
+            setToken(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /**
+     * Login
+     */
+    const login = async (credentials) => {
+        try {
+            const response = await authService.login(credentials);
+
+            localStorage.setItem("token", response.token);
+            localStorage.setItem("user", JSON.stringify(response.user));
+
+            setToken(response.token);
+            setUser(response.user);
+
+            Swal.fire({
+                icon: "success",
+                title: "Login Berhasil",
+                text: `Selamat datang, ${response.user.nama}`,
+                timer: 1500,
+                showConfirmButton: false,
+            });
+
+            navigate("/dashboard");
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    /**
+     * Logout
+     */
+    const logout = async () => {
+        try {
+            await authService.logout();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            setUser(null);
+            setToken(null);
+
+            Swal.fire({
+                icon: "success",
+                title: "Logout Berhasil",
+                timer: 1200,
+                showConfirmButton: false,
+            });
+
+            navigate("/");
+        }
+    };
+
+    /**
+     * Cek login pertama kali
+     */
+    useEffect(() => {
+        loadUser();
+    }, []);
+
+    return (
+        <AuthContext.Provider
+            value={{
+                user,
+                token,
+                loading,
+                login,
+                logout,
+                isAuthenticated: !!token,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+/**
+ * Custom Hook
+ */
+export const useAuth = () => useContext(AuthContext);
+
+export default AuthContext;
