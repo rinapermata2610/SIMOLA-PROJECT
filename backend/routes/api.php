@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\Mahasiswa\DashboardController;
 use App\Http\Controllers\Api\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LampiranBuktiController;
 use App\Http\Controllers\Api\Mahasiswa\ProfilController;
+use App\Http\Controllers\Api\Pembimbing\DashboardController as PembimbingDashboardController;
+use App\Http\Controllers\Api\Pembimbing\LogAktivitasController as PembimbingLogAktivitasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +37,7 @@ Route::prefix('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->prefix('mahasiswa')->group(function () {
+Route::middleware(['auth:sanctum', 'role:mahasiswa'])->prefix('mahasiswa')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -107,3 +109,29 @@ Route::middleware(['auth:sanctum'])->prefix('mahasiswa')->group(function () {
         });
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| Pembimbing
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth:sanctum', 'role:pembimbing'])
+    ->prefix('pembimbing')
+    ->group(function () {
+
+        Route::get('/dashboard', [PembimbingDashboardController::class, 'index']);
+
+        Route::controller(PembimbingLogAktivitasController::class)
+            ->prefix('log-aktivitas')
+            ->group(function () {
+
+                Route::get('/', 'index');
+
+                Route::get('/{id}', 'show');
+
+                Route::put('/{id}/verify', 'verify');
+
+            });
+
+    });
