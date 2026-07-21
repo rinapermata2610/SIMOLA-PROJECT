@@ -2,74 +2,81 @@
 // File : src/context/AuthContext.jsx
 // =============================================
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 
 import authService from "../services/authService";
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-    const navigate = useNavigate();
+export function AuthProvider({ children }) {
+    const [token, setToken] = useState(
+        localStorage.getItem("token")
+    );
 
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem("token"));
+    const [user, setUser] = useState(() => {
+        const data = localStorage.getItem("user");
+
+        return data ? JSON.parse(data) : null;
+    });
+
     const [loading, setLoading] = useState(true);
 
     /**
-     * Mengecek user yang sedang login
+     * Ambil data user yang sedang login
      */
     const loadUser = async () => {
-        try {
-            if (!token) {
-                setLoading(false);
-                return;
-            }
+        if (!token) {
+            setUser(null);
+            setLoading(false);
+            return;
+        }
 
+        try {
             const response = await authService.me();
 
-            setUser(response.data);
+            // Sesuaikan dengan response backend
+            const currentUser =
+                response.user ??
+                response.data ??
+                response;
+
+            setUser(currentUser);
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(currentUser)
+            );
         } catch (error) {
             console.error(error);
 
             localStorage.removeItem("token");
             localStorage.removeItem("user");
 
-            setUser(null);
             setToken(null);
+            setUser(null);
         } finally {
             setLoading(false);
         }
     };
 
     /**
-     * Login
+     * Dipanggil setelah login berhasil
      */
-    const login = async (credentials) => {
-        try {
-            const response = await authService.login(credentials);
+    const saveLogin = (response) => {
+        localStorage.setItem("token", response.token);
 
-            localStorage.setItem("token", response.token);
-            localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem(
+            "user",
+            JSON.stringify(response.user)
+        );
 
-            setToken(response.token);
-            setUser(response.user);
-
-            Swal.fire({
-                icon: "success",
-                title: "Login Berhasil",
-                text: `Selamat datang, ${response.user.nama}`,
-                timer: 1500,
-                showConfirmButton: false,
-            });
-
-            navigate("/dashboard");
-
-            return response;
-        } catch (error) {
-            throw error;
-        }
+        setToken(response.token);
+        setUser(response.user);
     };
 
     /**
@@ -80,50 +87,38 @@ export const AuthProvider = ({ children }) => {
             await authService.logout();
         } catch (error) {
             console.error(error);
-        } finally {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-
-            setUser(null);
-            setToken(null);
-
-            Swal.fire({
-                icon: "success",
-                title: "Logout Berhasil",
-                timer: 1200,
-                showConfirmButton: false,
-            });
-
-            navigate("/");
         }
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        setToken(null);
+        setUser(null);
     };
 
-    /**
-     * Cek login pertama kali
-     */
     useEffect(() => {
         loadUser();
-    }, []);
+    }, [token]);
 
     return (
         <AuthContext.Provider
             value={{
-                user,
                 token,
+                user,
                 loading,
-                login,
-                logout,
+
                 isAuthenticated: !!token,
+
+                saveLogin,
+                logout,
+                loadUser,
             }}
         >
             {children}
         </AuthContext.Provider>
     );
-};
+}
 
-/**
- * Custom Hook
- */
 export const useAuth = () => useContext(AuthContext);
 
 export default AuthContext;

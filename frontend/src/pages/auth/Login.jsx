@@ -6,13 +6,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-import LoginCard from "../../components/auth/LoginCard";
+import { useAuth } from "../../context/AuthContext";
 import authService from "../../services/authService";
+
+import LoginCard from "../../components/auth/LoginCard";
 
 import Wave from "../../assets/images/wave.svg";
 
 function Login() {
     const navigate = useNavigate();
+
+    const { saveLogin } = useAuth();
 
     const [loading, setLoading] = useState(false);
 
@@ -31,7 +35,7 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!form.username || !form.password) {
+        if (!form.username.trim() || !form.password.trim()) {
             Swal.fire({
                 icon: "warning",
                 title: "Data belum lengkap",
@@ -45,22 +49,24 @@ function Login() {
 
             const response = await authService.login(form);
 
-            localStorage.setItem("token", response.token);
-            localStorage.setItem(
-                "user",
-                JSON.stringify(response.user)
-            );
+            console.log("Login Response :", response);
 
-            Swal.fire({
+            // Simpan ke AuthContext + LocalStorage
+            saveLogin(response);
+
+            await Swal.fire({
                 icon: "success",
                 title: "Login Berhasil",
-                text: `Selamat datang ${response.user.nama}`,
-                timer: 1500,
+                text: `Selamat datang, ${response.user.nama}`,
+                timer: 1200,
                 showConfirmButton: false,
             });
 
-            navigate("/dashboard");
+            navigate("/dashboard", { replace: true });
+
         } catch (error) {
+            console.error(error);
+
             Swal.fire({
                 icon: "error",
                 title: "Login Gagal",
@@ -74,23 +80,20 @@ function Login() {
     };
 
     return (
-        <div className="relative min-h-screen bg-slate-100 overflow-hidden">
+        <div className="relative min-h-screen overflow-hidden bg-slate-100">
 
             {/* Background */}
-
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-slate-100 to-blue-100" />
 
             {/* Wave */}
-
             <img
                 src={Wave}
-                alt="Wave"
+                alt="Background Wave"
                 className="absolute bottom-0 left-0 w-full"
             />
 
             {/* Login Card */}
-
-            <div className="relative z-10 flex items-center justify-center min-h-screen px-5">
+            <div className="relative z-10 flex min-h-screen items-center justify-center px-5">
 
                 <LoginCard
                     form={form}

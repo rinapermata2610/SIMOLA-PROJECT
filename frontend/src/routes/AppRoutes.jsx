@@ -2,16 +2,45 @@
 // File : src/routes/AppRoutes.jsx
 // =============================================
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "../pages/auth/Login";
 import Dashboard from "../pages/mahasiswa/Dashboard";
 
+import ProtectedRoute from "../components/ProtectedRoute";
+
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* Login */}
+            <Route
+                path="/login"
+                element={<Login />}
+            />
+
+            {/* Dashboard */}
+            <Route
+                path="/dashboard"
+                element={
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* Redirect Root */}
+            <Route
+                path="/"
+                element={<Navigate to="/login" replace />}
+            />
+
+            {/* 404 */}
+            <Route
+                path="*"
+                element={<Navigate to="/login" replace />}
+            />
+
         </Routes>
     );
 }
