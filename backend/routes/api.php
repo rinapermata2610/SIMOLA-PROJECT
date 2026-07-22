@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 
 use App\Http\Controllers\Api\Mahasiswa\DashboardController;
+use App\Http\Controllers\Api\Mahasiswa\FormAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LampiranBuktiController;
 use App\Http\Controllers\Api\Mahasiswa\ProfilController;
@@ -35,7 +36,9 @@ Route::prefix('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum'])->prefix('mahasiswa')->group(function () {
+Route::middleware(['auth:sanctum'])
+    ->prefix('mahasiswa')
+    ->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -43,11 +46,61 @@ Route::middleware(['auth:sanctum'])->prefix('mahasiswa')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::controller(DashboardController::class)
+        ->prefix('dashboard')
+        ->group(function () {
+
+            Route::get('/', 'index');
+
+        });
 
     /*
     |--------------------------------------------------------------------------
-    | Log Aktivitas
+    | Form Aktivitas
+    |--------------------------------------------------------------------------
+    */
+
+    Route::controller(FormAktivitasController::class)
+        ->prefix('form-aktivitas')
+        ->group(function () {
+
+            /*
+            |--------------------------------------------------------------
+            | Cek tanggal yang dipilih
+            |--------------------------------------------------------------
+            */
+
+            Route::get('/check', 'check');
+
+            /*
+            |--------------------------------------------------------------
+            | Simpan aktivitas
+            |--------------------------------------------------------------
+            */
+
+            Route::post('/', 'store');
+
+            /*
+            |--------------------------------------------------------------
+            | Update aktivitas
+            |--------------------------------------------------------------
+            */
+
+            Route::put('/{id}', 'update');
+
+            /*
+            |--------------------------------------------------------------
+            | Hapus aktivitas
+            |--------------------------------------------------------------
+            */
+
+            Route::delete('/{id}', 'destroy');
+
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Log Aktivitas (History)
     |--------------------------------------------------------------------------
     */
 
@@ -55,15 +108,21 @@ Route::middleware(['auth:sanctum'])->prefix('mahasiswa')->group(function () {
         ->prefix('log-aktivitas')
         ->group(function () {
 
+            /*
+            |--------------------------------------------------------------
+            | Daftar Log
+            |--------------------------------------------------------------
+            */
+
             Route::get('/', 'index');
 
-            Route::post('/', 'store');
+            /*
+            |--------------------------------------------------------------
+            | Detail Log
+            |--------------------------------------------------------------
+            */
 
             Route::get('/{id}', 'show');
-
-            Route::put('/{id}', 'update');
-
-            Route::delete('/{id}', 'destroy');
 
         });
 

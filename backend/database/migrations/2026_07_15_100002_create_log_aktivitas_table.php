@@ -15,52 +15,101 @@ return new class extends Migration
 
             $table->id();
 
-            // Mahasiswa yang membuat log
+            /*
+            |--------------------------------------------------------------------------
+            | Relasi
+            |--------------------------------------------------------------------------
+            */
+
             $table->foreignId('mahasiswa_id')
                 ->constrained('users')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            // Periode magang
             $table->foreignId('periode_id')
                 ->constrained('magang_periode')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            // Tanggal aktivitas
+            /*
+            |--------------------------------------------------------------------------
+            | Informasi Aktivitas
+            |--------------------------------------------------------------------------
+            */
+
             $table->date('tanggal');
 
-            // Informasi aktivitas
-            $table->string('judul',255);
+            $table->string('judul', 255);
 
             $table->text('deskripsi');
 
             $table->text('hasil');
 
-            // Waktu pengerjaan
+            /*
+            |--------------------------------------------------------------------------
+            | Waktu Pengerjaan
+            |--------------------------------------------------------------------------
+            */
+
             $table->time('jam_mulai')->nullable();
 
             $table->time('jam_selesai')->nullable();
 
-            // Status aktivitas
-            $table->enum('status',[
+            /*
+            |--------------------------------------------------------------------------
+            | Status
+            |--------------------------------------------------------------------------
+            */
+
+            $table->enum('status', [
                 'draft',
                 'submitted',
                 'approved',
-                'revision'
+                'revision',
             ])->default('draft');
 
-            // Waktu dikirim ke pembimbing
             $table->timestamp('submitted_at')->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Timestamp
+            |--------------------------------------------------------------------------
+            */
 
             $table->timestamps();
 
-            // Soft Delete
             $table->softDeletes();
 
-            // Index
+            /*
+            |--------------------------------------------------------------------------
+            | Index
+            |--------------------------------------------------------------------------
+            */
+
             $table->index('tanggal');
+
             $table->index('status');
+
+            $table->index('mahasiswa_id');
+
+            $table->index('periode_id');
+
+            $table->index(['mahasiswa_id', 'tanggal']);
+
+            $table->index(['periode_id', 'tanggal']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Constraint
+            |--------------------------------------------------------------------------
+            */
+
+            // Satu mahasiswa hanya boleh memiliki
+            // satu log aktivitas pada satu tanggal.
+            $table->unique(
+                ['mahasiswa_id', 'tanggal'],
+                'unique_mahasiswa_tanggal'
+            );
         });
     }
 

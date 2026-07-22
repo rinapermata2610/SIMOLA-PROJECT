@@ -9,75 +9,31 @@ import CalendarHeader from "./CalendarHeader";
 import CalendarGrid from "./CalendarGrid";
 import CalendarLegend from "./CalendarLegend";
 
-function CalendarCard() {
+function CalendarCard({
+    selectedDate,
+    onDateClick,
+    onAddToday,
+}) {
+    const [currentDate, setCurrentDate] = useState(new Date());
 
-    // =============================================
-    // Kalender Dinamis
-    // Default: Juli 2026
-    // Nantinya bisa diganti menjadi new Date()
-    // =============================================
-    const [currentDate, setCurrentDate] = useState(
-        new Date(2026, 6, 1)
-    );
-
-    const [selectedDate, setSelectedDate] = useState(null);
-
-    // =============================================
-    // Bulan Sebelumnya
-    // =============================================
-    const handlePreviousMonth = () => {
-        setCurrentDate((prev) =>
+    const previousMonth = () => {
+        setCurrentDate(
             new Date(
-                prev.getFullYear(),
-                prev.getMonth() - 1,
+                currentDate.getFullYear(),
+                currentDate.getMonth() - 1,
                 1
             )
         );
     };
 
-    // =============================================
-    // Bulan Selanjutnya
-    // =============================================
-    const handleNextMonth = () => {
-        setCurrentDate((prev) =>
+    const nextMonth = () => {
+        setCurrentDate(
             new Date(
-                prev.getFullYear(),
-                prev.getMonth() + 1,
+                currentDate.getFullYear(),
+                currentDate.getMonth() + 1,
                 1
             )
         );
-    };
-
-    // =============================================
-    // Kembali ke Hari Ini
-    // =============================================
-    const handleToday = () => {
-        setCurrentDate(new Date());
-    };
-
-    // =============================================
-    // Klik Tanggal
-    // =============================================
-    const handleDateClick = (date) => {
-
-        setSelectedDate(date);
-
-        // Nanti akan membuka ActivityModal
-        console.log("Tanggal dipilih :", date);
-
-    };
-
-    // =============================================
-    // Tombol Isi Aktivitas Hari Ini
-    // =============================================
-    const handleAddActivity = () => {
-
-        const today = new Date();
-
-        setSelectedDate(today);
-
-        console.log("Tambah aktivitas :", today);
-
     };
 
     return (
@@ -91,10 +47,9 @@ function CalendarCard() {
                 p-6
             "
         >
+            {/* Header */}
 
-            {/* ================= HEADER ================= */}
-
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
 
                 <div>
 
@@ -102,15 +57,14 @@ function CalendarCard() {
                         Kalender Aktivitas Magang
                     </h2>
 
-                    <p className="text-gray-500 mt-1">
-                        Klik salah satu tanggal untuk mengisi
-                        atau memperbarui aktivitas magang.
+                    <p className="text-gray-500 mt-2">
+                        Pilih tanggal untuk mengisi atau memperbarui aktivitas magang.
                     </p>
 
                 </div>
 
                 <button
-                    onClick={handleAddActivity}
+                    onClick={onAddToday}
                     className="
                         flex
                         items-center
@@ -119,47 +73,41 @@ function CalendarCard() {
                         bg-sky-600
                         hover:bg-sky-700
                         text-white
-                        font-medium
-                        px-5
+                        px-6
                         py-3
                         rounded-xl
                         transition
+                        shadow-md
                     "
                 >
                     <FaPlus />
 
                     Isi Aktivitas Hari Ini
-
                 </button>
 
             </div>
 
-            {/* ================= HEADER BULAN ================= */}
+            {/* Header Kalender */}
 
-            <div className="mt-8">
+            <CalendarHeader
+                currentDate={currentDate}
+                previousMonth={previousMonth}
+                nextMonth={nextMonth}
+            />
 
-                <CalendarHeader
-                    currentDate={currentDate}
-                    onPrevious={handlePreviousMonth}
-                    onNext={handleNextMonth}
-                    onToday={handleToday}
-                />
-
-            </div>
-
-            {/* ================= GRID ================= */}
+            {/* Kalender */}
 
             <div className="mt-6">
 
                 <CalendarGrid
                     currentDate={currentDate}
                     selectedDate={selectedDate}
-                    onDateClick={handleDateClick}
+                    onDateClick={onDateClick}
                 />
 
             </div>
 
-            {/* ================= LEGEND ================= */}
+            {/* Legend */}
 
             <div className="mt-8">
 
