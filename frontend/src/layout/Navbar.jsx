@@ -2,12 +2,11 @@
 // File : src/components/layout/Navbar.jsx
 // =============================================
 
-import { useAuth } from "../context/AuthContext";
+import { FaBars, FaBell, FaUserCircle } from "react-icons/fa";
 
-function Navbar({ children }) {
-    const { user } = useAuth();
+function Navbar({ onMenuClick }) {
 
-    const currentDate = new Date().toLocaleDateString("id-ID", {
+    const today = new Date().toLocaleDateString("id-ID", {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -17,50 +16,112 @@ function Navbar({ children }) {
     return (
         <header
             className="
+                sticky
+                top-0
+                z-30
                 bg-white
-                shadow-sm
                 border-b
-                px-6
-                py-4
-                flex
-                justify-between
-                items-center
+                border-gray-200
+                shadow-sm
             "
         >
-            {/* Left */}
+            <div
+                className="
+                    h-20
+                    px-6
+                    flex
+                    items-center
+                    justify-between
+                "
+            >
+                {/* Left */}
+                <div className="flex items-center gap-4">
 
-            <div className="flex items-center gap-4">
+                    {/* Mobile Button */}
+                    <button
+                        onClick={onMenuClick}
+                        className="
+                            lg:hidden
+                            p-2
+                            rounded-lg
+                            hover:bg-gray-100
+                        "
+                    >
+                        <FaBars size={20} />
+                    </button>
 
-                {children}
+                    <div>
 
-                <div>
+                        <h1 className="text-2xl font-bold text-gray-800">
+                            Dashboard
+                        </h1>
 
-                    <h2 className="text-xl font-bold text-gray-800">
-                        Sistem Monitoring Logbook
-                    </h2>
+                        <p className="text-sm text-gray-500">
+                            {today}
+                        </p>
 
-                    <p className="text-sm text-gray-500">
-                        {currentDate}
-                    </p>
+                    </div>
+
+                </div>
+
+                {/* Right */}
+                <div className="flex items-center gap-5">
+
+                    {/* Notification */}
+                    <button
+                        className="
+                            relative
+                            w-11
+                            h-11
+                            rounded-full
+                            bg-gray-100
+                            hover:bg-gray-200
+                            flex
+                            items-center
+                            justify-center
+                            transition
+                        "
+                    >
+                        <FaBell className="text-gray-600" />
+
+                        <span
+                            className="
+                                absolute
+                                top-2
+                                right-2
+                                w-2.5
+                                h-2.5
+                                rounded-full
+                                bg-red-500
+                            "
+                        />
+                    </button>
+
+                    {/* User */}
+                    <div className="flex items-center gap-3">
+
+                        <FaUserCircle
+                            size={42}
+                            className="text-sky-600"
+                        />
+
+                        <div className="hidden md:block">
+
+                            <p className="font-semibold text-gray-800">
+                                Ahmad Fauzi
+                            </p>
+
+                            <p className="text-sm text-gray-500">
+                                Mahasiswa
+                            </p>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
-
-            {/* Right */}
-
-            <div className="text-right">
-
-                <p className="font-semibold text-gray-800">
-                    {user?.nama}
-                </p>
-
-                <p className="text-sm text-gray-500">
-                    {user?.role}
-                </p>
-
-            </div>
-
         </header>
     );
 }

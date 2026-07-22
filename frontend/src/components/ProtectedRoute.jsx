@@ -2,14 +2,14 @@
 // File : src/components/ProtectedRoute.jsx
 // =============================================
 
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Loading from "./common/Loading";
 
-function ProtectedRoute() {
+function ProtectedRoute({ children }) {
     const { loading, isAuthenticated } = useAuth();
 
-    // Menunggu pengecekan autentikasi
+    // Menunggu proses pengecekan login
     if (loading) {
         return (
             <Loading
@@ -19,13 +19,13 @@ function ProtectedRoute() {
         );
     }
 
-    // Jika belum login, arahkan ke halaman login
+    // Belum login
     if (!isAuthenticated) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/login" replace />;
     }
 
-    // Jika sudah login, tampilkan halaman yang diminta
-    return <Outlet />;
+    // Sudah login
+    return children;
 }
 
 export default ProtectedRoute;

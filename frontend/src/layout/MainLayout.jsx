@@ -2,54 +2,39 @@
 // File : src/layouts/MainLayout.jsx
 // =============================================
 
-import { Outlet } from "react-router-dom";
 import { useState } from "react";
-
-import { FaBars } from "react-icons/fa";
 
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-function MainLayout() {
+function MainLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
-    };
-
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="min-h-screen bg-slate-100">
 
-            {/* ================= Sidebar ================= */}
-
+            {/* Sidebar */}
             <Sidebar
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
             />
 
-            {/* ================= Main ================= */}
+            {/* Content */}
+            <div className="lg:ml-72">
 
-            <div className="flex-1 flex flex-col lg:ml-64">
+                {/* Navbar */}
+                <Navbar
+                    onMenuClick={() => setSidebarOpen(true)}
+                />
 
-                {/* ================= Navbar ================= */}
-
-                <Navbar>
-
-                    <button
-                        onClick={toggleSidebar}
-                        className="lg:hidden text-gray-700"
-                    >
-                        <FaBars size={22} />
-                    </button>
-
-                </Navbar>
-
-                {/* ================= Content ================= */}
-
-                <main className="flex-1 p-6">
-
-                    <Outlet />
-
+                {/* Main */}
+                <main
+                    className="
+                        p-6
+                        lg:p-8
+                    "
+                >
+                    {children}
                 </main>
 
             </div>

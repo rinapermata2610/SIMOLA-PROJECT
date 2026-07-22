@@ -2,19 +2,28 @@
 // File : src/pages/mahasiswa/Dashboard.jsx
 // =============================================
 
+import MainLayout from "../../layout/MainLayout";
+
+import DashboardHeader from "../../components/dashboard/DashboardHeader";
+import SummaryCards from "../../components/dashboard/SummaryCards";
+import CalendarCard from "../../components/dashboard/CalendarCard";
+
 function Dashboard() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white shadow-lg rounded-xl px-10 py-8">
-                <h1 className="text-3xl font-bold text-blue-700">
-                    Dashboard Mahasiswa
-                </h1>
+        <MainLayout>
+            <div className="space-y-6">
 
-                <p className="mt-3 text-gray-600">
-                    Login berhasil 🎉
-                </p>
+                {/* Header */}
+                <DashboardHeader />
+
+                {/* Summary Card */}
+                <SummaryCards />
+
+                {/* Kalender */}
+                <CalendarCard />
+
             </div>
-        </div>
+        </MainLayout>
     );
 }
 
