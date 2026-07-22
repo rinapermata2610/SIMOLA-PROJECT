@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 
 function ActivityForm({
-    form,
+    form = {}, // ✅ Diberi default object agar tidak undefined
     errors = {},
     loading = false,
     onChange,
@@ -19,6 +19,14 @@ function ActivityForm({
     onFileChange,
 }) {
     const fileInputRef = useRef(null);
+
+    // ✅ Ambil nilai aman dengan default fallback
+    const judul = form?.judul || "";
+    const deskripsi = form?.deskripsi || "";
+    const hasil = form?.hasil || "";
+    const jamMulai = form?.jam_mulai || "";
+    const jamSelesai = form?.jam_selesai || "";
+    const files = form?.files || []; // Pastikan ini selalu array
 
     const openFilePicker = () => {
         fileInputRef.current?.click();
@@ -33,7 +41,6 @@ function ActivityForm({
 
                 {/* Judul */}
                 <div>
-
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Judul Tugas
                         <span className="text-red-500"> *</span>
@@ -42,7 +49,7 @@ function ActivityForm({
                     <input
                         type="text"
                         name="judul"
-                        value={form.judul}
+                        value={judul}
                         onChange={onChange}
                         placeholder="Misal: Pengembangan Modul Autentikasi"
                         className={`
@@ -54,24 +61,22 @@ function ActivityForm({
                             outline-none
                             transition
                             ${
-                                errors.judul
+                                errors?.judul
                                     ? "border-red-500"
                                     : "border-gray-300 focus:border-sky-500"
                             }
                         `}
                     />
 
-                    {errors.judul && (
+                    {errors?.judul && (
                         <p className="text-sm text-red-500 mt-1">
                             {errors.judul}
                         </p>
                     )}
-
                 </div>
 
                 {/* Deskripsi */}
                 <div>
-
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Deskripsi Tugas
                         <span className="text-red-500"> *</span>
@@ -80,7 +85,7 @@ function ActivityForm({
                     <textarea
                         rows={4}
                         name="deskripsi"
-                        value={form.deskripsi}
+                        value={deskripsi}
                         onChange={onChange}
                         placeholder="Jelaskan detail tugas yang dikerjakan hari ini..."
                         className={`
@@ -93,24 +98,22 @@ function ActivityForm({
                             outline-none
                             transition
                             ${
-                                errors.deskripsi
+                                errors?.deskripsi
                                     ? "border-red-500"
                                     : "border-gray-300 focus:border-sky-500"
                             }
                         `}
                     />
 
-                    {errors.deskripsi && (
+                    {errors?.deskripsi && (
                         <p className="text-sm text-red-500 mt-1">
                             {errors.deskripsi}
                         </p>
                     )}
-
                 </div>
 
                 {/* Hasil */}
                 <div>
-
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Pencapaian / Hasil
                         <span className="text-red-500"> *</span>
@@ -119,7 +122,7 @@ function ActivityForm({
                     <textarea
                         rows={3}
                         name="hasil"
-                        value={form.hasil}
+                        value={hasil}
                         onChange={onChange}
                         placeholder="Apa hasil nyata dari pekerjaan hari ini?"
                         className={`
@@ -132,38 +135,32 @@ function ActivityForm({
                             outline-none
                             transition
                             ${
-                                errors.hasil
+                                errors?.hasil
                                     ? "border-red-500"
                                     : "border-gray-300 focus:border-sky-500"
                             }
                         `}
                     />
 
-                    {errors.hasil && (
+                    {errors?.hasil && (
                         <p className="text-sm text-red-500 mt-1">
                             {errors.hasil}
                         </p>
                     )}
-
                 </div>
 
                 {/* Jam */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                     <div>
-
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Jam Mulai
-                            <span className="text-gray-400">
-                                {" "}
-                                (opsional)
-                            </span>
+                            <span className="text-gray-400"> (opsional)</span>
                         </label>
 
                         <input
                             type="time"
                             name="jam_mulai"
-                            value={form.jam_mulai}
+                            value={jamMulai}
                             onChange={onChange}
                             className="
                                 w-full
@@ -176,23 +173,18 @@ function ActivityForm({
                                 focus:border-sky-500
                             "
                         />
-
                     </div>
 
                     <div>
-
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Jam Selesai
-                            <span className="text-gray-400">
-                                {" "}
-                                (opsional)
-                            </span>
+                            <span className="text-gray-400"> (opsional)</span>
                         </label>
 
                         <input
                             type="time"
                             name="jam_selesai"
-                            value={form.jam_selesai}
+                            value={jamSelesai}
                             onChange={onChange}
                             className="
                                 w-full
@@ -205,14 +197,11 @@ function ActivityForm({
                                 focus:border-sky-500
                             "
                         />
-
                     </div>
-
                 </div>
 
-                {/* Upload */}
+                {/* Upload Lampiran */}
                 <div>
-
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Lampiran Bukti
                     </label>
@@ -231,7 +220,6 @@ function ActivityForm({
                             transition
                         "
                     >
-
                         <div
                             className="
                                 w-14
@@ -257,10 +245,8 @@ function ActivityForm({
                         </p>
 
                         <p className="text-sm text-gray-500 mt-2">
-                            JPG, PNG, PDF, DOCX, XLSX
-                            (Maks. 10MB)
+                            JPG, PNG, PDF, DOCX, XLSX (Maks. 10MB)
                         </p>
-
                     </div>
 
                     <input
@@ -272,12 +258,10 @@ function ActivityForm({
                         onChange={onFileChange}
                     />
 
-                    {form.files.length > 0 && (
-
+                    {/* ✅ Menggunakan variable files yang aman dari undefined */}
+                    {files.length > 0 && (
                         <div className="mt-4 space-y-2">
-
-                            {form.files.map((file, index) => (
-
+                            {files.map((file, index) => (
                                 <div
                                     key={index}
                                     className="
@@ -290,29 +274,22 @@ function ActivityForm({
                                         py-3
                                     "
                                 >
-
                                     <div className="flex items-center gap-3">
-
                                         <FaPaperclip className="text-sky-600" />
-
                                         <span className="text-sm">
-                                            {file.name}
+                                            {file?.name || "File Bukti"}
                                         </span>
-
                                     </div>
 
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            const files =
-                                                [...form.files];
-
-                                            files.splice(index, 1);
-
-                                            onChange({
+                                            const updatedFiles = [...files];
+                                            updatedFiles.splice(index, 1);
+                                            onChange?.({
                                                 target: {
                                                     name: "files",
-                                                    value: files,
+                                                    value: updatedFiles,
                                                 },
                                             });
                                         }}
@@ -320,21 +297,14 @@ function ActivityForm({
                                     >
                                         <FaTrash />
                                     </button>
-
                                 </div>
-
                             ))}
-
                         </div>
-
                     )}
-
                 </div>
-
             </div>
 
             {/* Footer */}
-
             <div
                 className="
                     border-t
@@ -346,13 +316,11 @@ function ActivityForm({
                     justify-between
                 "
             >
-
                 <p className="text-sm text-gray-500">
                     Data akan otomatis tersimpan sebagai draft
                 </p>
 
                 <div className="flex gap-3">
-
                     <button
                         type="button"
                         onClick={onSaveDraft}
@@ -384,15 +352,10 @@ function ActivityForm({
                             transition
                         "
                     >
-                        {loading
-                            ? "Menyimpan..."
-                            : "Kirim"}
+                        {loading ? "Menyimpan..." : "Kirim"}
                     </button>
-
                 </div>
-
             </div>
-
         </form>
     );
 }

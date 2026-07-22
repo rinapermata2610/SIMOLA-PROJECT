@@ -23,7 +23,7 @@ function ActivityModal({
     if (!open) return null;
 
     const formattedDate = selectedDate
-        ? selectedDate.toLocaleDateString("id-ID", {
+    ? new Date(selectedDate).toLocaleDateString("id-ID", {
               weekday: "long",
               day: "numeric",
               month: "long",
