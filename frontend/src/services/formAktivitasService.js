@@ -8,24 +8,23 @@ const BASE_URL = "/mahasiswa/form-aktivitas";
 
 const formAktivitasService = {
     /**
-     * Mengecek apakah pada tanggal tertentu
-     * sudah terdapat aktivitas.
+     * Cek apakah sudah ada aktivitas pada tanggal tertentu
      */
     async check(tanggal) {
-        const response = await api.get(`${BASE_URL}/check`, {
+        const { data } = await api.get(`${BASE_URL}/check`, {
             params: { tanggal },
         });
 
-        return response.data;
+        return data;
     },
 
     /**
-     * Menyimpan aktivitas baru.
+     * Simpan aktivitas baru
      */
-    async store(data) {
-        const response = await api.post(
+    async store(formData) {
+        const { data } = await api.post(
             BASE_URL,
-            data,
+            formData,
             {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -33,29 +32,27 @@ const formAktivitasService = {
             }
         );
 
-        return response.data;
+        return data;
     },
 
     /**
-     * Mengambil detail aktivitas.
+     * Detail aktivitas
      */
     async show(id) {
-        const response = await api.get(
-            `${BASE_URL}/${id}`
-        );
+        const { data } = await api.get(`${BASE_URL}/${id}`);
 
-        return response.data;
+        return data;
     },
 
     /**
-     * Mengubah aktivitas.
+     * Update aktivitas
      */
-    async update(id, data) {
-        data.append("_method", "PUT");
+    async update(id, formData) {
+        formData.append("_method", "PUT");
 
-        const response = await api.post(
+        const { data } = await api.post(
             `${BASE_URL}/${id}`,
-            data,
+            formData,
             {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -63,18 +60,70 @@ const formAktivitasService = {
             }
         );
 
-        return response.data;
+        return data;
     },
 
     /**
-     * Menghapus aktivitas.
+     * Simpan sebagai draft
+     */
+    async saveDraft(formData) {
+        formData.append("status", "draft");
+
+        const { data } = await api.post(
+            BASE_URL,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+
+        return data;
+    },
+
+    /**
+     * Submit aktivitas
+     */
+    async submit(id) {
+        const { data } = await api.patch(
+            `${BASE_URL}/${id}/submit`
+        );
+
+        return data;
+    },
+
+    /**
+     * Hapus aktivitas
      */
     async destroy(id) {
-        const response = await api.delete(
+        const { data } = await api.delete(
             `${BASE_URL}/${id}`
         );
 
-        return response.data;
+        return data;
+    },
+
+    /**
+     * Ambil seluruh aktivitas milik mahasiswa
+     */
+    async getAll(params = {}) {
+        const { data } = await api.get(BASE_URL, {
+            params,
+        });
+
+        return data;
+    },
+
+    /**
+     * Ambil aktivitas berdasarkan tanggal
+     */
+    async getByDate(tanggal) {
+        const { data } = await api.get(BASE_URL, {
+            params: { tanggal },
+        });
+
+        return data;
     },
 };
 

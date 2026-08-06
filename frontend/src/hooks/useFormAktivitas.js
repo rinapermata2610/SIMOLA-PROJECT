@@ -12,9 +12,7 @@ const initialForm = {
     judul: "",
     deskripsi: "",
     hasil: "",
-    jam_mulai: "",
-    jam_selesai: "",
-    lampiran: null,
+    files: [],
 };
 
 function useFormAktivitas() {
@@ -27,14 +25,38 @@ function useFormAktivitas() {
     const [form, setForm] = useState(initialForm);
 
     /**
-     * Mengubah value form
+     * Input Text
      */
     const handleChange = (e) => {
-        const { name, value, files } = e.target;
+        const { name, value } = e.target;
 
         setForm((prev) => ({
             ...prev,
-            [name]: files ? files[0] : value,
+            [name]: value,
+        }));
+    };
+
+    /**
+     * Upload File
+     */
+    const handleFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+
+        if (!selectedFiles.length) return;
+
+        setForm((prev) => ({
+            ...prev,
+            files: [...prev.files, ...selectedFiles],
+        }));
+    };
+
+    /**
+     * Hapus File
+     */
+    const removeFile = (index) => {
+        setForm((prev) => ({
+            ...prev,
+            files: prev.files.filter((_, i) => i !== index),
         }));
     };
 
@@ -48,14 +70,13 @@ function useFormAktivitas() {
     };
 
     /**
-     * Mengambil data berdasarkan tanggal
+     * Load Data Berdasarkan Tanggal
      */
     const loadData = async (tanggal) => {
         try {
             setLoading(true);
 
-            const response =
-                await formAktivitasService.check(tanggal);
+            const response = await formAktivitasService.check(tanggal);
 
             if (response.exists) {
                 setMode("edit");
@@ -63,14 +84,10 @@ function useFormAktivitas() {
 
                 setForm({
                     tanggal: response.data.tanggal,
-                    judul: response.data.judul,
-                    deskripsi: response.data.deskripsi,
-                    hasil: response.data.hasil,
-                    jam_mulai:
-                        response.data.jam_mulai ?? "",
-                    jam_selesai:
-                        response.data.jam_selesai ?? "",
-                    lampiran: null,
+                    judul: response.data.judul || "",
+                    deskripsi: response.data.deskripsi || "",
+                    hasil: response.data.hasil || "",
+                    files: [],
                 });
             } else {
                 setMode("create");
@@ -82,6 +99,8 @@ function useFormAktivitas() {
                 });
             }
         } catch (error) {
+            console.error(error);
+
             Swal.fire({
                 icon: "error",
                 title: "Gagal",
@@ -95,45 +114,99 @@ function useFormAktivitas() {
     };
 
     /**
-     * Simpan Data
+     * Simpan Draft
      */
-    const handleSubmit = async () => {
+    const saveDraft = async () => {
         try {
             setLoading(true);
 
             const formData = new FormData();
 
-            Object.keys(form).forEach((key) => {
-                if (
-                    form[key] !== null &&
-                    form[key] !== ""
-                ) {
-                    formData.append(key, form[key]);
-                }
+            formData.append("tanggal", form.tanggal);
+            formData.append("judul", form.judul);
+            formData.append("deskripsi", form.deskripsi);
+            formData.append("hasil", form.hasil);
+            formData.append("status", "draft");
+
+            form.files.forEach((file) => {
+                formData.append("lampiran[]", file);
             });
 
             let response;
 
             if (mode === "create") {
-                response =
-                    await formAktivitasService.store(
-                        formData
-                    );
+                response = await formAktivitasService.store(formData);
             } else {
-                response =
-                    await formAktivitasService.update(
-                        activityId,
-                        formData
-                    );
+                response = await formAktivitasService.update(
+                    activityId,
+                    formData
+                );
+            }
+
+            Swal.fire({
+                icon: "success",
+                title: "Draft berhasil disimpan",
+                timer: 1500,
+                showConfirmButton: false,
+            });
+
+            return response;
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Gagal",
+                text:
+                    error.response?.data?.message ??
+                    "Gagal menyimpan draft.",
+            });
+
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /**
+     * Kirim Aktivitas
+     */
+    const submitForm = async (e) => {
+        if (e) e.preventDefault();
+
+        try {
+            setLoading(true);
+
+            const formData = new FormData();
+
+            formData.append("tanggal", form.tanggal);
+            formData.append("judul", form.judul);
+            formData.append("deskripsi", form.deskripsi);
+            formData.append("hasil", form.hasil);
+            formData.append("status", "submitted");
+
+            form.files.forEach((file) => {
+                formData.append("lampiran[]", file);
+            });
+
+            let response;
+
+            if (mode === "create") {
+                response = await formAktivitasService.store(formData);
+            } else {
+                response = await formAktivitasService.update(
+                    activityId,
+                    formData
+                );
             }
 
             Swal.fire({
                 icon: "success",
                 title: "Berhasil",
-                text: response.message,
+                text: "Aktivitas berhasil dikirim.",
                 timer: 1500,
                 showConfirmButton: false,
             });
+
+            resetForm();
 
             return response;
         } catch (error) {
@@ -156,11 +229,17 @@ function useFormAktivitas() {
         form,
         mode,
         activityId,
+
         setForm,
         setMode,
+
         handleChange,
-        handleSubmit,
+        handleFileChange,
+        removeFile,
+
         loadData,
+        saveDraft,
+        submitForm,
         resetForm,
     };
 }

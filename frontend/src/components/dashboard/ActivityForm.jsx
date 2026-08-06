@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 
 function ActivityForm({
-    form = {}, // ✅ Diberi default object agar tidak undefined
+    form = {},
     errors = {},
     loading = false,
     onChange,
@@ -20,16 +20,25 @@ function ActivityForm({
 }) {
     const fileInputRef = useRef(null);
 
-    // ✅ Ambil nilai aman dengan default fallback
     const judul = form?.judul || "";
     const deskripsi = form?.deskripsi || "";
     const hasil = form?.hasil || "";
-    const jamMulai = form?.jam_mulai || "";
-    const jamSelesai = form?.jam_selesai || "";
-    const files = form?.files || []; // Pastikan ini selalu array
+    const files = form?.files || [];
 
     const openFilePicker = () => {
         fileInputRef.current?.click();
+    };
+
+    const removeFile = (index) => {
+        const updatedFiles = [...files];
+        updatedFiles.splice(index, 1);
+
+        onChange?.({
+            target: {
+                name: "files",
+                value: updatedFiles,
+            },
+        });
     };
 
     return (
@@ -149,59 +158,9 @@ function ActivityForm({
                     )}
                 </div>
 
-                {/* Jam */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Jam Mulai
-                            <span className="text-gray-400"> (opsional)</span>
-                        </label>
-
-                        <input
-                            type="time"
-                            name="jam_mulai"
-                            value={jamMulai}
-                            onChange={onChange}
-                            className="
-                                w-full
-                                rounded-lg
-                                border
-                                border-gray-300
-                                px-4
-                                py-3
-                                outline-none
-                                focus:border-sky-500
-                            "
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Jam Selesai
-                            <span className="text-gray-400"> (opsional)</span>
-                        </label>
-
-                        <input
-                            type="time"
-                            name="jam_selesai"
-                            value={jamSelesai}
-                            onChange={onChange}
-                            className="
-                                w-full
-                                rounded-lg
-                                border
-                                border-gray-300
-                                px-4
-                                py-3
-                                outline-none
-                                focus:border-sky-500
-                            "
-                        />
-                    </div>
-                </div>
-
                 {/* Upload Lampiran */}
                 <div>
+
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Lampiran Bukti
                     </label>
@@ -220,6 +179,7 @@ function ActivityForm({
                             transition
                         "
                     >
+
                         <div
                             className="
                                 w-14
@@ -245,66 +205,85 @@ function ActivityForm({
                         </p>
 
                         <p className="text-sm text-gray-500 mt-2">
-                            JPG, PNG, PDF, DOCX, XLSX (Maks. 10MB)
+                            JPG, PNG, PDF, DOCX, XLSX (Maks. 10 MB)
                         </p>
+
                     </div>
 
                     <input
                         ref={fileInputRef}
                         type="file"
-                        multiple
                         hidden
+                        multiple
                         accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx"
                         onChange={onFileChange}
                     />
 
-                    {/* ✅ Menggunakan variable files yang aman dari undefined */}
                     {files.length > 0 && (
-                        <div className="mt-4 space-y-2">
+
+                        <div className="mt-4 space-y-3">
+
                             {files.map((file, index) => (
+
                                 <div
                                     key={index}
                                     className="
                                         flex
                                         items-center
                                         justify-between
+                                        rounded-xl
                                         border
-                                        rounded-lg
+                                        border-gray-200
+                                        bg-gray-50
                                         px-4
                                         py-3
                                     "
                                 >
+
                                     <div className="flex items-center gap-3">
-                                        <FaPaperclip className="text-sky-600" />
-                                        <span className="text-sm">
-                                            {file?.name || "File Bukti"}
-                                        </span>
+
+                                        <FaPaperclip className="text-sky-600 text-lg" />
+
+                                        <div>
+
+                                            <p className="font-medium text-gray-700">
+                                                {file.name}
+                                            </p>
+
+                                            <p className="text-xs text-gray-500">
+                                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                                            </p>
+
+                                        </div>
+
                                     </div>
 
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            const updatedFiles = [...files];
-                                            updatedFiles.splice(index, 1);
-                                            onChange?.({
-                                                target: {
-                                                    name: "files",
-                                                    value: updatedFiles,
-                                                },
-                                            });
-                                        }}
-                                        className="text-red-500 hover:text-red-700"
+                                        onClick={() => removeFile(index)}
+                                        className="
+                                            text-red-500
+                                            hover:text-red-700
+                                            transition
+                                        "
                                     >
                                         <FaTrash />
                                     </button>
+
                                 </div>
+
                             ))}
+
                         </div>
+
                     )}
+
                 </div>
+
             </div>
 
             {/* Footer */}
+
             <div
                 className="
                     border-t
@@ -316,11 +295,13 @@ function ActivityForm({
                     justify-between
                 "
             >
+
                 <p className="text-sm text-gray-500">
                     Data akan otomatis tersimpan sebagai draft
                 </p>
 
                 <div className="flex gap-3">
+
                     <button
                         type="button"
                         onClick={onSaveDraft}
@@ -354,8 +335,11 @@ function ActivityForm({
                     >
                         {loading ? "Menyimpan..." : "Kirim"}
                     </button>
+
                 </div>
+
             </div>
+
         </form>
     );
 }
