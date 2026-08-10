@@ -62,7 +62,13 @@ function Login() {
                 showConfirmButton: false,
             });
 
-            navigate("/dashboard", { replace: true });
+            const role = response?.user?.role;
+
+            if (role === "admin") {
+                navigate("/admin/dashboard", { replace: true });
+            } else {
+                navigate("/dashboard", { replace: true });
+            }
 
         } catch (error) {
             console.error(error);

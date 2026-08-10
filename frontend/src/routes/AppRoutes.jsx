@@ -6,6 +6,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "../pages/auth/Login";
 import Dashboard from "../pages/mahasiswa/Dashboard";
+import AdminDashboard from "../pages/admin/Dashboard";
+import AdminLayout from "../layout/admin/AdminLayout";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -25,6 +27,17 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <Dashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/admin/dashboard"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout>
+                            <AdminDashboard />
+                        </AdminLayout>
                     </ProtectedRoute>
                 }
             />
