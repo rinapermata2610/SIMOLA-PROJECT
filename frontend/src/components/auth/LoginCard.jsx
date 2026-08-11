@@ -39,22 +39,7 @@ function LoginCard({
                     Sistem Monitoring dan Laporan Magang
                 </p>
 
-                <div
-                    className="
-                        inline-block
-                        mt-5
-                        bg-sky-100
-                        text-sky-700
-                        px-5
-                        py-2
-                        rounded-full
-                        text-xs
-                        font-semibold
-                        tracking-wide
-                    "
-                >
-                    LOGIN MAHASISWA
-                </div>
+                
             </div>
 
             {/* Form */}
