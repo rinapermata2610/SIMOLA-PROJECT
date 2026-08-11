@@ -93,6 +93,18 @@ class AkunController extends Controller
         ]);
     }
 
+    public function activate(int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+        $user->is_active = true;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun diaktifkan.',
+        ]);
+    }
+
     public function deactivate(int $id): JsonResponse
     {
         $user = User::findOrFail($id);
@@ -103,6 +115,25 @@ class AkunController extends Controller
             'success' => true,
             'message' => 'Akun dinonaktifkan.',
         ]);
+    }
+
+    public function destroy(int $id): JsonResponse
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Akun dihapus.',
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun tidak bisa dihapus karena masih memiliki data terkait (periode magang/log aktivitas).',
+                'error' => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+        }
     }
 
     public function resetPassword(int $id): JsonResponse
