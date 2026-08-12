@@ -1,0 +1,4 @@
+*.pdf
+test/*
+*.http
+*.md

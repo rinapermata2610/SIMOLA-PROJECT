@@ -14,6 +14,8 @@ import Dashboard from "../pages/mahasiswa/Dashboard";
 import LogAktivitas from "../pages/mahasiswa/LogAktivitas";
 import DetailLog from "../pages/mahasiswa/DetailLog";
 import EditLog from "../pages/mahasiswa/EditLog";
+import AdminDashboard from "../pages/admin/Dashboard";
+import AdminLayout from "../layout/admin/AdminLayout";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -48,6 +50,12 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <LogAktivitas />
+                path="/admin/dashboard"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout>
+                            <AdminDashboard />
+                        </AdminLayout>
                     </ProtectedRoute>
                 }
             />
@@ -74,6 +82,7 @@ function AppRoutes() {
                 REDIRECT
             ============================ */}
 
+            {/* Redirect Root */}
             <Route
                 path="/"
                 element={

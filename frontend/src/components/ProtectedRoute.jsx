@@ -6,8 +6,8 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Loading from "./common/Loading";
 
-function ProtectedRoute({ children }) {
-    const { loading, isAuthenticated } = useAuth();
+function ProtectedRoute({ children, allowedRoles }) {
+    const { loading, isAuthenticated, user } = useAuth();
 
     // Menunggu proses pengecekan login
     if (loading) {
@@ -22,6 +22,10 @@ function ProtectedRoute({ children }) {
     // Belum login
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
+    }
+
+    if (allowedRoles && !allowedRoles.includes(user?.role)) {
+        return <Navigate to="/dashboard" replace />;
     }
 
     // Sudah login
