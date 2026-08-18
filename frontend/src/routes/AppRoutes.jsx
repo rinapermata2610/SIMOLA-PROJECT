@@ -2,10 +2,18 @@
 // File : src/routes/AppRoutes.jsx
 // =============================================
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import {
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 
 import Login from "../pages/auth/Login";
+
 import Dashboard from "../pages/mahasiswa/Dashboard";
+import LogAktivitas from "../pages/mahasiswa/LogAktivitas";
+import DetailLog from "../pages/mahasiswa/DetailLog";
+import EditLog from "../pages/mahasiswa/EditLog";
 import AdminDashboard from "../pages/admin/Dashboard";
 import ManajemenAkun from "../pages/admin/ManajemenAkun";
 import AdminLayout from "../layout/admin/AdminLayout";
@@ -16,13 +24,19 @@ function AppRoutes() {
     return (
         <Routes>
 
-            {/* Login */}
+            {/* ============================
+                AUTH
+            ============================ */}
+
             <Route
                 path="/login"
                 element={<Login />}
             />
 
-            {/* Dashboard */}
+            {/* ============================
+                MAHASISWA
+            ============================ */}
+
             <Route
                 path="/dashboard"
                 element={
@@ -33,6 +47,10 @@ function AppRoutes() {
             />
 
             <Route
+                path="/log-aktivitas"
+                element={
+                    <ProtectedRoute>
+                        <LogAktivitas />
                 path="/admin/dashboard"
                 element={
                     <ProtectedRoute allowedRoles={["admin"]}>
@@ -50,20 +68,50 @@ function AppRoutes() {
                         <AdminLayout>
                             <ManajemenAkun />
                         </AdminLayout>
+                path="/log-aktivitas/:id"
+                element={
+                    <ProtectedRoute>
+                        <DetailLog />
                     </ProtectedRoute>
                 }
             />
 
+            <Route
+                path="/log-aktivitas/:id/edit"
+                element={
+                    <ProtectedRoute>
+                        <EditLog />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* ============================
+                REDIRECT
+            ============================ */}
+
             {/* Redirect Root */}
             <Route
                 path="/"
-                element={<Navigate to="/login" replace />}
+                element={
+                    <Navigate
+                        to="/login"
+                        replace
+                    />
+                }
             />
 
-            {/* 404 */}
+            {/* ============================
+                404
+            ============================ */}
+
             <Route
                 path="*"
-                element={<Navigate to="/login" replace />}
+                element={
+                    <Navigate
+                        to="/login"
+                        replace
+                    />
+                }
             />
 
         </Routes>

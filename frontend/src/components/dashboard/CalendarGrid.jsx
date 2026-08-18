@@ -22,19 +22,14 @@ function CalendarGrid({
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
-    // Hari pertama bulan
     const firstDay = new Date(year, month, 1);
-
-    // Jumlah hari dalam bulan
     const lastDay = new Date(year, month + 1, 0);
 
     const totalDays = lastDay.getDate();
 
-    // Mengubah Sunday menjadi indeks terakhir
     let startDay = firstDay.getDay();
     startDay = startDay === 0 ? 6 : startDay - 1;
 
-    // Hari terakhir bulan sebelumnya
     const previousMonthLastDay = new Date(
         year,
         month,
@@ -46,8 +41,9 @@ function CalendarGrid({
     const calendar = [];
 
     // ==========================
-    // Tanggal bulan sebelumnya
+    // Bulan Sebelumnya
     // ==========================
+
     for (let i = startDay; i > 0; i--) {
         calendar.push({
             day: previousMonthLastDay - i + 1,
@@ -56,20 +52,15 @@ function CalendarGrid({
     }
 
     // ==========================
-    // Bulan sekarang
+    // Bulan Sekarang
     // ==========================
-    for (let day = 1; day <= totalDays; day++) {
 
+    for (let day = 1; day <= totalDays; day++) {
         const date = new Date(year, month, day);
 
-        let status = "empty";
-
-        // contoh dummy
-        if ([1, 3, 8, 10, 14].includes(day))
-            status = "completed";
-
         const isToday =
-            date.toDateString() === today.toDateString();
+            date.toDateString() ===
+            today.toDateString();
 
         const isSelected =
             selectedDate &&
@@ -79,7 +70,6 @@ function CalendarGrid({
         calendar.push({
             day,
             date,
-            status,
             currentMonth: true,
             isToday,
             isSelected,
@@ -87,8 +77,9 @@ function CalendarGrid({
     }
 
     // ==========================
-    // Bulan berikutnya
+    // Bulan Berikutnya
     // ==========================
+
     while (calendar.length < 42) {
         calendar.push({
             day:
@@ -111,10 +102,10 @@ function CalendarGrid({
                     <div
                         key={day}
                         className="
+                            py-2
                             text-center
                             font-semibold
                             text-gray-500
-                            py-2
                         "
                     >
                         {day}
@@ -134,10 +125,13 @@ function CalendarGrid({
                         key={index}
                         day={item.day}
                         date={item.date}
-                        status={item.status}
+                        currentMonth={
+                            item.currentMonth
+                        }
                         isToday={item.isToday}
-                        isSelected={item.isSelected}
-                        currentMonth={item.currentMonth}
+                        isSelected={
+                            item.isSelected
+                        }
                         onClick={() =>
                             item.currentMonth &&
                             onDateClick(item.date)
