@@ -1,7 +1,3 @@
-// =============================================
-// File : src/pages/mahasiswa/Dashboard.jsx
-// =============================================
-
 import { useState } from "react";
 
 import MainLayout from "../../layout/MainLayout";
@@ -20,6 +16,7 @@ function Dashboard() {
     const {
         form,
         loading,
+        errorMessage,
         handleChange,
         handleFileChange,
         removeFile,
@@ -41,6 +38,14 @@ function Dashboard() {
         setShowModal(false);
         setSelectedDate(null);
         resetForm();
+    };
+
+    const handleSubmit = (statusType = "submitted") => {
+        const dateStr = selectedDate 
+            ? selectedDate.toISOString().split("T")[0] 
+            : null;
+        
+        submitForm(statusType, dateStr);
     };
 
     return (
@@ -69,7 +74,7 @@ function Dashboard() {
                     onChange={handleChange}
                     onFileChange={handleFileChange}
                     onRemoveFile={removeFile}
-                    onSubmit={submitForm}
+                    onSubmit={handleSubmit}
                     onClose={handleCloseModal}
                 />
 

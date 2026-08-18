@@ -50,12 +50,6 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <LogAktivitas />
-                path="/admin/dashboard"
-                element={
-                    <ProtectedRoute allowedRoles={["admin"]}>
-                        <AdminLayout>
-                            <AdminDashboard />
-                        </AdminLayout>
                     </ProtectedRoute>
                 }
             />
@@ -74,6 +68,21 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <EditLog />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* ============================
+                ADMIN
+            ============================ */}
+
+            <Route
+                path="/admin/dashboard"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout>
+                            <AdminDashboard />
+                        </AdminLayout>
                     </ProtectedRoute>
                 }
             />
