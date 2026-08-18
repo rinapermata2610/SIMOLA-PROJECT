@@ -15,6 +15,7 @@ import LogAktivitas from "../pages/mahasiswa/LogAktivitas";
 import DetailLog from "../pages/mahasiswa/DetailLog";
 import EditLog from "../pages/mahasiswa/EditLog";
 import AdminDashboard from "../pages/admin/Dashboard";
+import ManajemenAkun from "../pages/admin/ManajemenAkun";
 import AdminLayout from "../layout/admin/AdminLayout";
 
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -61,6 +62,12 @@ function AppRoutes() {
             />
 
             <Route
+                path="/admin/akun"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout>
+                            <ManajemenAkun />
+                        </AdminLayout>
                 path="/log-aktivitas/:id"
                 element={
                     <ProtectedRoute>

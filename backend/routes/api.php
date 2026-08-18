@@ -214,8 +214,10 @@ Route::middleware(['auth:sanctum', 'role:admin'])
         Route::get('/akun', [AdminAkunController::class, 'index']);
         Route::post('/akun', [AdminAkunController::class, 'store']);
         Route::put('/akun/{id}', [AdminAkunController::class, 'update']);
+        Route::put('/akun/{id}/activate', [AdminAkunController::class, 'activate']);
         Route::put('/akun/{id}/deactivate', [AdminAkunController::class, 'deactivate']);
         Route::post('/akun/{id}/reset-password', [AdminAkunController::class, 'resetPassword']);
+        Route::delete('/akun/{id}', [AdminAkunController::class, 'destroy']);
 
         Route::post('/akun/import', [AdminImportAkunController::class, 'import']);
 
