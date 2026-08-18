@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Pembimbing\DashboardController as PembimbingDashboa
 use App\Http\Controllers\Api\Pembimbing\LogAktivitasController as PembimbingLogAktivitasController;
 use App\Http\Controllers\Api\Admin\AkunController as AdminAkunController;
 use App\Http\Controllers\Api\Admin\ImportAkunController as AdminImportAkunController;
+use App\Http\Controllers\Api\Admin\PeriodeBatchController as AdminPeriodeBatchController;
 use App\Http\Controllers\Api\Admin\PeriodeMagangController as AdminPeriodeController;
 use App\Http\Controllers\Api\Admin\PenugasanController as AdminPenugasanController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
@@ -225,6 +226,14 @@ Route::middleware(['auth:sanctum', 'role:admin'])
         Route::get('/periode', [AdminPeriodeController::class, 'index']);
         Route::post('/periode', [AdminPeriodeController::class, 'store']);
         Route::put('/periode/{id}', [AdminPeriodeController::class, 'update']);
+
+        // Periode Batch
+        Route::get('/periode-batch', [AdminPeriodeBatchController::class, 'index']);
+        Route::post('/periode-batch', [AdminPeriodeBatchController::class, 'store']);
+        Route::put('/periode-batch/{id}', [AdminPeriodeBatchController::class, 'update']);
+        Route::get('/periode-batch/{id}', [AdminPeriodeBatchController::class, 'show']);
+        Route::post('/periode-batch/{id}/mahasiswa', [AdminPeriodeBatchController::class, 'addMahasiswa']);
+        Route::delete('/periode-batch/{id}/mahasiswa/{periodeId}', [AdminPeriodeBatchController::class, 'removeMahasiswa']);
 
         // Penugasan
         Route::get('/penugasan', [AdminPenugasanController::class, 'index']);

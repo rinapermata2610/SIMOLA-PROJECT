@@ -9,6 +9,7 @@ class MagangPeriode extends Model
     protected $table = 'magang_periode';
 
     protected $fillable = [
+        'periode_batch_id',
         'mahasiswa_id',
         'pembimbing_id',
         'instansi',
@@ -31,6 +32,11 @@ class MagangPeriode extends Model
     public function pembimbing()
     {
         return $this->belongsTo(User::class, 'pembimbing_id');
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(PeriodeBatch::class, 'periode_batch_id');
     }
 
     public function logAktivitas()
