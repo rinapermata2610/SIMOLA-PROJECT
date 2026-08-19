@@ -4,7 +4,7 @@
 
 import AkunTableRow from "./AkunTableRow";
 
-function AkunTable({ data = [], loading, onEdit, onToggleStatus, onResetPassword, onDelete, onAssignPembimbing }) {
+function AkunTable({ data = [], loading, onEdit, onToggleStatus, onResetPassword, onDelete, onAssignPembimbing, pembimbingList = [] }) {
     if (loading) {
         return <div className="text-center py-10 text-gray-600">Memuat data akun...</div>;
     }
@@ -40,6 +40,7 @@ function AkunTable({ data = [], loading, onEdit, onToggleStatus, onResetPassword
                                     onResetPassword={onResetPassword}
                                     onDelete={onDelete}
                                     onAssignPembimbing={onAssignPembimbing}
+                                    pembimbingList={pembimbingList}
                                 />
                             ))
                         )}

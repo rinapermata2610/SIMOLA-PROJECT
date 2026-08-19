@@ -9,7 +9,7 @@ import {
     FaTrashAlt,
 } from "react-icons/fa";
 
-function AkunTableRow({ user, onEdit, onToggleStatus, onResetPassword, onDelete, onAssignPembimbing }) {
+function AkunTableRow({ user, onEdit, onToggleStatus, onResetPassword, onDelete, onAssignPembimbing, pembimbingList = [] }) {
     const roleClasses = {
         mahasiswa: "bg-sky-100 text-sky-700",
         pembimbing: "bg-amber-100 text-amber-700",
@@ -72,7 +72,11 @@ function AkunTableRow({ user, onEdit, onToggleStatus, onResetPassword, onDelete,
                         onChange={(e) => onAssignPembimbing(user, e.target.value)}
                     >
                         <option value="">Pilih Pembimbing</option>
-                        <option value="1">Pembimbing Demo</option>
+                        {pembimbingList.map((pembimbing) => (
+                            <option key={pembimbing.id} value={pembimbing.id}>
+                                {pembimbing.nama}
+                            </option>
+                        ))}
                     </select>
                 ) : (
                     <span className="text-gray-400">—</span>
