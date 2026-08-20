@@ -1,140 +1,64 @@
-// =============================================
-// File : src/hooks/useLogAktivitas.js
-// =============================================
+import { useState, useEffect, useCallback } from "react";
+import api from "../services/api"; // Sesuaikan lokasi instance axios proyekmu
 
-import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
-
-import logAktivitasService from "../services/logAktivitasService";
-
-function useLogAktivitas() {
+export default function useLogAktivitas() {
     const [loading, setLoading] = useState(false);
-
     const [logs, setLogs] = useState([]);
-
     const [filters, setFilters] = useState({
+        search: "",
+        status: "",
         tanggal_mulai: "",
         tanggal_selesai: "",
-        status: "",
     });
 
-    /**
-     * Mengambil seluruh data log aktivitas
-     */
-    const fetchLogs = async () => {
+    const fetchLogs = useCallback(async () => {
+        setLoading(true);
         try {
-            setLoading(true);
-
-            const response = await logAktivitasService.getAll(filters);
-
-            setLogs(response.data ?? []);
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Gagal",
-                text:
-                    error.response?.data?.message ??
-                    "Gagal mengambil data aktivitas.",
+            const response = await api.get("/mahasiswa/log-aktivitas", {
+                params: filters,
             });
+            if (response.data.success) {
+                setLogs(response.data.data);
+            }
+        } catch (error) {
+            console.error("Gagal memuat log aktivitas:", error);
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters]);
 
-    /**
-     * Load pertama
-     */
     useEffect(() => {
         fetchLogs();
-    }, []);
+    }, [fetchLogs]);
 
-    /**
-     * Mengubah filter
-     */
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-
-        setFilters((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    /**
-     * Tombol Cari
-     */
     const handleSearch = () => {
         fetchLogs();
     };
 
-    /**
-     * Refresh data
-     */
-    const refresh = () => {
-        fetchLogs();
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
-    /**
-     * Hapus aktivitas
-     */
     const handleDelete = async (id) => {
-        const result = await Swal.fire({
-            title: "Hapus Aktivitas?",
-            text: "Data yang dihapus tidak dapat dikembalikan.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Ya, Hapus",
-            cancelButtonText: "Batal",
-            confirmButtonColor: "#dc2626",
-        });
-
-        if (!result.isConfirmed) return;
-
+        if (!window.confirm("Apakah Anda yakin ingin menghapus data log ini?")) return;
         try {
-            setLoading(true);
-
-            const response =
-                await logAktivitasService.destroy(id);
-
-            Swal.fire({
-                icon: "success",
-                title: "Berhasil",
-                text: response.message,
-                timer: 1500,
-                showConfirmButton: false,
-            });
-
-            fetchLogs();
+            const response = await api.delete(`/mahasiswa/form-aktivitas/${id}`);
+            if (response.data.success) {
+                fetchLogs();
+            }
         } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Gagal",
-                text:
-                    error.response?.data?.message ??
-                    "Gagal menghapus aktivitas.",
-            });
-        } finally {
-            setLoading(false);
+            alert(error.response?.data?.message || "Gagal menghapus log.");
         }
     };
 
     return {
         loading,
-
         logs,
-
         filters,
-
-        fetchLogs,
-
-        refresh,
-
-        handleDelete,
-
         handleSearch,
-
         handleFilterChange,
+        handleDelete,
+        refreshLogs: fetchLogs,
     };
 }
-
-export default useLogAktivitas;

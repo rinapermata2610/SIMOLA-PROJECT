@@ -84,6 +84,7 @@ function DeleteDialog({
                     </div>
 
                     <button
+                        type="button"
                         onClick={onClose}
                         disabled={loading}
                         className="
@@ -157,6 +158,7 @@ function DeleteDialog({
                     "
                 >
                     <button
+                        type="button"
                         onClick={onClose}
                         disabled={loading}
                         className="
@@ -174,6 +176,7 @@ function DeleteDialog({
                     </button>
 
                     <button
+                        type="button"
                         onClick={onConfirm}
                         disabled={loading}
                         className="

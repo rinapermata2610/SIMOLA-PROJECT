@@ -17,6 +17,7 @@ import MainLayout from "../../layout/MainLayout";
 import ActivityForm from "../../components/dashboard/ActivityForm";
 
 import useFormAktivitas from "../../hooks/useFormAktivitas";
+import logAktivitasService from "../../services/logAktivitasService";
 
 function EditLog() {
     const { id } = useParams();
@@ -28,7 +29,7 @@ function EditLog() {
         loading,
         setForm,
         handleChange,
-        handleSubmit,
+        updateForm,
     } = useFormAktivitas();
 
     useEffect(() => {
@@ -37,11 +38,7 @@ function EditLog() {
 
     const loadData = async () => {
         try {
-            const response = await fetch(
-                `http://localhost:8000/api/mahasiswa/log-aktivitas/${id}`
-            );
-
-            const result = await response.json();
+            const result = await logAktivitasService.getById(id);
 
             if (result.data) {
                 setForm({
@@ -70,7 +67,7 @@ function EditLog() {
         e.preventDefault();
 
         try {
-            await handleSubmit(id);
+            await updateForm(id);
 
             Swal.fire({
                 icon: "success",
@@ -97,6 +94,7 @@ function EditLog() {
                     <div className="flex items-center gap-4">
 
                         <button
+                            type="button"
                             onClick={() =>
                                 navigate("/log-aktivitas")
                             }
@@ -127,6 +125,7 @@ function EditLog() {
                     </div>
 
                     <button
+                        type="button"
                         onClick={handleUpdate}
                         disabled={loading}
                         className="

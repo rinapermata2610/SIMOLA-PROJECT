@@ -7,85 +7,33 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class LogAktivitasResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     */
     public function toArray(Request $request): array
     {
         return [
-
-            'id' => $this->id,
-
-            'mahasiswa_id' => $this->mahasiswa_id,
-
-            'periode_id' => $this->periode_id,
-
-            'tanggal' => $this->tanggal,
-
-            'judul' => $this->judul,
-
-            'deskripsi' => $this->deskripsi,
-
-            'hasil' => $this->hasil,
-
-            'jam_mulai' => $this->jam_mulai,
-
-            'jam_selesai' => $this->jam_selesai,
-
-            'durasi' => $this->jam_mulai && $this->jam_selesai
-                ? $this->jam_mulai . ' - ' . $this->jam_selesai
-                : null,
-
-            'status' => $this->status,
-
-            'submitted_at' => $this->submitted_at,
-
-            'created_at' => optional($this->created_at)
-                ->format('Y-m-d H:i:s'),
-
-            'updated_at' => optional($this->updated_at)
-                ->format('Y-m-d H:i:s'),
-
-            'periode' => $this->whenLoaded('periode', function () {
-
+            'id'           => $this->id,
+            'tanggal'      => $this->tanggal ? $this->tanggal->format('Y-m-d') : null,
+            'judul'        => $this->judul,
+            'deskripsi'    => $this->deskripsi,
+            'hasil'        => $this->hasil,
+            'status'       => $this->status,
+            'submitted_at' => $this->submitted_at ? $this->submitted_at->format('Y-m-d H:i:s') : null,
+            'periode'      => $this->whenLoaded('periode', function () {
                 return [
-
-                    'id' => $this->periode->id,
-
-                    'tanggal_mulai' => $this->periode->tanggal_mulai,
-
-                    'tanggal_selesai' => $this->periode->tanggal_selesai,
-
-                    'instansi' => $this->periode->instansi,
-
+                    'id'   => $this->periode->id,
+                    'nama' => $this->periode->nama ?? null,
                 ];
-
             }),
-
-            'lampiran' => LampiranBuktiResource::collection(
-                $this->whenLoaded('lampiran')
-            ),
-
-            'penilaian' => $this->whenLoaded('penilaian', function () {
-
-                if (!$this->penilaian) {
-                    return null;
-                }
-
-                return [
-
-                    'id' => $this->penilaian->id,
-
-                    'status' => $this->penilaian->status,
-
-                    'komentar' => $this->penilaian->komentar,
-
-                    'verified_at' => $this->penilaian->verified_at,
-
-                ];
-
+            'lampiran'     => $this->whenLoaded('lampiran', function () {
+                return $this->lampiran->map(function ($file) {
+                    return [
+                        'id'        => $file->id,
+                        'nama_file' => $file->nama_file,
+                        'url'       => $file->file_path ? asset('storage/' . $file->file_path) : null,
+                        'file_type' => $file->file_type,
+                        'file_size' => $file->file_size,
+                    ];
+                });
             }),
-
         ];
     }
 }
