@@ -16,6 +16,14 @@ function StatCard({ title, value, icon, color = "sky", helperText, helperColor, 
             bg: "bg-amber-100",
             text: "text-amber-600",
         },
+        red: {
+            bg: "bg-red-100",
+            text: "text-red-600",
+        },
+        gray: {
+            bg: "bg-gray-100",
+            text: "text-gray-600",
+        },
     };
 
     const selected = colorClasses[color] || colorClasses.sky;

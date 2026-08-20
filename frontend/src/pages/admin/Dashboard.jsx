@@ -71,23 +71,7 @@ function Dashboard() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <button
-                        aria-label="Tambah akun baru"
-                        onClick={() => navigate("/admin/akun")}
-                        className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2.5 rounded-xl transition"
-                    >
-                        + Tambah Akun
-                    </button>
-
-                    <button
-                        aria-label="Buat periode baru"
-                        onClick={() => navigate("/admin/periode")}
-                        className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl transition"
-                    >
-                        + Buat Periode Baru
-                    </button>
-                </div>
+                
             </section>
 
             <StatCardGrid data={data} />
