@@ -37,6 +37,13 @@ export default function ActivityModal({
         ? formatDateID(selectedDate)
         : formatDateID(form.tanggal);
 
+    const handleFormSubmit = (e, statusType = "submitted") => {
+        e.preventDefault();
+        if (onSubmit) {
+            onSubmit(statusType);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 transition-all">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
@@ -70,13 +77,8 @@ export default function ActivityModal({
                 </div>
 
                 {/* Form Body */}
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        onSubmit("submitted");
-                    }}
-                    className="flex-1 overflow-y-auto p-6 space-y-5"
-                >
+                <form onSubmit={(e) => handleFormSubmit(e, "submitted")} className="flex-1 overflow-y-auto p-6 space-y-5">
+                    
                     {/* Error Banner */}
                     {errorMessage && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3 text-red-600 text-xs font-semibold">
@@ -95,7 +97,7 @@ export default function ActivityModal({
                         <input
                             type="text"
                             name="judul"
-                            value={form.judul}
+                            value={form.judul || ""}
                             onChange={onChange}
                             required
                             placeholder="Contoh: Merancang Wireframe Dashboard Utama"
@@ -111,7 +113,7 @@ export default function ActivityModal({
                         <textarea
                             name="deskripsi"
                             rows="3"
-                            value={form.deskripsi}
+                            value={form.deskripsi || ""}
                             onChange={onChange}
                             required
                             placeholder="Jelaskan secara singkat tugas dan pekerjaan yang kamu lakukan hari ini..."
@@ -127,7 +129,7 @@ export default function ActivityModal({
                         <textarea
                             name="hasil"
                             rows="2"
-                            value={form.hasil}
+                            value={form.hasil || ""}
                             onChange={onChange}
                             required
                             placeholder="Contoh: Dokumen spesifikasi UI/UX dan 5 komponen siap pakai..."
@@ -215,7 +217,7 @@ export default function ActivityModal({
                     <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
                         <button
                             type="button"
-                            onClick={() => onSubmit("draft")}
+                            onClick={(e) => handleFormSubmit(e, "draft")}
                             disabled={loading}
                             className="px-5 py-2.5 border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
                         >

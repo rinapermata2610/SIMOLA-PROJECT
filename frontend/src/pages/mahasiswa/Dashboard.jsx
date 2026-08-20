@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import MainLayout from "../../layout/MainLayout";
 
@@ -10,6 +11,7 @@ import ActivityModal from "../../components/dashboard/ActivityModal";
 import useFormAktivitas from "../../hooks/useFormAktivitas";
 
 function Dashboard() {
+    const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
@@ -40,12 +42,17 @@ function Dashboard() {
         resetForm();
     };
 
-    const handleSubmit = (statusType = "submitted") => {
+    const handleSubmit = async (statusType = "submitted") => {
         const dateStr = selectedDate 
             ? selectedDate.toISOString().split("T")[0] 
             : null;
         
-        submitForm(statusType, dateStr);
+        const saved = await submitForm(statusType, dateStr);
+        if (saved) {
+            setShowModal(false);
+            setSelectedDate(null);
+            navigate("/log-aktivitas");
+        }
     };
 
     return (
@@ -71,6 +78,7 @@ function Dashboard() {
                     selectedDate={selectedDate}
                     form={form}
                     loading={loading}
+                    errorMessage={errorMessage}
                     onChange={handleChange}
                     onFileChange={handleFileChange}
                     onRemoveFile={removeFile}

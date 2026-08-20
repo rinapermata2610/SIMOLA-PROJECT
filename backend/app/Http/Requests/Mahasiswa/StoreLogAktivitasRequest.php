@@ -14,13 +14,14 @@ class StoreLogAktivitasRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'periode_id' => 'nullable|exists:magang_periode,id',
             'tanggal'    => 'required|date',
             'judul'      => 'required|string|max:255',
             'deskripsi'  => 'required|string',
             'hasil'      => 'required|string',
-            'status'     => 'nullable|in:draft,submitted',
-            'lampiran.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+            'status'     => 'required|in:draft,submitted',
+            'lampiran'   => 'nullable|array',
+            'lampiran.*' => 'file|mimes:png,jpg,jpeg,pdf,docx,doc|max:5120',
+            'periode_id' => 'nullable|exists:magang_periode,id',
         ];
     }
 }
