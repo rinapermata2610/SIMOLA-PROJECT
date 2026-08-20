@@ -12,6 +12,11 @@ class ProfilResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $periode = $this->relationLoaded('periodeMagang')
+            ? ($this->periodeMagang->firstWhere('status', 'aktif')
+                ?? $this->periodeMagang->first())
+            : null;
+
         return [
 
             'id' => $this->id,
@@ -26,37 +31,33 @@ class ProfilResource extends JsonResource
 
             'role' => $this->role,
 
-            'periode_magang' => $this->whenLoaded('magangPeriode', function () {
+            'periode_magang' => $this->when($periode, function () use ($periode) {
 
                 return [
 
-                    'id' => $this->magangPeriode->id,
+                    'id' => $periode->id,
 
-                    'tanggal_mulai' => $this->magangPeriode->tanggal_mulai,
+                    'tanggal_mulai' => $periode->tanggal_mulai,
 
-                    'tanggal_selesai' => $this->magangPeriode->tanggal_selesai,
+                    'tanggal_selesai' => $periode->tanggal_selesai,
 
-                    'instansi' => $this->magangPeriode->instansi,
+                    'instansi' => $periode->instansi,
 
                 ];
 
             }),
 
-            'pembimbing' => $this->whenLoaded('magangPeriode', function () {
-
-                if (!$this->magangPeriode || !$this->magangPeriode->pembimbing) {
-                    return null;
-                }
+            'pembimbing' => $this->when($periode?->relationLoaded('pembimbing') && $periode->pembimbing, function () use ($periode) {
 
                 return [
 
-                    'id' => $this->magangPeriode->pembimbing->id,
+                    'id' => $periode->pembimbing->id,
 
-                    'nama' => $this->magangPeriode->pembimbing->nama,
+                    'nama' => $periode->pembimbing->nama,
 
-                    'email' => $this->magangPeriode->pembimbing->email,
+                    'email' => $periode->pembimbing->email,
 
-                    'username' => $this->magangPeriode->pembimbing->username,
+                    'username' => $periode->pembimbing->username,
 
                 ];
 

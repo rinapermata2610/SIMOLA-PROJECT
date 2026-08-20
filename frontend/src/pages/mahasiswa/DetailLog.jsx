@@ -25,21 +25,32 @@ function DetailLog() {
     const [loading, setLoading] = useState(true);
 
     const [activity, setActivity] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         loadDetail();
-    }, []);
+    }, [id]);
 
     const loadDetail = async () => {
         try {
             setLoading(true);
+            setErrorMessage("");
 
             const response =
                 await logAktivitasService.getById(id);
 
+            if (!response?.success || !response.data) {
+                throw new Error(response?.message || "Data aktivitas tidak ditemukan.");
+            }
+
             setActivity(response.data);
         } catch (error) {
             console.error(error);
+            setErrorMessage(
+                error.response?.data?.message ||
+                error.message ||
+                "Data aktivitas gagal dimuat."
+            );
         } finally {
             setLoading(false);
         }
@@ -59,7 +70,14 @@ function DetailLog() {
         return (
             <MainLayout>
                 <div className="bg-white rounded-2xl p-10 shadow text-center">
-                    Data tidak ditemukan.
+                    <p className="text-red-600">{errorMessage || "Data tidak ditemukan."}</p>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/log-aktivitas")}
+                        className="mt-4 px-4 py-2 rounded-lg bg-slate-800 text-white hover:bg-slate-700"
+                    >
+                        Kembali ke Log Aktivitas
+                    </button>
                 </div>
             </MainLayout>
         );
@@ -77,6 +95,7 @@ function DetailLog() {
                     <div className="flex items-center gap-4">
 
                         <button
+                            type="button"
                             onClick={() =>
                                 navigate("/log-aktivitas")
                             }
@@ -122,9 +141,9 @@ function DetailLog() {
 
                         <div>
 
-                            <label className="text-sm text-slate-500">
+                            <p className="text-sm text-slate-500">
                                 Tanggal
-                            </label>
+                            </p>
 
                             <div className="mt-2 flex items-center gap-3">
 
@@ -152,9 +171,9 @@ function DetailLog() {
 
                         <div>
 
-                            <label className="text-sm text-slate-500">
+                            <p className="text-sm text-slate-500">
                                 Judul Aktivitas
-                            </label>
+                            </p>
 
                             <div className="mt-2 flex items-center gap-3">
 
@@ -206,55 +225,31 @@ function DetailLog() {
                             Lampiran
                         </h3>
 
-                        {activity.lampiran ? (
-
-                            <div className="flex items-center justify-between border rounded-xl p-4">
-
-                                <div className="flex items-center gap-3">
-
-                                    <FaFileAlt
-                                        size={24}
-                                        className="text-red-500"
-                                    />
-
-                                    <div>
-
-                                        <p className="font-medium">
-                                            {activity.lampiran}
-                                        </p>
-
-                                        <p className="text-sm text-slate-500">
-                                            File Lampiran
-                                        </p>
-
+                        {activity.lampiran?.length > 0 ? (
+                            <div className="space-y-3">
+                                {activity.lampiran.map((file) => (
+                                    <div key={file.id} className="flex items-center justify-between border rounded-xl p-4">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <FaFileAlt size={24} className="text-red-500 shrink-0" />
+                                            <div className="min-w-0">
+                                                <p className="font-medium truncate">{file.nama_file}</p>
+                                                <p className="text-sm text-slate-500">File Lampiran</p>
+                                            </div>
+                                        </div>
+                                        {file.url && (
+                                            <a
+                                                href={file.url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 flex items-center gap-2 shrink-0"
+                                            >
+                                                <FaDownload />
+                                                Lihat
+                                            </a>
+                                        )}
                                     </div>
-
-                                </div>
-
-                                <a
-                                    href={activity.lampiran_url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="
-                                        px-4
-                                        py-2
-                                        rounded-lg
-                                        bg-sky-600
-                                        text-white
-                                        hover:bg-sky-700
-                                        flex
-                                        items-center
-                                        gap-2
-                                    "
-                                >
-                                    <FaDownload />
-
-                                    Download
-
-                                </a>
-
+                                ))}
                             </div>
-
                         ) : (
 
                             <div className="border rounded-xl p-6 text-center text-slate-500">

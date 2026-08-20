@@ -14,6 +14,7 @@ import Dashboard from "../pages/mahasiswa/Dashboard";
 import LogAktivitas from "../pages/mahasiswa/LogAktivitas";
 import DetailLog from "../pages/mahasiswa/DetailLog";
 import EditLog from "../pages/mahasiswa/EditLog";
+import Profile from "../pages/mahasiswa/Profile";
 import AdminDashboard from "../pages/admin/Dashboard";
 import AdminLayout from "../layout/admin/AdminLayout";
 
@@ -68,6 +69,15 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <EditLog />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/profil"
+                element={
+                    <ProtectedRoute>
+                        <Profile />
                     </ProtectedRoute>
                 }
             />

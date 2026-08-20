@@ -23,6 +23,11 @@ class MagangPeriode extends Model
         return $this->belongsTo(User::class, 'mahasiswa_id');
     }
 
+    public function pembimbing()
+    {
+        return $this->belongsTo(User::class, 'pembimbing_id');
+    }
+
     public function logAktivitas()
     {
         return $this->hasMany(LogAktivitas::class, 'periode_id');
