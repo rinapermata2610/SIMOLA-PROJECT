@@ -46,29 +46,29 @@ export default function ActivityModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 transition-all">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                 
                 {/* Header Modal */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-sky-600 to-cyan-500 px-5 py-4 text-white sm:px-6">
                     <div className="flex items-center space-x-3">
-                        <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                        <div className="rounded-xl bg-white/20 p-2.5 text-white">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-slate-800">
+                            <h2 className="text-lg font-extrabold">
                                 Tambah Aktivitas Magang
                             </h2>
-                            <p className="text-xs text-slate-500 font-medium">
-                                📅 {formattedDate}
+                            <p className="text-xs font-medium text-sky-100">
+                                {formattedDate}
                             </p>
                         </div>
                     </div>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="rounded-lg p-2 text-white/80 hover:bg-white/20 hover:text-white"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -77,7 +77,7 @@ export default function ActivityModal({
                 </div>
 
                 {/* Form Body */}
-                <form onSubmit={(e) => handleFormSubmit(e, "submitted")} className="flex-1 overflow-y-auto p-6 space-y-5">
+                <form onSubmit={(e) => handleFormSubmit(e, "submitted")} className="flex-1 space-y-5 overflow-y-auto bg-slate-50/60 p-5 sm:p-6">
                     
                     {/* Error Banner */}
                     {errorMessage && (
@@ -101,7 +101,7 @@ export default function ActivityModal({
                             onChange={onChange}
                             required
                             placeholder="Contoh: Merancang Wireframe Dashboard Utama"
-                            className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 shadow-sm outline-none transition-all focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10"
                         />
                     </div>
 
@@ -117,7 +117,7 @@ export default function ActivityModal({
                             onChange={onChange}
                             required
                             placeholder="Jelaskan secara singkat tugas dan pekerjaan yang kamu lakukan hari ini..."
-                            className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium resize-none"
+                            className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 shadow-sm outline-none transition-all focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10"
                         ></textarea>
                     </div>
 
@@ -133,7 +133,7 @@ export default function ActivityModal({
                             onChange={onChange}
                             required
                             placeholder="Contoh: Dokumen spesifikasi UI/UX dan 5 komponen siap pakai..."
-                            className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium resize-none"
+                            className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 shadow-sm outline-none transition-all focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10"
                         ></textarea>
                     </div>
 
@@ -143,7 +143,7 @@ export default function ActivityModal({
                             Lampiran Bukti (Opsional)
                         </label>
                         
-                        <div className="relative border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-5 text-center transition-all bg-slate-50/50 hover:bg-blue-50/30 group cursor-pointer">
+                        <div className="group relative cursor-pointer rounded-xl border-2 border-dashed border-slate-200 bg-white p-5 text-center shadow-sm transition-all hover:border-sky-400 hover:bg-sky-50/40">
                             <input
                                 type="file"
                                 multiple
@@ -158,7 +158,7 @@ export default function ActivityModal({
                                     </svg>
                                 </div>
                                 <div className="text-xs">
-                                    <span className="font-semibold text-blue-600 hover:underline">
+                                    <span className="font-bold text-sky-600 hover:underline">
                                         Klik untuk unggah
                                     </span>
                                     <span className="text-slate-500"> atau tarik file ke sini</span>
@@ -219,14 +219,14 @@ export default function ActivityModal({
                             type="button"
                             onClick={(e) => handleFormSubmit(e, "draft")}
                             disabled={loading}
-                            className="px-5 py-2.5 border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                            className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-100 disabled:opacity-50"
                         >
                             {loading ? "Menyimpan..." : "Simpan Draft"}
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 flex items-center space-x-2"
+                            className="flex items-center space-x-2 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-500 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-sky-500/25 hover:shadow-xl disabled:opacity-50"
                         >
                             {loading && (
                                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">

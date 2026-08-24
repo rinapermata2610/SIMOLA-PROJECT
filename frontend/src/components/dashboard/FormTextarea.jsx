@@ -1,7 +1,3 @@
-// =============================================
-// File : src/components/dashboard/FormTextarea.jsx
-// =============================================
-
 function FormTextarea({
     label,
     name,
@@ -18,33 +14,13 @@ function FormTextarea({
 
     return (
         <div className="space-y-2">
-
-            {/* Label */}
             <div className="flex items-center justify-between">
-
-                <label
-                    htmlFor={name}
-                    className="text-sm font-semibold text-gray-700"
-                >
+                <label htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-600">
                     {label}
-
-                    {required && (
-                        <span className="text-red-500 ml-1">
-                            *
-                        </span>
-                    )}
-
+                    {required && <span className="ml-1 text-red-500">*</span>}
                 </label>
-
-                {maxLength && (
-                    <span className="text-xs text-gray-400">
-                        {currentLength}/{maxLength}
-                    </span>
-                )}
-
+                {maxLength && <span className="text-xs font-medium text-slate-400">{currentLength}/{maxLength}</span>}
             </div>
-
-            {/* Textarea */}
             <textarea
                 id={name}
                 name={name}
@@ -54,36 +30,11 @@ function FormTextarea({
                 placeholder={placeholder}
                 disabled={disabled}
                 maxLength={maxLength}
-                className={`
-                    w-full
-                    rounded-xl
-                    border
-                    px-4
-                    py-3
-                    text-sm
-                    resize-none
-                    outline-none
-                    transition
-                    ${
-                        error
-                            ? "border-red-500 focus:border-red-500"
-                            : "border-gray-300 focus:border-sky-500"
-                    }
-                    ${
-                        disabled
-                            ? "bg-gray-100 cursor-not-allowed"
-                            : "bg-white"
-                    }
-                `}
+                className={`w-full resize-none rounded-xl border bg-white px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 shadow-sm outline-none transition ${
+                    error ? "border-red-500 focus:ring-4 focus:ring-red-500/10" : "border-slate-200 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10"
+                } ${disabled ? "cursor-not-allowed bg-slate-100" : ""}`}
             />
-
-            {/* Error */}
-            {error && (
-                <p className="text-sm text-red-500">
-                    {error}
-                </p>
-            )}
-
+            {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
     );
 }

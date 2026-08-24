@@ -270,10 +270,10 @@ class LogAktivitasController extends Controller
                 ], 404);
             }
 
-            if ($logAktivitas->status !== 'draft') {
+            if (!in_array($logAktivitas->status, ['draft', 'submitted'], true)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Aktivitas yang sudah dikirim tidak dapat dihapus.'
+                    'message' => 'Aktivitas yang sudah diverifikasi tidak dapat dihapus.'
                 ], 422);
             }
 

@@ -63,6 +63,11 @@ function AppRoutes() {
                         <AdminLayout>
                             <ManajemenAkun />
                         </AdminLayout>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
                 path="/log-aktivitas/:id"
                 element={
                     <ProtectedRoute>

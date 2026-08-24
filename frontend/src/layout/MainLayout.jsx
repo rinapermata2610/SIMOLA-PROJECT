@@ -31,6 +31,7 @@ function MainLayout({ children }) {
                 <main
                     className="
                         p-6
+                        pt-20
                         lg:p-8
                     "
                 >

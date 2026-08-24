@@ -1,345 +1,58 @@
-// =============================================
-// File : src/components/dashboard/ActivityForm.jsx
-// =============================================
-
 import { useRef } from "react";
-import {
-    FaUpload,
-    FaPaperclip,
-    FaTrash,
-} from "react-icons/fa";
+import { FaUpload, FaPaperclip, FaTrash } from "react-icons/fa";
 
-function ActivityForm({
-    form = {},
-    errors = {},
-    loading = false,
-    onChange,
-    onSubmit,
-    onSaveDraft,
-    onFileChange,
-}) {
+function ActivityForm({ form = {}, errors = {}, loading = false, onChange, onSubmit, onSaveDraft, onFileChange }) {
     const fileInputRef = useRef(null);
-
     const judul = form?.judul || "";
     const deskripsi = form?.deskripsi || "";
     const hasil = form?.hasil || "";
     const files = form?.files || [];
 
-    const openFilePicker = () => {
-        fileInputRef.current?.click();
-    };
-
     const removeFile = (index) => {
         const updatedFiles = [...files];
         updatedFiles.splice(index, 1);
-
-        onChange?.({
-            target: {
-                name: "files",
-                value: updatedFiles,
-            },
-        });
+        onChange?.({ target: { name: "files", value: updatedFiles } });
     };
 
+    const fieldClass = (error) => `w-full rounded-xl border bg-white px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 shadow-sm outline-none transition focus:ring-4 ${error ? "border-red-500 focus:ring-red-500/10" : "border-slate-200 focus:border-sky-500 focus:ring-sky-500/10"}`;
+    const labelClass = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600";
+
     return (
-        <form
-            onSubmit={onSubmit}
-            className="flex flex-col h-full"
-        >
-            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-
-                {/* Judul */}
+        <form onSubmit={onSubmit} className="flex h-full flex-col">
+            <div className="flex-1 space-y-5 overflow-y-auto bg-slate-50/60 px-5 py-5 sm:px-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Judul Tugas
-                        <span className="text-red-500"> *</span>
-                    </label>
-
-                    <input
-                        type="text"
-                        name="judul"
-                        value={judul}
-                        onChange={onChange}
-                        placeholder="Misal: Pengembangan Modul Autentikasi"
-                        className={`
-                            w-full
-                            rounded-lg
-                            border
-                            px-4
-                            py-3
-                            outline-none
-                            transition
-                            ${
-                                errors?.judul
-                                    ? "border-red-500"
-                                    : "border-gray-300 focus:border-sky-500"
-                            }
-                        `}
-                    />
-
-                    {errors?.judul && (
-                        <p className="text-sm text-red-500 mt-1">
-                            {errors.judul}
-                        </p>
-                    )}
+                    <label className={labelClass}>Judul Tugas <span className="text-red-500">*</span></label>
+                    <input type="text" name="judul" value={judul} onChange={onChange} placeholder="Misal: Pengembangan Modul Autentikasi" className={fieldClass(errors?.judul)} />
+                    {errors?.judul && <p className="mt-1 text-sm text-red-500">{errors.judul}</p>}
                 </div>
-
-                {/* Deskripsi */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Deskripsi Tugas
-                        <span className="text-red-500"> *</span>
-                    </label>
-
-                    <textarea
-                        rows={4}
-                        name="deskripsi"
-                        value={deskripsi}
-                        onChange={onChange}
-                        placeholder="Jelaskan detail tugas yang dikerjakan hari ini..."
-                        className={`
-                            w-full
-                            rounded-lg
-                            border
-                            px-4
-                            py-3
-                            resize-none
-                            outline-none
-                            transition
-                            ${
-                                errors?.deskripsi
-                                    ? "border-red-500"
-                                    : "border-gray-300 focus:border-sky-500"
-                            }
-                        `}
-                    />
-
-                    {errors?.deskripsi && (
-                        <p className="text-sm text-red-500 mt-1">
-                            {errors.deskripsi}
-                        </p>
-                    )}
+                    <label className={labelClass}>Deskripsi Tugas <span className="text-red-500">*</span></label>
+                    <textarea rows={4} name="deskripsi" value={deskripsi} onChange={onChange} placeholder="Jelaskan detail tugas yang dikerjakan hari ini..." className={`${fieldClass(errors?.deskripsi)} resize-none`} />
+                    {errors?.deskripsi && <p className="mt-1 text-sm text-red-500">{errors.deskripsi}</p>}
                 </div>
-
-                {/* Hasil */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Pencapaian / Hasil
-                        <span className="text-red-500"> *</span>
-                    </label>
-
-                    <textarea
-                        rows={3}
-                        name="hasil"
-                        value={hasil}
-                        onChange={onChange}
-                        placeholder="Apa hasil nyata dari pekerjaan hari ini?"
-                        className={`
-                            w-full
-                            rounded-lg
-                            border
-                            px-4
-                            py-3
-                            resize-none
-                            outline-none
-                            transition
-                            ${
-                                errors?.hasil
-                                    ? "border-red-500"
-                                    : "border-gray-300 focus:border-sky-500"
-                            }
-                        `}
-                    />
-
-                    {errors?.hasil && (
-                        <p className="text-sm text-red-500 mt-1">
-                            {errors.hasil}
-                        </p>
-                    )}
+                    <label className={labelClass}>Pencapaian / Hasil <span className="text-red-500">*</span></label>
+                    <textarea rows={3} name="hasil" value={hasil} onChange={onChange} placeholder="Apa hasil nyata dari pekerjaan hari ini?" className={`${fieldClass(errors?.hasil)} resize-none`} />
+                    {errors?.hasil && <p className="mt-1 text-sm text-red-500">{errors.hasil}</p>}
                 </div>
-
-                {/* Upload Lampiran */}
                 <div>
-
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Lampiran Bukti
-                    </label>
-
-                    <div
-                        onClick={openFilePicker}
-                        className="
-                            border-2
-                            border-dashed
-                            border-gray-300
-                            rounded-xl
-                            p-8
-                            text-center
-                            cursor-pointer
-                            hover:border-sky-500
-                            transition
-                        "
-                    >
-
-                        <div
-                            className="
-                                w-14
-                                h-14
-                                mx-auto
-                                rounded-full
-                                bg-sky-100
-                                flex
-                                items-center
-                                justify-center
-                                text-sky-600
-                                mb-3
-                            "
-                        >
-                            <FaUpload size={20} />
-                        </div>
-
-                        <p className="text-gray-700">
-                            Seret file ke sini atau{" "}
-                            <span className="text-sky-600">
-                                klik untuk upload
-                            </span>
-                        </p>
-
-                        <p className="text-sm text-gray-500 mt-2">
-                            JPG, PNG, PDF, DOCX, XLSX (Maks. 10 MB)
-                        </p>
-
+                    <label className={labelClass}>Lampiran Bukti</label>
+                    <div onClick={() => fileInputRef.current?.click()} className="group cursor-pointer rounded-xl border-2 border-dashed border-slate-200 bg-white p-6 text-center shadow-sm transition hover:border-sky-400 hover:bg-sky-50/40">
+                        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-sky-50 text-sky-600 transition-transform group-hover:scale-105"><FaUpload size={20} /></div>
+                        <p className="text-sm text-slate-600">Seret file ke sini atau <span className="font-bold text-sky-600">klik untuk upload</span></p>
+                        <p className="mt-2 text-xs text-slate-400">JPG, PNG, PDF, DOCX, XLSX (Maks. 10 MB)</p>
                     </div>
-
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        hidden
-                        multiple
-                        accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx"
-                        onChange={onFileChange}
-                    />
-
-                    {files.length > 0 && (
-
-                        <div className="mt-4 space-y-3">
-
-                            {files.map((file, index) => (
-
-                                <div
-                                    key={index}
-                                    className="
-                                        flex
-                                        items-center
-                                        justify-between
-                                        rounded-xl
-                                        border
-                                        border-gray-200
-                                        bg-gray-50
-                                        px-4
-                                        py-3
-                                    "
-                                >
-
-                                    <div className="flex items-center gap-3">
-
-                                        <FaPaperclip className="text-sky-600 text-lg" />
-
-                                        <div>
-
-                                            <p className="font-medium text-gray-700">
-                                                {file.name}
-                                            </p>
-
-                                            <p className="text-xs text-gray-500">
-                                                {(file.size / 1024 / 1024).toFixed(2)} MB
-                                            </p>
-
-                                        </div>
-
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => removeFile(index)}
-                                        className="
-                                            text-red-500
-                                            hover:text-red-700
-                                            transition
-                                        "
-                                    >
-                                        <FaTrash />
-                                    </button>
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    )}
-
+                    <input ref={fileInputRef} type="file" hidden multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx" onChange={onFileChange} />
+                    {files.length > 0 && <div className="mt-4 space-y-2">{files.map((file, index) => <div key={index} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"><div className="flex min-w-0 items-center gap-3"><FaPaperclip className="shrink-0 text-sky-600" /><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-700">{file.name}</p><p className="text-xs text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p></div></div><button type="button" onClick={() => removeFile(index)} className="rounded-lg p-2 text-red-500 hover:bg-red-50 hover:text-red-700" title="Hapus file"><FaTrash /></button></div>)}</div>}
                 </div>
-
             </div>
-
-            {/* Footer */}
-
-            <div
-                className="
-                    border-t
-                    px-6
-                    py-4
-                    bg-white
-                    flex
-                    items-center
-                    justify-between
-                "
-            >
-
-                <p className="text-sm text-gray-500">
-                    Data akan otomatis tersimpan sebagai draft
-                </p>
-
-                <div className="flex gap-3">
-
-                    <button
-                        type="button"
-                        onClick={onSaveDraft}
-                        disabled={loading}
-                        className="
-                            px-5
-                            py-2.5
-                            rounded-lg
-                            border
-                            border-sky-600
-                            text-sky-600
-                            hover:bg-sky-50
-                            transition
-                        "
-                    >
-                        Simpan Draft
-                    </button>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="
-                            px-6
-                            py-2.5
-                            rounded-lg
-                            bg-sky-600
-                            hover:bg-sky-700
-                            text-white
-                            transition
-                        "
-                    >
-                        {loading ? "Menyimpan..." : "Kirim"}
-                    </button>
-
+            <div className="flex flex-col gap-3 border-t border-slate-200 bg-white/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <p className="text-xs font-medium text-slate-500">Data akan otomatis tersimpan sebagai draft</p>
+                <div className="flex justify-end gap-3">
+                    <button type="button" onClick={onSaveDraft} disabled={loading} className="rounded-xl border border-sky-200 bg-white px-5 py-2.5 text-sm font-bold text-sky-700 shadow-sm hover:border-sky-300 hover:bg-sky-50 disabled:opacity-50">Simpan Draft</button>
+                    <button type="submit" disabled={loading} className="rounded-xl bg-gradient-to-r from-sky-600 to-cyan-500 px-6 py-2.5 text-sm font-bold text-white shadow-md hover:shadow-lg disabled:opacity-50">{loading ? "Menyimpan..." : "Kirim"}</button>
                 </div>
-
             </div>
-
         </form>
     );
 }
