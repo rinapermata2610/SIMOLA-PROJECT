@@ -38,25 +38,25 @@ function CalendarDay({
             className={`
                 relative
                 aspect-square
-                rounded-xl
-                border-2
+                rounded-lg
+                border
                 flex
                 items-center
                 justify-center
-                text-lg
+                text-sm
                 font-semibold
                 transition-all
 
                 ${
                     !currentMonth
-                        ? "bg-gray-100 border-gray-200 text-gray-400"
-                        : "bg-white border-gray-200"
+                        ? "bg-slate-50 border-slate-200 text-slate-400"
+                        : "bg-white border-slate-200 text-slate-700"
                 }
 
                 ${
                     currentMonth &&
                     !disabled
-                        ? "hover:border-sky-500 hover:bg-sky-50 hover:shadow-md hover:scale-[1.03]"
+                        ? "hover:border-sky-500 hover:bg-sky-50 hover:shadow-sm"
                         : ""
                 }
 
@@ -68,7 +68,7 @@ function CalendarDay({
 
                 ${
                     isSelected
-                        ? "ring-2 ring-sky-500 border-sky-500"
+                        ? "ring-2 ring-sky-500 ring-offset-1 border-sky-500"
                         : ""
                 }
 
@@ -92,10 +92,10 @@ function CalendarDay({
                 <span
                     className="
                         absolute
-                        bottom-2
-                        right-2
-                        w-2.5
-                        h-2.5
+                        bottom-1.5
+                        right-1.5
+                        h-1.5
+                        w-1.5
                         rounded-full
                         bg-sky-600
                     "

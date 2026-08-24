@@ -3,6 +3,7 @@
 // =============================================
 
 import {
+    FaCalendarAlt,
     FaTrashAlt,
     FaTimes,
 } from "react-icons/fa";
@@ -25,18 +26,25 @@ function DeleteDialog({
                 flex
                 items-center
                 justify-center
-                bg-black/50
+                bg-slate-900/60
+                backdrop-blur-sm
                 p-4
             "
         >
             <div
                 className="
-                    bg-white
                     w-full
                     max-w-md
-                    rounded-2xl
-                    shadow-2xl
                     overflow-hidden
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    shadow-2xl
+                    animate-in
+                    fade-in
+                    zoom-in-95
+                    duration-200
                 "
             >
                 {/* Header */}
@@ -45,8 +53,12 @@ function DeleteDialog({
                         flex
                         items-center
                         justify-between
-                        px-6
+                        bg-gradient-to-r
+                        from-red-600
+                        to-rose-500
+                        px-5
                         py-5
+                        text-white
                         border-b
                     "
                 >
@@ -57,25 +69,25 @@ function DeleteDialog({
                                 w-12
                                 h-12
                                 rounded-full
-                                bg-red-100
+                                bg-white/20
                                 flex
                                 items-center
                                 justify-center
                             "
                         >
                             <FaTrashAlt
-                                className="text-red-600"
+                                className="text-white"
                                 size={20}
                             />
                         </div>
 
                         <div>
 
-                            <h2 className="text-lg font-bold text-slate-800">
+                            <h2 className="text-lg font-extrabold">
                                 Hapus Aktivitas
                             </h2>
 
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-red-100">
                                 Konfirmasi penghapusan data
                             </p>
 
@@ -90,7 +102,9 @@ function DeleteDialog({
                         className="
                             p-2
                             rounded-lg
-                            hover:bg-slate-100
+                            text-white/80
+                            hover:bg-white/20
+                            hover:text-white
                             transition
                         "
                     >
@@ -99,9 +113,9 @@ function DeleteDialog({
                 </div>
 
                 {/* Body */}
-                <div className="px-6 py-6">
+                <div className="px-5 py-6 sm:px-6">
 
-                    <p className="text-slate-700">
+                    <p className="text-sm font-medium leading-6 text-slate-600">
                         Apakah Anda yakin ingin menghapus
                         aktivitas berikut?
                     </p>
@@ -113,17 +127,22 @@ function DeleteDialog({
                                 rounded-xl
                                 border
                                 border-slate-200
-                                bg-slate-50
+                                bg-slate-50/80
                                 p-4
                             "
                         >
-                            <p className="font-semibold text-slate-800">
+                            <div className="flex items-start gap-3">
+                                <FaCalendarAlt className="mt-1 shrink-0 text-sky-600" />
+                                <div className="min-w-0">
+                            <p className="truncate text-sm font-extrabold text-slate-800">
                                 {activity.judul}
                             </p>
 
-                            <p className="mt-1 text-sm text-slate-500">
+                            <p className="mt-1 text-xs font-medium text-slate-500">
                                 {activity.tanggal}
                             </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -131,15 +150,15 @@ function DeleteDialog({
                         className="
                             mt-6
                             rounded-lg
-                            bg-red-50
+                            bg-red-50/80
                             border
                             border-red-200
                             p-3
                         "
                     >
                         <p className="text-sm text-red-600">
-                            Data yang dihapus tidak dapat
-                            dikembalikan.
+                            Data yang dihapus tidak dapat dikembalikan,
+                            termasuk aktivitas yang sudah dikirim.
                         </p>
                     </div>
 
@@ -151,10 +170,11 @@ function DeleteDialog({
                         flex
                         justify-end
                         gap-3
-                        px-6
+                        px-5
                         py-5
                         border-t
-                        bg-slate-50
+                        bg-slate-50/80
+                        sm:px-6
                     "
                 >
                     <button
@@ -162,16 +182,25 @@ function DeleteDialog({
                         onClick={onClose}
                         disabled={loading}
                         className="
+                            flex
+                            items-center
+                            gap-2
+                            rounded-xl
+                            border
+                            border-slate-200
+                            bg-white
                             px-5
                             py-2.5
                             rounded-xl
-                            border
-                            border-slate-300
-                            text-slate-700
+                            text-sm
+                            font-bold
+                            text-slate-600
+                            shadow-sm
                             hover:bg-slate-100
                             transition
                         "
                     >
+                        <FaTimes />
                         Batal
                     </button>
 
@@ -180,20 +209,27 @@ function DeleteDialog({
                         onClick={onConfirm}
                         disabled={loading}
                         className="
+                            flex
+                            items-center
+                            gap-2
+                            rounded-xl
+                            bg-gradient-to-r
+                            from-red-600
+                            to-rose-500
                             px-5
                             py-2.5
-                            rounded-xl
-                            bg-red-600
+                            text-sm
+                            font-bold
                             text-white
-                            hover:bg-red-700
-                            transition
+                            shadow-md
+                            shadow-red-500/20
+                            hover:shadow-lg
                             disabled:opacity-50
                             disabled:cursor-not-allowed
                         "
                     >
-                        {loading
-                            ? "Menghapus..."
-                            : "Hapus"}
+                        <FaTrashAlt />
+                        {loading ? "Menghapus..." : "Hapus Aktivitas"}
                     </button>
                 </div>
 

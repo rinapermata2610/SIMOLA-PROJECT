@@ -27,13 +27,13 @@ function CalendarLegend() {
     ];
 
     return (
-        <div className="border-t border-gray-200 pt-6">
+        <div className="border-t border-slate-200 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
 
-            <h3 className="text-base font-semibold text-gray-800 mb-4">
+            <h3 className="mb-4 text-base font-extrabold text-slate-800">
                 Keterangan Status Kalender
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-3">
 
                 {legends.map((item) => (
                     <div
@@ -42,11 +42,11 @@ function CalendarLegend() {
                             flex
                             items-start
                             gap-3
-                            bg-gray-50
+                            bg-slate-50
                             rounded-xl
                             border
                             border-gray-200
-                            p-4
+                            p-3
                         "
                     >
                         <span

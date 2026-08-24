@@ -44,20 +44,20 @@ function CalendarCard({
                 shadow-sm
                 border
                 border-gray-200
-                p-6
+                p-4 sm:p-6
             "
         >
             {/* Header */}
 
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
+            <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
                 <div>
 
-                    <h2 className="text-2xl font-bold text-gray-800">
+                    <h2 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
                         Kalender Aktivitas Magang
                     </h2>
 
-                    <p className="text-gray-500 mt-2">
+                    <p className="mt-1 text-sm text-slate-500">
                         Pilih tanggal untuk mengisi atau memperbarui aktivitas magang.
                     </p>
 
@@ -70,49 +70,53 @@ function CalendarCard({
                         items-center
                         justify-center
                         gap-2
-                        bg-sky-600
-                        hover:bg-sky-700
+                        rounded-lg
+                        bg-gradient-to-r
+                        from-sky-600
+                        to-cyan-500
+                        px-4
+                        py-2.5
+                        text-sm
+                        font-bold
                         text-white
-                        px-6
-                        py-3
-                        rounded-xl
-                        transition
                         shadow-md
+                        transition
+                        hover:shadow-lg
+                        active:shadow-sm
+                        focus-visible:outline-none
+                        group
                     "
                 >
-                    <FaPlus />
+                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white/20 transition-transform duration-200 group-hover:rotate-90">
+                        <FaPlus className="text-xs" />
+                    </span>
 
                     Isi Aktivitas Hari Ini
                 </button>
 
             </div>
 
-            {/* Header Kalender */}
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+                {/* Kalender */}
+                <div>
+                    <CalendarHeader
+                        currentDate={currentDate}
+                        onPrevious={previousMonth}
+                        onNext={nextMonth}
+                        onToday={() => setCurrentDate(new Date())}
+                    />
 
-            <CalendarHeader
-                currentDate={currentDate}
-                previousMonth={previousMonth}
-                nextMonth={nextMonth}
-            />
+                    <div className="mx-auto mt-4 max-w-3xl">
+                        <CalendarGrid
+                            currentDate={currentDate}
+                            selectedDate={selectedDate}
+                            onDateClick={onDateClick}
+                        />
+                    </div>
+                </div>
 
-            {/* Kalender */}
-
-            <div className="mt-6">
-
-                <CalendarGrid
-                    currentDate={currentDate}
-                    selectedDate={selectedDate}
-                    onDateClick={onDateClick}
-                />
-
-            </div>
-
-            {/* Legend */}
-
-            <div className="mt-8">
-
+                {/* Keterangan */}
                 <CalendarLegend />
-
             </div>
 
         </div>

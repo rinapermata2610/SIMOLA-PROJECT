@@ -32,20 +32,20 @@ function CalendarHeader({
                 bg-slate-50
                 border
                 border-gray-200
-                rounded-2xl
-                px-6
-                py-5
+                rounded-xl
+                px-4
+                py-3
             "
         >
 
             {/* Kiri */}
             <div>
 
-                <h3 className="text-2xl font-bold text-gray-800 capitalize">
+                <h3 className="text-lg font-extrabold capitalize text-slate-900 sm:text-xl">
                     {monthYear}
                 </h3>
 
-                <p className="text-sm text-gray-500 mt-1">
+                    <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">
                     Kalender Aktivitas Mahasiswa Magang
                 </p>
 
@@ -58,9 +58,9 @@ function CalendarHeader({
                 <button
                     onClick={onPrevious}
                     className="
-                        w-11
-                        h-11
-                        rounded-xl
+                        h-9
+                        w-9
+                        rounded-lg
                         border
                         border-gray-300
                         flex
@@ -85,9 +85,10 @@ function CalendarHeader({
                         bg-sky-600
                         hover:bg-sky-700
                         text-white
-                        px-5
-                        py-3
-                        rounded-xl
+                        px-3
+                        py-2
+                        rounded-lg
+                        text-sm
                         font-medium
                         transition
                     "

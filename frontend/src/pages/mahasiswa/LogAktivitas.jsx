@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEye, FaPen, FaTrash } from "react-icons/fa";
+import {
+    FaCalendarAlt,
+    FaEye,
+    FaPaperclip,
+    FaPen,
+    FaRedoAlt,
+    FaSearch,
+    FaTrash,
+} from "react-icons/fa";
 import MainLayout from "../../layout/MainLayout";
 import api from "../../services/api";
 import logAktivitasService from "../../services/logAktivitasService";
@@ -80,41 +88,47 @@ export default function LogAktivitas() {
 
     return (
         <MainLayout>
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Log Aktivitas</h1>
-                    <p className="text-sm text-slate-500">Riwayat aktivitas magang yang telah dibuat.</p>
+            <div className="mx-auto max-w-7xl space-y-6">
+                <div className="rounded-2xl border border-slate-200 bg-gradient-to-r from-sky-600 to-cyan-500 px-5 py-6 text-white shadow-sm sm:px-7">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-sky-100">SIMOLA / Aktivitas</p>
+                    <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Log Aktivitas</h1>
+                    <p className="mt-1 text-sm text-white/85">Riwayat aktivitas magang yang telah dibuat.</p>
                 </div>
 
                 {/* Filter / Search Bar */}
-                <form onSubmit={handleSearch} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-wrap items-center gap-4">
-                    <div>
-                        <label htmlFor="tanggal-mulai" className="block text-xs font-semibold text-slate-500 mb-1">Tanggal Mulai</label>
+                <form onSubmit={handleSearch} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                    <div className="mb-4 flex items-center gap-2 text-sm font-extrabold text-slate-800">
+                        <FaSearch className="text-sky-600" />
+                        Filter aktivitas
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] xl:items-end">
+                        <div>
+                        <label htmlFor="tanggal-mulai" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Tanggal Mulai</label>
                         <input
                             id="tanggal-mulai"
                             type="date"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
-                            className="border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500"
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
                         />
-                    </div>
-                    <div>
-                        <label htmlFor="tanggal-selesai" className="block text-xs font-semibold text-slate-500 mb-1">Tanggal Selesai</label>
+                        </div>
+                        <div>
+                        <label htmlFor="tanggal-selesai" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Tanggal Selesai</label>
                         <input
                             id="tanggal-selesai"
                             type="date"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
-                            className="border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500"
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
                         />
-                    </div>
-                    <div>
-                        <label htmlFor="status-filter" className="block text-xs font-semibold text-slate-500 mb-1">Status</label>
+                        </div>
+                        <div>
+                        <label htmlFor="status-filter" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Status</label>
                         <select
                             id="status-filter"
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500"
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-500/10"
                         >
                             <option value="">Semua Status</option>
                             <option value="draft">Draft</option>
@@ -122,35 +136,38 @@ export default function LogAktivitas() {
                             <option value="approved">Disetujui</option>
                             <option value="rejected">Ditolak</option>
                         </select>
-                    </div>
-                    <div className="flex items-end space-x-2 mt-auto">
+                        </div>
+                        <div className="flex items-end gap-2">
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-all"
+                            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-500 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-sky-500/20 hover:shadow-lg"
                         >
-                            🔍 Cari
+                            <FaSearch />
+                            Cari
                         </button>
                         <button
                             type="button"
                             onClick={handleReset}
-                            className="p-2 border border-slate-200 hover:bg-slate-50 rounded-lg text-xs text-slate-600 transition-all"
-                            title="Reset Filter"
+                            className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm hover:border-sky-200 hover:bg-sky-50 hover:text-sky-600"
+                            title="Refresh data"
                         >
-                            🔄
+                            <FaRedoAlt />
                         </button>
+                        </div>
                     </div>
                 </form>
 
                 {/* Tabel Log Aktivitas */}
-                <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-                    <table className="w-full text-left text-xs text-slate-600">
-                        <thead className="bg-slate-50 border-b border-slate-100 font-bold uppercase text-slate-500">
+                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div className="overflow-x-auto">
+                    <table className="w-full min-w-[720px] text-left text-sm text-slate-600">
+                        <thead className="border-b border-slate-100 bg-slate-50 font-bold uppercase text-slate-500">
                             <tr>
-                                <th className="px-6 py-3.5">Tanggal</th>
-                                <th className="px-6 py-3.5">Judul Aktivitas</th>
-                                <th className="px-6 py-3.5">Lampiran</th>
-                                <th className="px-6 py-3.5">Status</th>
-                                <th className="px-6 py-3.5 text-right">Aksi</th>
+                                <th className="px-6 py-4 text-xs tracking-wide">Tanggal</th>
+                                <th className="px-6 py-4 text-xs tracking-wide">Judul Aktivitas</th>
+                                <th className="px-6 py-4 text-xs tracking-wide">Lampiran</th>
+                                <th className="px-6 py-4 text-xs tracking-wide">Status</th>
+                                <th className="px-6 py-4 text-right text-xs tracking-wide">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -168,7 +185,7 @@ export default function LogAktivitas() {
                                 </tr>
                             ) : (
                                 logs.map((item) => (
-                                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                    <tr key={item.id} className="transition-colors hover:bg-sky-50/30">
                                         <td className="px-6 py-4 font-semibold text-slate-700">{item.tanggal}</td>
                                         <td className="px-6 py-4">
                                             <p className="font-bold text-slate-800">{item.judul}</p>
@@ -177,7 +194,7 @@ export default function LogAktivitas() {
                                         <td className="px-6 py-4">
                                             {item.lampiran && item.lampiran.length > 0 ? (
                                                 <span className="inline-flex items-center text-blue-600 font-semibold">
-                                                    📎 {item.lampiran.length} file
+                                                    <FaPaperclip className="mr-1.5" /> {item.lampiran.length} file
                                                 </span>
                                             ) : (
                                                 <span className="text-slate-300">-</span>
@@ -214,7 +231,7 @@ export default function LogAktivitas() {
                                                         <FaPen />
                                                     </button>
                                                 )}
-                                                {item.status === "draft" && (
+                                                {(item.status === "draft" || item.status === "submitted") && (
                                                     <button
                                                         type="button"
                                                         onClick={() => openDeleteDialog(item)}
@@ -231,6 +248,7 @@ export default function LogAktivitas() {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
             <DeleteDialog
