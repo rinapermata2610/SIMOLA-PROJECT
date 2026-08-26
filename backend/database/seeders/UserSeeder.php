@@ -45,6 +45,19 @@ class UserSeeder extends Seeder
             ]
         );
 
+        User::updateOrCreate(
+            [
+                'username' => 'rinapermata',
+            ],
+            [
+                'nama'     => 'Rina Permata',
+                'email'    => 'rina.permata@simola.id',
+                'password' => Hash::make('password123'),
+                'nim'      => null,
+                'role'     => 'pembimbing',
+            ]
+        );
+
         // ==========================
         // MAHASISWA
         // ==========================

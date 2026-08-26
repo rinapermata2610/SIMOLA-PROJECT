@@ -19,6 +19,8 @@ import Attendance from "../pages/mahasiswa/Attendance";
 import AdminDashboard from "../pages/admin/Dashboard";
 import ManajemenAkun from "../pages/admin/ManajemenAkun";
 import AdminLayout from "../layout/admin/AdminLayout";
+import PembimbingDashboard from "../pages/pembimbing/Dashboard";
+import PembimbingModulePage from "../pages/pembimbing/ModulePage";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -107,6 +109,11 @@ function AppRoutes() {
             {/* ============================
                 ADMIN
             ============================ */}
+
+            <Route path="/pembimbing/dashboard" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingDashboard /></ProtectedRoute>} />
+            <Route path="/pembimbing/kehadiran" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingModulePage title="Rekapan Kehadiran" description="Lihat rekapan kehadiran mahasiswa bimbingan." /></ProtectedRoute>} />
+            <Route path="/pembimbing/penilaian" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingModulePage title="Penilaian" description="Kelola penilaian mahasiswa bimbingan." /></ProtectedRoute>} />
+            <Route path="/pembimbing/laporan" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingModulePage title="Laporan" description="Akses laporan kegiatan mahasiswa bimbingan." /></ProtectedRoute>} />
 
             <Route
                 path="/admin/dashboard"
