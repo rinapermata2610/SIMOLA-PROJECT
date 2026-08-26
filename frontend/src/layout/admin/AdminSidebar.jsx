@@ -76,7 +76,7 @@ function AdminSidebar({ isOpen, onClose }) {
                     ${isOpen ? "translate-x-0" : "-translate-x-full"}
                 `}
             >
-                <div className="h-20 px-6 flex items-center justify-between border-b border-gray-200">
+                <div className="h-16 px-6 flex items-center justify-between border-b border-gray-200">
                     <div className="flex items-center gap-3">
                         <img
                             src={Logo}

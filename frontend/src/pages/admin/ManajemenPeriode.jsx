@@ -3,7 +3,7 @@
 // =============================================
 
 import { useEffect, useMemo, useState } from "react";
-import { FaCalendarAlt, FaPlusCircle, FaUsers } from "react-icons/fa";
+import { FaCalendarAlt, FaUsers } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 import StatCard from "../../components/admin/StatCard";
@@ -118,7 +118,6 @@ function ManajemenPeriode() {
                     onClick={handleCreate}
                     className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-4 py-2.5 font-semibold shadow-sm flex items-center gap-2"
                 >
-                    <FaPlusCircle />
                     + Buat Periode Baru
                 </button>
             </section>
