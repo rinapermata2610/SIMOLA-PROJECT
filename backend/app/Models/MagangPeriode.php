@@ -2,27 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MagangPeriode extends Model
 {
+    use HasFactory;
+
     protected $table = 'magang_periode';
 
     protected $fillable = [
         'periode_batch_id',
         'mahasiswa_id',
-        'pembimbing_id',
-        'instansi',
         'tanggal_mulai',
         'tanggal_selesai',
-        'status'
+        'status',
     ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONSHIP
-    |--------------------------------------------------------------------------
-    */
 
     public function mahasiswa()
     {

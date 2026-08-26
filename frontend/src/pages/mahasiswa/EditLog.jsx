@@ -17,6 +17,7 @@ import MainLayout from "../../layout/MainLayout";
 import ActivityForm from "../../components/dashboard/ActivityForm";
 
 import useFormAktivitas from "../../hooks/useFormAktivitas";
+import logAktivitasService from "../../services/logAktivitasService";
 
 function EditLog() {
     const { id } = useParams();
@@ -28,7 +29,7 @@ function EditLog() {
         loading,
         setForm,
         handleChange,
-        handleSubmit,
+        updateForm,
     } = useFormAktivitas();
 
     useEffect(() => {
@@ -37,11 +38,7 @@ function EditLog() {
 
     const loadData = async () => {
         try {
-            const response = await fetch(
-                `http://localhost:8000/api/mahasiswa/log-aktivitas/${id}`
-            );
-
-            const result = await response.json();
+            const result = await logAktivitasService.getById(id);
 
             if (result.data) {
                 setForm({
@@ -70,7 +67,7 @@ function EditLog() {
         e.preventDefault();
 
         try {
-            await handleSubmit(id);
+            await updateForm(id);
 
             Swal.fire({
                 icon: "success",
@@ -88,38 +85,33 @@ function EditLog() {
 
     return (
         <MainLayout>
-            <div className="space-y-6">
+            <div className="mx-auto max-w-5xl space-y-6">
 
                 {/* Header */}
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-gradient-to-r from-sky-600 to-cyan-500 p-5 text-white shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-7">
 
                     <div className="flex items-center gap-4">
 
                         <button
+                            type="button"
                             onClick={() =>
                                 navigate("/log-aktivitas")
                             }
-                            className="
-                                w-10
-                                h-10
-                                rounded-lg
-                                bg-slate-100
-                                hover:bg-slate-200
-                            "
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white hover:bg-white/30"
                         >
                             <FaArrowLeft className="mx-auto" />
                         </button>
 
                         <div>
 
-                            <h1 className="text-3xl font-bold text-slate-800">
+                            <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-100">SIMOLA / Aktivitas</p>
+                            <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
                                 Edit Aktivitas
                             </h1>
 
-                            <p className="text-slate-500">
-                                Perbarui data aktivitas
-                                magang.
+                            <p className="text-sm text-white/85">
+                                Perbarui data aktivitas magang.
                             </p>
 
                         </div>
@@ -127,20 +119,10 @@ function EditLog() {
                     </div>
 
                     <button
+                        type="button"
                         onClick={handleUpdate}
                         disabled={loading}
-                        className="
-                            flex
-                            items-center
-                            gap-2
-                            px-5
-                            py-3
-                            rounded-xl
-                            bg-sky-600
-                            text-white
-                            hover:bg-sky-700
-                            disabled:opacity-50
-                        "
+                        className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-sky-700 shadow-md hover:bg-sky-50 hover:shadow-lg disabled:opacity-50 sm:px-5"
                     >
                         <FaSave />
 
@@ -154,14 +136,7 @@ function EditLog() {
                 {/* Form */}
 
                 <div
-                    className="
-                        bg-white
-                        rounded-2xl
-                        shadow-sm
-                        border
-                        border-slate-200
-                        p-8
-                    "
+                    className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                 >
                     <ActivityForm
                         form={form}

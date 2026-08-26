@@ -1,13 +1,7 @@
 function Footer() {
     return (
-        <div className="mt-6 text-center text-sm text-gray-600">
-            {/* Belum punya akun?{" "} */}
-            <button
-                type="button"
-                className="text-blue-600 font-semibold hover:underline"
-            >
-                {/* Daftar di sini */}
-            </button>
+        <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs font-medium text-slate-400">
+            SIMOLA • Monitoring Magang Terpadu
         </div>
     );
 }

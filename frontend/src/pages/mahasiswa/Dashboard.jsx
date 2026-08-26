@@ -1,8 +1,5 @@
-// =============================================
-// File : src/pages/mahasiswa/Dashboard.jsx
-// =============================================
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import MainLayout from "../../layout/MainLayout";
 
@@ -14,12 +11,14 @@ import ActivityModal from "../../components/dashboard/ActivityModal";
 import useFormAktivitas from "../../hooks/useFormAktivitas";
 
 function Dashboard() {
+    const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
     const {
         form,
         loading,
+        errorMessage,
         handleChange,
         handleFileChange,
         removeFile,
@@ -43,9 +42,22 @@ function Dashboard() {
         resetForm();
     };
 
+    const handleSubmit = async (statusType = "submitted") => {
+        const dateStr = selectedDate 
+            ? selectedDate.toISOString().split("T")[0] 
+            : null;
+        
+        const saved = await submitForm(statusType, dateStr);
+        if (saved) {
+            setShowModal(false);
+            setSelectedDate(null);
+            navigate("/log-aktivitas");
+        }
+    };
+
     return (
         <MainLayout>
-            <div className="space-y-6">
+            <div className="mx-auto max-w-7xl space-y-6">
 
                 {/* Header */}
                 <DashboardHeader />
@@ -66,10 +78,11 @@ function Dashboard() {
                     selectedDate={selectedDate}
                     form={form}
                     loading={loading}
+                    errorMessage={errorMessage}
                     onChange={handleChange}
                     onFileChange={handleFileChange}
                     onRemoveFile={removeFile}
-                    onSubmit={submitForm}
+                    onSubmit={handleSubmit}
                     onClose={handleCloseModal}
                 />
 

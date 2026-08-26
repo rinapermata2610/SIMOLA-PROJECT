@@ -86,20 +86,20 @@ function Login() {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-slate-100">
+        <div className="relative min-h-screen overflow-hidden bg-sky-50">
 
             {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-slate-100 to-blue-100" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-sky-50 to-cyan-100" />
 
             {/* Wave */}
             <img
                 src={Wave}
                 alt="Background Wave"
-                className="absolute bottom-0 left-0 w-full"
+                className="absolute bottom-0 left-0 w-full opacity-70"
             />
 
             {/* Login Card */}
-            <div className="relative z-10 flex min-h-screen items-center justify-center px-5">
+            <div className="relative z-10 flex min-h-screen items-center justify-center px-5 py-10">
 
                 <LoginCard
                     form={form}

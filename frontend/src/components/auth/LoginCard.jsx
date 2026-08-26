@@ -16,30 +16,34 @@ function LoginCard({
             className="
                 w-full
                 max-w-md
-                bg-white
-                rounded-2xl
+                rounded-3xl
+                border
+                border-white/70
+                bg-white/95
                 shadow-2xl
-                px-8
-                py-10
+                px-6
+                py-8
+                backdrop-blur-sm
+                sm:px-9
+                sm:py-10
             "
         >
             {/* Header */}
-            <div className="text-center mb-8">
+            <div className="mb-8 text-center">
                 <img
                     src={Logo}
                     alt="Logo Kemendikdasmen"
-                    className="w-20 h-20 object-contain mx-auto mb-4"
+                    className="mx-auto mb-4 h-20 w-20 object-contain drop-shadow-sm"
                 />
 
-                <h1 className="text-4xl font-bold text-sky-600">
+                <h1 className="text-4xl font-extrabold tracking-tight text-sky-600">
                     SIMOLA
                 </h1>
 
-                <p className="text-gray-600 mt-2 text-sm">
-                    Sistem Monitoring dan Laporan Magang
+                <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+                    Sistem Monitoring &amp; Layanan Magang
                 </p>
-
-                
+                <div className="mx-auto mt-5 h-1 w-12 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400" />
             </div>
 
             {/* Form */}

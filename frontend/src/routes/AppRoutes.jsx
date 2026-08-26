@@ -14,6 +14,7 @@ import Dashboard from "../pages/mahasiswa/Dashboard";
 import LogAktivitas from "../pages/mahasiswa/LogAktivitas";
 import DetailLog from "../pages/mahasiswa/DetailLog";
 import EditLog from "../pages/mahasiswa/EditLog";
+import Profile from "../pages/mahasiswa/Profile";
 import AdminDashboard from "../pages/admin/Dashboard";
 import ManajemenAkun from "../pages/admin/ManajemenAkun";
 import ManajemenPeriode from "../pages/admin/ManajemenPeriode";
@@ -52,17 +53,6 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <LogAktivitas />
-                    </ProtectedRoute>
-                }
-            />
-
-            <Route
-                path="/admin/dashboard"
-                element={
-                    <ProtectedRoute allowedRoles={["admin"]}>
-                        <AdminLayout>
-                            <AdminDashboard />
-                        </AdminLayout>
                     </ProtectedRoute>
                 }
             />
@@ -107,6 +97,30 @@ function AppRoutes() {
                 }
             />
 
+            <Route
+                path="/profil"
+                element={
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* ============================
+                ADMIN
+            ============================ */}
+
+            <Route
+                path="/admin/dashboard"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout>
+                            <AdminDashboard />
+                        </AdminLayout>
+                    </ProtectedRoute>
+                }
+            />
+
             {/* ============================
                 REDIRECT
             ============================ */}
@@ -138,6 +152,7 @@ function AppRoutes() {
 
         </Routes>
     );
+
 }
 
 export default AppRoutes;

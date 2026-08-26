@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Api\Auth\AuthController;
-
 use App\Http\Controllers\Api\Mahasiswa\DashboardController;
 use App\Http\Controllers\Api\Mahasiswa\FormAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LogAktivitasController;
@@ -23,19 +21,13 @@ use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardControll
 | Authentication
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('auth')->group(function () {
-
     Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
-
         Route::post('/logout', [AuthController::class, 'logout']);
-
         Route::get('/me', [AuthController::class, 'me']);
-
     });
-
 });
 
 /*
@@ -43,7 +35,6 @@ Route::prefix('auth')->group(function () {
 | Mahasiswa
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth:sanctum'])
     ->prefix('mahasiswa')
     ->group(function () {
@@ -53,85 +44,37 @@ Route::middleware(['auth:sanctum'])
     | Dashboard
     |--------------------------------------------------------------------------
     */
-
-    Route::controller(DashboardController::class)
-        ->prefix('dashboard')
-        ->group(function () {
-
-            Route::get('/', 'index');
-
-        });
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 
     /*
     |--------------------------------------------------------------------------
-    | Form Aktivitas
+    | Form Aktivitas (Pencecekan Tanggal)
     |--------------------------------------------------------------------------
     */
-
-    Route::controller(FormAktivitasController::class)
-        ->prefix('form-aktivitas')
-        ->group(function () {
-
-            /*
-            |--------------------------------------------------------------
-            | Cek tanggal yang dipilih
-            |--------------------------------------------------------------
-            */
-
-            Route::get('/check', 'check');
-
-            /*
-            |--------------------------------------------------------------
-            | Simpan aktivitas
-            |--------------------------------------------------------------
-            */
-
-            Route::post('/', 'store');
-
-            /*
-            |--------------------------------------------------------------
-            | Update aktivitas
-            |--------------------------------------------------------------
-            */
-
-            Route::put('/{id}', 'update');
-
-            /*
-            |--------------------------------------------------------------
-            | Hapus aktivitas
-            |--------------------------------------------------------------
-            */
-
-            Route::delete('/{id}', 'destroy');
-
-        });
+    Route::get('/form-aktivitas/check', [FormAktivitasController::class, 'check']);
 
     /*
     |--------------------------------------------------------------------------
-    | Log Aktivitas (History)
+    | Log Aktivitas & Form Aktivitas (CRUD)
     |--------------------------------------------------------------------------
     */
-
     Route::controller(LogAktivitasController::class)
         ->prefix('log-aktivitas')
         ->group(function () {
+            Route::get('/', 'index');          // Ambil daftar log
+            Route::post('/', 'store');         // Simpan log baru
+            Route::get('/{id}', 'show');       // Detail log
+            Route::put('/{id}', 'update');     // Update log
+            Route::delete('/{id}', 'destroy'); // Hapus log
+        });
 
-            /*
-            |--------------------------------------------------------------
-            | Daftar Log
-            |--------------------------------------------------------------
-            */
-
-            Route::get('/', 'index');
-
-            /*
-            |--------------------------------------------------------------
-            | Detail Log
-            |--------------------------------------------------------------
-            */
-
-            Route::get('/{id}', 'show');
-
+    // Alias route untuk kompatibilitas jika Frontend masih menembak ke '/form-aktivitas'
+    Route::controller(LogAktivitasController::class)
+        ->prefix('form-aktivitas')
+        ->group(function () {
+            Route::post('/', 'store');
+            Route::put('/{id}', 'update');
+            Route::delete('/{id}', 'destroy');
         });
 
     /*
@@ -139,21 +82,14 @@ Route::middleware(['auth:sanctum'])
     | Lampiran Bukti
     |--------------------------------------------------------------------------
     */
-
     Route::controller(LampiranBuktiController::class)
         ->prefix('lampiran')
         ->group(function () {
-
             Route::get('/{logId}', 'index');
-
             Route::post('/', 'store');
-
             Route::get('/detail/{id}', 'show');
-
             Route::get('/download/{id}', 'download');
-
             Route::delete('/{id}', 'destroy');
-
         });
 
     /*
@@ -161,18 +97,13 @@ Route::middleware(['auth:sanctum'])
     | Profil Mahasiswa
     |--------------------------------------------------------------------------
     */
-
     Route::controller(ProfilController::class)
+        ->prefix('profile')
         ->group(function () {
-
-            Route::get('/profile', 'show');
-
-            Route::put('/profile', 'update');
-
-            Route::put('/profile/password', 'changePassword');
-
+            Route::get('/', 'show');
+            Route::put('/', 'update');
+            Route::put('/password', 'changePassword');
         });
-
 });
 
 /*
@@ -180,7 +111,6 @@ Route::middleware(['auth:sanctum'])
 | Pembimbing
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth:sanctum', 'role:pembimbing'])
     ->prefix('pembimbing')
     ->group(function () {
@@ -190,15 +120,10 @@ Route::middleware(['auth:sanctum', 'role:pembimbing'])
         Route::controller(PembimbingLogAktivitasController::class)
             ->prefix('log-aktivitas')
             ->group(function () {
-
                 Route::get('/', 'index');
-
                 Route::get('/{id}', 'show');
-
                 Route::put('/{id}/verify', 'verify');
-
             });
-
     });
 
 /*
@@ -206,7 +131,6 @@ Route::middleware(['auth:sanctum', 'role:pembimbing'])
 | Admin
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth:sanctum', 'role:admin'])
     ->prefix('admin')
     ->group(function () {
@@ -242,5 +166,4 @@ Route::middleware(['auth:sanctum', 'role:admin'])
 
         // Dashboard admin
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
-
     });

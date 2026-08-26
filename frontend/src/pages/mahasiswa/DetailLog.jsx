@@ -25,21 +25,32 @@ function DetailLog() {
     const [loading, setLoading] = useState(true);
 
     const [activity, setActivity] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         loadDetail();
-    }, []);
+    }, [id]);
 
     const loadDetail = async () => {
         try {
             setLoading(true);
+            setErrorMessage("");
 
             const response =
                 await logAktivitasService.getById(id);
 
+            if (!response?.success || !response.data) {
+                throw new Error(response?.message || "Data aktivitas tidak ditemukan.");
+            }
+
             setActivity(response.data);
         } catch (error) {
             console.error(error);
+            setErrorMessage(
+                error.response?.data?.message ||
+                error.message ||
+                "Data aktivitas gagal dimuat."
+            );
         } finally {
             setLoading(false);
         }
@@ -48,8 +59,8 @@ function DetailLog() {
     if (loading) {
         return (
             <MainLayout>
-                <div className="bg-white rounded-2xl p-10 shadow text-center">
-                    Memuat data...
+                <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm font-medium text-slate-500 shadow-sm">
+                    Memuat detail aktivitas...
                 </div>
             </MainLayout>
         );
@@ -58,8 +69,15 @@ function DetailLog() {
     if (!activity) {
         return (
             <MainLayout>
-                <div className="bg-white rounded-2xl p-10 shadow text-center">
-                    Data tidak ditemukan.
+                <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+                    <p className="text-sm font-semibold text-red-600">{errorMessage || "Data tidak ditemukan."}</p>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/log-aktivitas")}
+                        className="mt-5 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-500 px-5 py-2.5 text-sm font-bold text-white shadow-md hover:shadow-lg"
+                    >
+                        Kembali ke Log Aktivitas
+                    </button>
                 </div>
             </MainLayout>
         );
@@ -68,65 +86,60 @@ function DetailLog() {
     return (
         <MainLayout>
 
-            <div className="space-y-6">
+            <div className="mx-auto max-w-5xl space-y-6">
 
                 {/* Header */}
 
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-gradient-to-r from-sky-600 to-cyan-500 p-5 text-white shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-7">
 
                     <div className="flex items-center gap-4">
 
                         <button
+                            type="button"
                             onClick={() =>
                                 navigate("/log-aktivitas")
                             }
-                            className="
-                                w-10
-                                h-10
-                                rounded-lg
-                                bg-slate-100
-                                hover:bg-slate-200
-                            "
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white hover:bg-white/30"
                         >
                             <FaArrowLeft className="mx-auto" />
                         </button>
 
                         <div>
 
-                            <h1 className="text-3xl font-bold text-slate-800">
+                            <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-100">SIMOLA / Aktivitas</p>
+                            <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
                                 Detail Aktivitas
                             </h1>
 
-                            <p className="text-slate-500">
-                                Informasi lengkap aktivitas
-                                magang
+                            <p className="text-sm text-white/85">
+                                Informasi lengkap aktivitas magang
                             </p>
 
                         </div>
 
                     </div>
 
-                    <StatusBadge
-                        status={activity.status}
-                    />
+                    <div className="w-fit rounded-full bg-white px-1 py-1 shadow-md">
+                        <StatusBadge status={activity.status} />
+                    </div>
 
                 </div>
 
                 {/* Card */}
 
-                <div className="bg-white rounded-2xl shadow border border-slate-200 p-8 space-y-8">
+                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
                     {/* Informasi */}
 
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid gap-4 border-b border-slate-100 bg-slate-50/70 p-5 sm:p-6 md:grid-cols-2">
 
                         <div>
 
-                            <label className="text-sm text-slate-500">
+                            <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
                                 Tanggal
-                            </label>
+                            </p>
 
-                            <div className="mt-2 flex items-center gap-3">
+                            <div className="mt-2 flex items-center gap-3 text-sm font-bold text-slate-800">
 
                                 <FaCalendarAlt className="text-sky-600" />
 
@@ -152,11 +165,11 @@ function DetailLog() {
 
                         <div>
 
-                            <label className="text-sm text-slate-500">
+                            <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
                                 Judul Aktivitas
-                            </label>
+                            </p>
 
-                            <div className="mt-2 flex items-center gap-3">
+                            <div className="mt-2 flex items-center gap-3 text-sm font-bold text-slate-800">
 
                                 <FaClipboardList className="text-sky-600" />
 
@@ -172,13 +185,15 @@ function DetailLog() {
 
                     {/* Deskripsi */}
 
+                    <div className="space-y-8 p-5 sm:p-8">
+
                     <div>
 
-                        <h3 className="font-semibold text-lg mb-3">
+                        <h3 className="mb-3 text-base font-extrabold text-slate-800">
                             Deskripsi Kegiatan
                         </h3>
 
-                        <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 leading-7">
+                        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-5 text-sm leading-7 text-slate-600">
                             {activity.deskripsi}
                         </div>
 
@@ -188,11 +203,11 @@ function DetailLog() {
 
                     <div>
 
-                        <h3 className="font-semibold text-lg mb-3">
+                        <h3 className="mb-3 text-base font-extrabold text-slate-800">
                             Hasil / Output
                         </h3>
 
-                        <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 leading-7">
+                        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-5 text-sm leading-7 text-slate-600">
                             {activity.hasil}
                         </div>
 
@@ -202,62 +217,38 @@ function DetailLog() {
 
                     <div>
 
-                        <h3 className="font-semibold text-lg mb-4">
+                        <h3 className="mb-4 text-base font-extrabold text-slate-800">
                             Lampiran
                         </h3>
 
-                        {activity.lampiran ? (
-
-                            <div className="flex items-center justify-between border rounded-xl p-4">
-
-                                <div className="flex items-center gap-3">
-
-                                    <FaFileAlt
-                                        size={24}
-                                        className="text-red-500"
-                                    />
-
-                                    <div>
-
-                                        <p className="font-medium">
-                                            {activity.lampiran}
-                                        </p>
-
-                                        <p className="text-sm text-slate-500">
-                                            File Lampiran
-                                        </p>
-
+                        {activity.lampiran?.length > 0 ? (
+                            <div className="space-y-3">
+                                {activity.lampiran.map((file) => (
+                                    <div key={file.id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-sky-200 hover:bg-sky-50/40">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <FaFileAlt size={22} className="shrink-0 text-sky-600" />
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-bold text-slate-700">{file.nama_file}</p>
+                                                <p className="text-xs text-slate-400">File Lampiran</p>
+                                            </div>
+                                        </div>
+                                        {file.url && (
+                                            <a
+                                                href={file.url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-500 px-4 py-2 text-xs font-bold text-white shadow-sm hover:shadow-md"
+                                            >
+                                                <FaDownload />
+                                                Lihat
+                                            </a>
+                                        )}
                                     </div>
-
-                                </div>
-
-                                <a
-                                    href={activity.lampiran_url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="
-                                        px-4
-                                        py-2
-                                        rounded-lg
-                                        bg-sky-600
-                                        text-white
-                                        hover:bg-sky-700
-                                        flex
-                                        items-center
-                                        gap-2
-                                    "
-                                >
-                                    <FaDownload />
-
-                                    Download
-
-                                </a>
-
+                                ))}
                             </div>
-
                         ) : (
 
-                            <div className="border rounded-xl p-6 text-center text-slate-500">
+                            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm font-medium text-slate-500">
                                 Tidak ada lampiran.
                             </div>
 
@@ -266,6 +257,8 @@ function DetailLog() {
                     </div>
 
                 </div>
+
+            </div>
 
             </div>
 

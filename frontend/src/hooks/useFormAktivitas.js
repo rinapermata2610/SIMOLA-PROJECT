@@ -1,223 +1,134 @@
-// =============================================
-// File : src/hooks/useFormAktivitas.js
-// =============================================
-
 import { useState } from "react";
-import Swal from "sweetalert2";
+import api from "../services/api";
 
-import formAktivitasService from "../services/formAktivitasService";
-
-const initialForm = {
-    tanggal: "",
-    judul: "",
-    deskripsi: "",
-    hasil: "",
-    files: [],
-};
-
-function useFormAktivitas() {
+export default function useFormAktivitas() {
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [form, setForm] = useState({
+        judul: "",
+        deskripsi: "",
+        hasil: "",
+        tanggal: new Date().toISOString().split("T")[0],
+        lampiran: [],
+    });
 
-    const [mode, setMode] = useState("create");
-
-    const [activityId, setActivityId] = useState(null);
-
-    const [form, setForm] = useState(initialForm);
-
-    /**
-     * Input Text
-     */
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        setForm((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setForm((prev) => ({ ...prev, [name]: value }));
+        if (errorMessage) setErrorMessage("");
     };
 
-    /**
-     * Upload File
-     */
     const handleFileChange = (e) => {
-        const selectedFiles = Array.from(e.target.files);
-
-        if (!selectedFiles.length) return;
-
+        if (!e.target.files || e.target.files.length === 0) return;
+        const newFiles = Array.from(e.target.files);
         setForm((prev) => ({
             ...prev,
-            files: [...prev.files, ...selectedFiles],
+            lampiran: [...prev.lampiran, ...newFiles],
         }));
+        e.target.value = "";
     };
 
-    /**
-     * Hapus File
-     */
     const removeFile = (index) => {
         setForm((prev) => ({
             ...prev,
-            files: prev.files.filter((_, i) => i !== index),
+            lampiran: prev.lampiran.filter((_, i) => i !== index),
         }));
     };
 
-    /**
-     * Reset Form
-     */
     const resetForm = () => {
-        setMode("create");
-        setActivityId(null);
-        setForm(initialForm);
+        setForm({
+            judul: "",
+            deskripsi: "",
+            hasil: "",
+            tanggal: new Date().toISOString().split("T")[0],
+            lampiran: [],
+        });
+        setErrorMessage("");
     };
 
-    /**
-     * Load Data Berdasarkan Tanggal
-     */
-    const loadData = async (tanggal) => {
+    const submitForm = async (statusType = "submitted", customDate = null) => {
+        setLoading(true);
+        setErrorMessage("");
+
         try {
-            setLoading(true);
+            const formData = new FormData();
+            formData.append("judul", form.judul || "");
+            formData.append("deskripsi", form.deskripsi || "");
+            formData.append("hasil", form.hasil || "");
 
-            const response = await formAktivitasService.check(tanggal);
+            const targetDate = customDate || form.tanggal || new Date().toISOString().split("T")[0];
+            formData.append("tanggal", targetDate);
+            formData.append("status", statusType);
 
-            if (response.exists) {
-                setMode("edit");
-                setActivityId(response.data.id);
-
-                setForm({
-                    tanggal: response.data.tanggal,
-                    judul: response.data.judul || "",
-                    deskripsi: response.data.deskripsi || "",
-                    hasil: response.data.hasil || "",
-                    files: [],
-                });
-            } else {
-                setMode("create");
-                setActivityId(null);
-
-                setForm({
-                    ...initialForm,
-                    tanggal,
+            if (form.lampiran && form.lampiran.length > 0) {
+                form.lampiran.forEach((file) => {
+                    formData.append("lampiran[]", file);
                 });
             }
-        } catch (error) {
-            console.error(error);
 
-            Swal.fire({
-                icon: "error",
-                title: "Gagal",
-                text:
-                    error.response?.data?.message ??
-                    "Gagal memuat data aktivitas.",
+            // Kirim HTTP POST ke Backend Laravel
+            const response = await api.post("/mahasiswa/log-aktivitas", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             });
+
+            if (response.status === 200 || response.status === 201 || response.data?.success) {
+                resetForm();
+                return true; // Berhasil tersimpan ke database
+            }
+            return false;
+        } catch (error) {
+            console.error("Gagal menyimpan aktivitas:", error);
+            let msg = "Terjadi kesalahan saat menyimpan data ke database.";
+            if (error.response?.data?.errors) {
+                const firstKey = Object.keys(error.response.data.errors)[0];
+                msg = error.response.data.errors[firstKey][0];
+            } else if (error.response?.data?.message) {
+                msg = error.response.data.message;
+            }
+            setErrorMessage(msg);
+            return false;
         } finally {
             setLoading(false);
         }
     };
 
-    /**
-     * Simpan Draft
-     */
-    const saveDraft = async () => {
-        try {
-            setLoading(true);
-
-            const formData = new FormData();
-
-            formData.append("tanggal", form.tanggal);
-            formData.append("judul", form.judul);
-            formData.append("deskripsi", form.deskripsi);
-            formData.append("hasil", form.hasil);
-            formData.append("status", "draft");
-
-            form.files.forEach((file) => {
-                formData.append("lampiran[]", file);
-            });
-
-            let response;
-
-            if (mode === "create") {
-                response = await formAktivitasService.store(formData);
-            } else {
-                response = await formAktivitasService.update(
-                    activityId,
-                    formData
-                );
-            }
-
-            Swal.fire({
-                icon: "success",
-                title: "Draft berhasil disimpan",
-                timer: 1500,
-                showConfirmButton: false,
-            });
-
-            return response;
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Gagal",
-                text:
-                    error.response?.data?.message ??
-                    "Gagal menyimpan draft.",
-            });
-
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    /**
-     * Kirim Aktivitas
-     */
-    const submitForm = async (e) => {
-        if (e) e.preventDefault();
+    const updateForm = async (id) => {
+        setLoading(true);
+        setErrorMessage("");
 
         try {
-            setLoading(true);
-
             const formData = new FormData();
+            formData.append("tanggal", form.tanggal || "");
+            formData.append("judul", form.judul || "");
+            formData.append("deskripsi", form.deskripsi || "");
+            formData.append("hasil", form.hasil || "");
+            formData.append("status", form.status || "draft");
+            formData.append("_method", "PUT");
 
-            formData.append("tanggal", form.tanggal);
-            formData.append("judul", form.judul);
-            formData.append("deskripsi", form.deskripsi);
-            formData.append("hasil", form.hasil);
-            formData.append("status", "submitted");
-
-            form.files.forEach((file) => {
-                formData.append("lampiran[]", file);
-            });
-
-            let response;
-
-            if (mode === "create") {
-                response = await formAktivitasService.store(formData);
-            } else {
-                response = await formAktivitasService.update(
-                    activityId,
-                    formData
-                );
+            if (form.lampiran && form.lampiran.length > 0) {
+                form.lampiran.forEach((file) => {
+                    formData.append("lampiran[]", file);
+                });
             }
 
-            Swal.fire({
-                icon: "success",
-                title: "Berhasil",
-                text: "Aktivitas berhasil dikirim.",
-                timer: 1500,
-                showConfirmButton: false,
+            const response = await api.post(`/mahasiswa/log-aktivitas/${id}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             });
 
-            resetForm();
+            if (!response.data?.success) {
+                throw new Error(response.data?.message || "Aktivitas gagal diperbarui.");
+            }
 
-            return response;
+            return response.data;
         } catch (error) {
-            Swal.fire({
-                icon: "error",
-                title: "Gagal",
-                text:
-                    error.response?.data?.message ??
-                    "Terjadi kesalahan.",
-            });
-
+            const message = error.response?.data?.errors
+                ? Object.values(error.response.data.errors)[0][0]
+                : error.response?.data?.message || error.message;
+            setErrorMessage(message || "Terjadi kesalahan saat memperbarui aktivitas.");
             throw error;
         } finally {
             setLoading(false);
@@ -225,23 +136,15 @@ function useFormAktivitas() {
     };
 
     return {
-        loading,
         form,
-        mode,
-        activityId,
-
         setForm,
-        setMode,
-
+        loading,
+        errorMessage,
         handleChange,
         handleFileChange,
         removeFile,
-
-        loadData,
-        saveDraft,
         submitForm,
+        updateForm,
         resetForm,
     };
 }
-
-export default useFormAktivitas;

@@ -23,7 +23,7 @@ class ProfilController extends Controller
             $user = Auth::user();
 
             $user->load([
-                'magangPeriode.pembimbing'
+                'periodeMagang.pembimbing'
             ]);
 
             return response()->json([

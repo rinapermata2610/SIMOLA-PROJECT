@@ -54,7 +54,7 @@ const logAktivitasService = {
      * Mengirim aktivitas.
      */
     async submit(formData) {
-        formData.append("status", "terkirim");
+        formData.append("status", "submitted");
 
         const response = await api.post(
             BASE_URL,

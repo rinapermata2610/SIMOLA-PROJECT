@@ -95,17 +95,20 @@ function CalendarGrid({
 
             {/* Nama Hari */}
 
-            <div className="grid grid-cols-7 gap-2 mb-4">
+            <div className="mb-2 grid grid-cols-7 gap-1.5 sm:gap-2">
 
                 {weekDays.map((day) => (
 
                     <div
                         key={day}
                         className="
-                            py-2
+                            py-1.5
                             text-center
-                            font-semibold
-                            text-gray-500
+                            text-[11px]
+                            font-bold
+                            uppercase
+                            tracking-wide
+                            text-slate-400
                         "
                     >
                         {day}
@@ -117,7 +120,7 @@ function CalendarGrid({
 
             {/* Kalender */}
 
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
 
                 {calendar.map((item, index) => (
 
