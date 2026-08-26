@@ -15,6 +15,7 @@ import LogAktivitas from "../pages/mahasiswa/LogAktivitas";
 import DetailLog from "../pages/mahasiswa/DetailLog";
 import EditLog from "../pages/mahasiswa/EditLog";
 import Profile from "../pages/mahasiswa/Profile";
+import Attendance from "../pages/mahasiswa/Attendance";
 import AdminDashboard from "../pages/admin/Dashboard";
 import ManajemenAkun from "../pages/admin/ManajemenAkun";
 import AdminLayout from "../layout/admin/AdminLayout";
@@ -90,6 +91,15 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <Profile />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/absensi"
+                element={
+                    <ProtectedRoute>
+                        <Attendance />
                     </ProtectedRoute>
                 }
             />

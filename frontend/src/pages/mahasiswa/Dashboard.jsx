@@ -5,6 +5,7 @@ import MainLayout from "../../layout/MainLayout";
 
 import DashboardHeader from "../../components/dashboard/DashboardHeader";
 import SummaryCards from "../../components/dashboard/SummaryCards";
+import AttendanceCard from "../../components/dashboard/AttendanceCard";
 import CalendarCard from "../../components/dashboard/CalendarCard";
 import ActivityModal from "../../components/dashboard/ActivityModal";
 
@@ -64,6 +65,8 @@ function Dashboard() {
 
                 {/* Summary */}
                 <SummaryCards />
+
+                <AttendanceCard />
 
                 {/* Kalender */}
                 <CalendarCard

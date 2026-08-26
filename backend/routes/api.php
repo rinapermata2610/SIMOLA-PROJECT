@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Mahasiswa\FormAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LampiranBuktiController;
 use App\Http\Controllers\Api\Mahasiswa\ProfilController;
+use App\Http\Controllers\Api\Mahasiswa\AbsensiController;
 use App\Http\Controllers\Api\Pembimbing\DashboardController as PembimbingDashboardController;
 use App\Http\Controllers\Api\Pembimbing\LogAktivitasController as PembimbingLogAktivitasController;
 use App\Http\Controllers\Api\Admin\AkunController as AdminAkunController;
@@ -44,6 +45,14 @@ Route::middleware(['auth:sanctum'])
     |--------------------------------------------------------------------------
     */
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    Route::controller(AbsensiController::class)
+        ->prefix('absensi')
+        ->middleware('role:mahasiswa')
+        ->group(function () {
+            Route::get('/', 'today');
+            Route::post('/{type}', 'store');
+        });
 
     /*
     |--------------------------------------------------------------------------
