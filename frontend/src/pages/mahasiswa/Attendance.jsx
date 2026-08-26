@@ -28,6 +28,25 @@ export default function Attendance() {
         year: "numeric",
     }).format(new Date(`${date}T00:00:00`));
 
+    const formatLateness = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return [hours ? `${hours} jam` : "", remainingMinutes ? `${remainingMinutes} menit` : ""]
+            .filter(Boolean)
+            .join(" ");
+    };
+
+    const renderTime = (time, status, minutes) => (
+        <div>
+            <span>{time || "-"}</span>
+            {status === "terlambat" && (
+                <span className="ml-2 text-xs font-semibold text-rose-600">
+                    Terlambat {formatLateness(minutes)}
+                </span>
+            )}
+        </div>
+    );
+
     return (
         <MainLayout>
             <div className="mx-auto max-w-7xl space-y-6">
@@ -64,8 +83,8 @@ export default function Attendance() {
                                 ) : history.map((item) => (
                                     <tr key={item.id} className="text-slate-700">
                                         <td className="px-3 py-4 font-medium">{formatDate(item.tanggal)}</td>
-                                        <td className="px-3 py-4 text-emerald-700">{item.jam_masuk || "-"}</td>
-                                        <td className="px-3 py-4 text-orange-700">{item.jam_keluar || "-"}</td>
+                                        <td className="px-3 py-4 text-emerald-700">{renderTime(item.jam_masuk, item.status_masuk, item.keterlambatan_masuk_menit)}</td>
+                                        <td className="px-3 py-4 text-orange-700">{renderTime(item.jam_keluar, item.status_keluar, item.keterlambatan_keluar_menit)}</td>
                                     </tr>
                                 ))}
                             </tbody>

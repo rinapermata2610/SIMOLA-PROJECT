@@ -12,7 +12,11 @@ class Absensi extends Model
         'mahasiswa_id',
         'tanggal',
         'jam_masuk',
+        'status_masuk',
+        'keterlambatan_masuk_menit',
         'jam_keluar',
+        'status_keluar',
+        'keterlambatan_keluar_menit',
         'latitude_masuk',
         'longitude_masuk',
         'latitude_keluar',
@@ -23,6 +27,8 @@ class Absensi extends Model
         'tanggal' => 'date:Y-m-d',
         'jam_masuk' => 'datetime:H:i',
         'jam_keluar' => 'datetime:H:i',
+        'keterlambatan_masuk_menit' => 'integer',
+        'keterlambatan_keluar_menit' => 'integer',
     ];
 
     public function mahasiswa()

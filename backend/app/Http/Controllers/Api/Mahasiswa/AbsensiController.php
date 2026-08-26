@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\Mahasiswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class AbsensiController extends Controller
 {
@@ -22,12 +22,12 @@ class AbsensiController extends Controller
 
     public function today(): JsonResponse
     {
+        $today = Carbon::today();
         $attendance = Absensi::where('mahasiswa_id', Auth::id())
-            ->whereDate('tanggal', Carbon::today())
+            ->whereDate('tanggal', $today)
             ->first();
-
         $history = Absensi::where('mahasiswa_id', Auth::id())
-            ->whereBetween('tanggal', [Carbon::today()->subDays(6), Carbon::today()])
+            ->whereBetween('tanggal', [$today->copy()->subDays(6), $today])
             ->orderByDesc('tanggal')
             ->get();
 
@@ -40,10 +40,16 @@ class AbsensiController extends Controller
                 'latitude' => self::OFFICE_LATITUDE,
                 'longitude' => self::OFFICE_LONGITUDE,
                 'radius_meters' => self::ALLOWED_RADIUS_METERS,
+                'required' => $today->dayOfWeekIso >= 1 && $today->dayOfWeekIso <= 4,
             ],
             'schedule' => [
                 'masuk' => [self::CLOCK_IN_START, self::CLOCK_IN_END],
                 'keluar' => [self::CLOCK_OUT_START, self::CLOCK_OUT_END],
+            ],
+            'workday' => [
+                'day' => $today->dayName,
+                'is_wfh' => $today->dayOfWeekIso === 5,
+                'requires_office_location' => $today->dayOfWeekIso >= 1 && $today->dayOfWeekIso <= 4,
             ],
         ]);
     }
@@ -55,47 +61,42 @@ class AbsensiController extends Controller
         }
 
         $now = Carbon::now();
-        $currentTime = $now->format('H:i');
+        if ($now->dayOfWeekIso >= 6) {
+            return response()->json(['success' => false, 'message' => 'Absensi hanya tersedia pada hari Senin sampai Jumat.'], 422);
+        }
+
+        $currentMinutes = ((int) $now->format('H') * 60) + (int) $now->format('i');
         [$startTime, $endTime] = $type === 'masuk'
             ? [self::CLOCK_IN_START, self::CLOCK_IN_END]
             : [self::CLOCK_OUT_START, self::CLOCK_OUT_END];
-
-        if ($currentTime < $startTime || $currentTime > $endTime) {
-            return response()->json([
-                'success' => false,
-                'message' => "Absen {$type} hanya dapat dilakukan pukul {$startTime} sampai {$endTime} WIB.",
-            ], 422);
-        }
+        $startMinutes = $this->timeToMinutes($startTime);
+        $endMinutes = $this->timeToMinutes($endTime);
+        $isOnTime = $currentMinutes >= $startMinutes && $currentMinutes <= $endMinutes;
+        $latenessMinutes = $isOnTime ? 0 : min(abs($currentMinutes - $startMinutes), abs($currentMinutes - $endMinutes));
+        $requiresOfficeLocation = $now->dayOfWeekIso >= 1 && $now->dayOfWeekIso <= 4;
 
         $validated = Validator::make($request->all(), [
-            'latitude' => ['required', 'numeric', 'between:-90,90'],
-            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'latitude' => [$requiresOfficeLocation ? 'required' : 'nullable', 'numeric', 'between:-90,90'],
+            'longitude' => [$requiresOfficeLocation ? 'required' : 'nullable', 'numeric', 'between:-180,180'],
         ])->validate();
 
-        $distance = $this->distanceInMeters(
-            (float) $validated['latitude'],
-            (float) $validated['longitude']
-        );
-
-        if ($distance > self::ALLOWED_RADIUS_METERS) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Absensi hanya dapat dilakukan di area Balai Bahasa Provinsi Jawa Barat.',
-                'distance_meters' => round($distance),
-            ], 422);
+        if ($requiresOfficeLocation) {
+            $distance = $this->distanceInMeters((float) $validated['latitude'], (float) $validated['longitude']);
+            if ($distance > self::ALLOWED_RADIUS_METERS) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Absensi Senin sampai Kamis hanya dapat dilakukan di area Balai Bahasa Provinsi Jawa Barat.',
+                    'distance_meters' => round($distance),
+                ], 422);
+            }
         }
 
         $attendance = Absensi::where('mahasiswa_id', Auth::id())
-            ->whereDate('tanggal', Carbon::today())
+            ->whereDate('tanggal', $now)
             ->first();
-
         if ($type === 'keluar' && !$attendance?->jam_masuk) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Silakan absen masuk terlebih dahulu.',
-            ], 422);
+            return response()->json(['success' => false, 'message' => 'Silakan absen masuk terlebih dahulu.'], 422);
         }
-
         $attendance ??= Absensi::firstOrCreate([
             'mahasiswa_id' => Auth::id(),
             'tanggal' => $now->toDateString(),
@@ -104,6 +105,8 @@ class AbsensiController extends Controller
         $column = $type === 'masuk' ? 'jam_masuk' : 'jam_keluar';
         $latitudeColumn = $type === 'masuk' ? 'latitude_masuk' : 'latitude_keluar';
         $longitudeColumn = $type === 'masuk' ? 'longitude_masuk' : 'longitude_keluar';
+        $statusColumn = $type === 'masuk' ? 'status_masuk' : 'status_keluar';
+        $latenessColumn = $type === 'masuk' ? 'keterlambatan_masuk_menit' : 'keterlambatan_keluar_menit';
 
         if ($attendance->{$column}) {
             return response()->json([
@@ -115,13 +118,17 @@ class AbsensiController extends Controller
 
         $attendance->update([
             $column => $now,
+            $statusColumn => $isOnTime ? 'tepat_waktu' : 'terlambat',
+            $latenessColumn => $latenessMinutes,
             $latitudeColumn => $validated['latitude'],
             $longitudeColumn => $validated['longitude'],
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => "Absen {$type} berhasil dicatat pada {$now->format('H:i')} WIB.",
+            'message' => $isOnTime
+                ? "Absen {$type} berhasil dicatat pada {$now->format('H:i')} WIB."
+                : "Absen {$type} tercatat terlambat {$this->formatDuration($latenessMinutes)}.",
             'data' => $this->formatAttendance($attendance->fresh()),
         ]);
     }
@@ -136,8 +143,25 @@ class AbsensiController extends Controller
             'id' => $attendance->id,
             'tanggal' => $attendance->tanggal?->format('Y-m-d'),
             'jam_masuk' => $attendance->jam_masuk?->format('H:i'),
+            'status_masuk' => $attendance->status_masuk,
+            'keterlambatan_masuk_menit' => $attendance->keterlambatan_masuk_menit,
             'jam_keluar' => $attendance->jam_keluar?->format('H:i'),
+            'status_keluar' => $attendance->status_keluar,
+            'keterlambatan_keluar_menit' => $attendance->keterlambatan_keluar_menit,
         ];
+    }
+
+    private function timeToMinutes(string $time): int
+    {
+        [$hours, $minutes] = array_map('intval', explode(':', $time));
+        return ($hours * 60) + $minutes;
+    }
+
+    private function formatDuration(int $minutes): string
+    {
+        $hours = intdiv($minutes, 60);
+        $remainingMinutes = $minutes % 60;
+        return trim(($hours ? "{$hours} jam " : '') . ($remainingMinutes ? "{$remainingMinutes} menit" : ''));
     }
 
     private function distanceInMeters(float $latitude, float $longitude): float
@@ -146,10 +170,7 @@ class AbsensiController extends Controller
         $latitudeDelta = deg2rad($latitude - self::OFFICE_LATITUDE);
         $longitudeDelta = deg2rad($longitude - self::OFFICE_LONGITUDE);
         $a = sin($latitudeDelta / 2) ** 2
-            + cos(deg2rad(self::OFFICE_LATITUDE))
-            * cos(deg2rad($latitude))
-            * sin($longitudeDelta / 2) ** 2;
-
+            + cos(deg2rad(self::OFFICE_LATITUDE)) * cos(deg2rad($latitude)) * sin($longitudeDelta / 2) ** 2;
         return $earthRadius * 2 * asin(min(1, sqrt($a)));
     }
 }

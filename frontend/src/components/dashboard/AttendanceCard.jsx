@@ -7,11 +7,13 @@ function AttendanceCard({ onAttendanceChange }) {
     const [attendance, setAttendance] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState("");
+    const [requiresOfficeLocation, setRequiresOfficeLocation] = useState(true);
 
     const loadAttendance = async () => {
         try {
             const response = await absensiService.getToday();
             setAttendance(response.data);
+            setRequiresOfficeLocation(response.workday?.requires_office_location ?? true);
         } catch (error) {
             Swal.fire("Gagal", error.response?.data?.message || "Data absensi gagal dimuat.", "error");
         } finally {
@@ -24,27 +26,34 @@ function AttendanceCard({ onAttendanceChange }) {
     }, []);
 
     const handleClock = (type) => {
-        if (!navigator.geolocation) {
+        if (requiresOfficeLocation && !navigator.geolocation) {
             Swal.fire("Lokasi tidak tersedia", "Browser ini tidak mendukung akses lokasi.", "error");
             return;
         }
 
         setSubmitting(type);
+        const submitAttendance = (coordinates = {}) => absensiService.clock(type, coordinates);
+        const submit = async (coordinates) => {
+            try {
+                const response = await submitAttendance(coordinates);
+                setAttendance(response.data);
+                onAttendanceChange?.();
+                Swal.fire("Berhasil", response.message, "success");
+            } catch (error) {
+                Swal.fire("Absensi gagal", error.response?.data?.message || "Tidak dapat mencatat absensi.", "error");
+            } finally {
+                setSubmitting("");
+            }
+        };
+
+        if (!requiresOfficeLocation) {
+            submit();
+            return;
+        }
+
         navigator.geolocation.getCurrentPosition(
             async ({ coords }) => {
-                try {
-                    const response = await absensiService.clock(type, {
-                        latitude: coords.latitude,
-                        longitude: coords.longitude,
-                    });
-                    setAttendance(response.data);
-                    onAttendanceChange?.();
-                    Swal.fire("Berhasil", response.message, "success");
-                } catch (error) {
-                    Swal.fire("Absensi gagal", error.response?.data?.message || "Tidak dapat mencatat absensi.", "error");
-                } finally {
-                    setSubmitting("");
-                }
+                await submit({ latitude: coords.latitude, longitude: coords.longitude });
             },
             (error) => {
                 setSubmitting("");
@@ -68,7 +77,7 @@ function AttendanceCard({ onAttendanceChange }) {
                     <h2 className="mt-1 text-xl font-bold text-slate-800">Balai Bahasa Provinsi Jawa Barat</h2>
                     <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
                         <FaMapMarkerAlt className="text-rose-500" />
-                        Wajib berada di area kantor untuk absen
+                        Senin–Kamis wajib berada di area kantor · Jumat WFH
                     </p>
                     <p className="mt-1 text-xs font-semibold text-slate-500">Masuk 06.00–07.30 WIB · Keluar 16.00–18.00 WIB</p>
                 </div>
