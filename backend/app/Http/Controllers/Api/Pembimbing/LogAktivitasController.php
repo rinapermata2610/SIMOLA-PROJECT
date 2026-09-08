@@ -25,7 +25,7 @@ class LogAktivitasController extends Controller
         try {
             $user = Auth::user();
 
-            $query = LogAktivitas::with(['mahasiswa', 'periode', 'penilaian'])
+            $query = LogAktivitas::with(['mahasiswa', 'periode', 'penilaian', 'lampiran'])
                 ->whereHas('periode', function ($q) use ($user) {
                     $q->where('pembimbing_id', $user->id);
                 });
@@ -77,7 +77,7 @@ class LogAktivitasController extends Controller
         try {
             $user = Auth::user();
 
-            $log = LogAktivitas::with(['mahasiswa', 'periode', 'penilaian'])
+            $log = LogAktivitas::with(['mahasiswa', 'periode', 'penilaian', 'lampiran'])
                 ->where('id', $id)
                 ->whereHas('periode', function ($q) use ($user) {
                     $q->where('pembimbing_id', $user->id);
