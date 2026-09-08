@@ -13,17 +13,18 @@ class MagangPeriodeSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ambil user berdasarkan role
-        $mahasiswa = User::where('role', 'mahasiswa')->first();
-        $pembimbing = User::where('role', 'pembimbing')->first();
+        $mahasiswa = User::where('username', 'ahmadfauzi')
+            ->where('role', 'mahasiswa')
+            ->first();
+        $pembimbing = User::where('username', 'rinapermata')
+            ->where('role', 'pembimbing')
+            ->first();
 
-        // Pastikan user tersedia
         if (!$mahasiswa || !$pembimbing) {
-            $this->command->error('Mahasiswa atau Pembimbing belum tersedia.');
+            $this->command->error('Mahasiswa Ahmad Fauzi atau Pembimbing Rina Permata belum tersedia.');
             return;
         }
 
-        // Buat atau perbarui periode magang
         MagangPeriode::updateOrCreate(
             [
                 'mahasiswa_id' => $mahasiswa->id,

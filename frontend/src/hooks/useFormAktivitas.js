@@ -1,6 +1,13 @@
 import { useState } from "react";
 import api from "../services/api";
 
+const getLocalDateString = (date = new Date()) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
 export default function useFormAktivitas() {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -8,7 +15,7 @@ export default function useFormAktivitas() {
         judul: "",
         deskripsi: "",
         hasil: "",
-        tanggal: new Date().toISOString().split("T")[0],
+        tanggal: getLocalDateString(),
         lampiran: [],
     });
 
@@ -40,7 +47,7 @@ export default function useFormAktivitas() {
             judul: "",
             deskripsi: "",
             hasil: "",
-            tanggal: new Date().toISOString().split("T")[0],
+            tanggal: getLocalDateString(),
             lampiran: [],
         });
         setErrorMessage("");
@@ -56,7 +63,7 @@ export default function useFormAktivitas() {
             formData.append("deskripsi", form.deskripsi || "");
             formData.append("hasil", form.hasil || "");
 
-            const targetDate = customDate || form.tanggal || new Date().toISOString().split("T")[0];
+            const targetDate = customDate || form.tanggal || getLocalDateString();
             formData.append("tanggal", targetDate);
             formData.append("status", statusType);
 

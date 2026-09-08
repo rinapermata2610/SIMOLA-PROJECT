@@ -4,10 +4,17 @@
 
 import CalendarDay from "./CalendarDay";
 
+const normalizeDate = (value) => {
+    if (!value) return null;
+    return String(value).slice(0, 10);
+};
+
 function CalendarGrid({
     currentDate,
     selectedDate,
     onDateClick,
+    periode,
+    activities = [],
 }) {
     const weekDays = [
         "Sen",
@@ -37,6 +44,16 @@ function CalendarGrid({
     ).getDate();
 
     const today = new Date();
+    const todayKey = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0"),
+    ].join("-");
+    const activityDates = new Set(
+        activities
+            .filter((activity) => activity?.tanggal)
+            .map((activity) => normalizeDate(activity.tanggal))
+    );
 
     const calendar = [];
 
@@ -57,6 +74,11 @@ function CalendarGrid({
 
     for (let day = 1; day <= totalDays; day++) {
         const date = new Date(year, month, day);
+        const dateKey = [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0"),
+        ].join("-");
 
         const isToday =
             date.toDateString() ===
@@ -67,12 +89,29 @@ function CalendarGrid({
             date.toDateString() ===
                 selectedDate.toDateString();
 
+        const periodStart = normalizeDate(periode?.tanggal_mulai);
+        const periodEnd = normalizeDate(periode?.tanggal_selesai);
+        const isOutsidePeriod = periodStart && periodEnd
+            ? dateKey < periodStart || dateKey > periodEnd
+            : false;
+        const isFilled = activityDates.has(dateKey);
+        const status = isOutsidePeriod
+            ? "outside"
+            : isFilled
+                ? "filled"
+                : dateKey === todayKey
+                    ? "today"
+                    : dateKey < todayKey
+                        ? "empty"
+                        : "upcoming";
+
         calendar.push({
             day,
             date,
             currentMonth: true,
             isToday,
             isSelected,
+            status,
         });
     }
 
@@ -135,6 +174,7 @@ function CalendarGrid({
                         isSelected={
                             item.isSelected
                         }
+                        status={item.status}
                         onClick={() =>
                             item.currentMonth &&
                             onDateClick(item.date)

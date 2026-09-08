@@ -15,9 +15,17 @@ import LogAktivitas from "../pages/mahasiswa/LogAktivitas";
 import DetailLog from "../pages/mahasiswa/DetailLog";
 import EditLog from "../pages/mahasiswa/EditLog";
 import Profile from "../pages/mahasiswa/Profile";
+import Attendance from "../pages/mahasiswa/Attendance";
 import AdminDashboard from "../pages/admin/Dashboard";
 import ManajemenAkun from "../pages/admin/ManajemenAkun";
 import AdminLayout from "../layout/admin/AdminLayout";
+import PembimbingDashboard from "../pages/pembimbing/Dashboard";
+import PembimbingPenilaian from "../pages/pembimbing/Penilaian";
+import DaftarPenilaian from "../pages/pembimbing/DaftarPenilaian";
+import PembimbingModulePage from "../pages/pembimbing/ModulePage";
+import DaftarKehadiran from "../pages/pembimbing/DaftarKehadiran";
+import RekapKehadiran from "../pages/pembimbing/RekapKehadiran";
+import Laporan from "../pages/pembimbing/Laporan";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -94,9 +102,25 @@ function AppRoutes() {
                 }
             />
 
+            <Route
+                path="/absensi"
+                element={
+                    <ProtectedRoute>
+                        <Attendance />
+                    </ProtectedRoute>
+                }
+            />
+
             {/* ============================
                 ADMIN
             ============================ */}
+
+            <Route path="/pembimbing/dashboard" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingDashboard /></ProtectedRoute>} />
+            <Route path="/pembimbing/kehadiran" element={<ProtectedRoute allowedRoles={["pembimbing"]}><DaftarKehadiran /></ProtectedRoute>} />
+            <Route path="/pembimbing/kehadiran/:studentId" element={<ProtectedRoute allowedRoles={["pembimbing"]}><RekapKehadiran /></ProtectedRoute>} />
+            <Route path="/pembimbing/penilaian" element={<ProtectedRoute allowedRoles={["pembimbing"]}><DaftarPenilaian /></ProtectedRoute>} />
+            <Route path="/pembimbing/penilaian/:studentId" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingPenilaian /></ProtectedRoute>} />
+            <Route path="/pembimbing/laporan" element={<ProtectedRoute allowedRoles={["pembimbing"]}><Laporan /></ProtectedRoute>} />
 
             <Route
                 path="/admin/dashboard"

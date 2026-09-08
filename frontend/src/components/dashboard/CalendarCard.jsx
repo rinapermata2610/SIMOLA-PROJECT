@@ -13,6 +13,8 @@ function CalendarCard({
     selectedDate,
     onDateClick,
     onAddToday,
+    periode,
+    activities,
 }) {
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -111,6 +113,8 @@ function CalendarCard({
                             currentDate={currentDate}
                             selectedDate={selectedDate}
                             onDateClick={onDateClick}
+                            periode={periode}
+                            activities={activities}
                         />
                     </div>
                 </div>

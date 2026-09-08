@@ -64,6 +64,10 @@ class DashboardResource extends JsonResource
                 $this['aktivitas_terbaru']
             ),
 
+            'aktivitas_kalender' => LogAktivitasResource::collection(
+                $this['aktivitas_kalender']
+            ),
+
         ];
     }
 }

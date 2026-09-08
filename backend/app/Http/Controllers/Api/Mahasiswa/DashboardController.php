@@ -74,16 +74,20 @@ class DashboardController extends Controller
             // ===========================
             // Progress Magang
             // ===========================
-            $progress = 0;
+            $totalHari = \Illuminate\Support\Carbon::parse($periode->tanggal_mulai)
+                ->diffInDays(\Illuminate\Support\Carbon::parse($periode->tanggal_selesai)) + 1;
+            $hariTerisi = (clone $query)
+                ->distinct('tanggal')
+                ->count('tanggal');
+            $persentase = $totalHari > 0
+                ? round(($hariTerisi / $totalHari) * 100, 2)
+                : 0;
 
-            if ($totalAktivitas > 0) {
-
-                $progress = round(
-                    ($totalApproved / $totalAktivitas) * 100,
-                    2
-                );
-
-            }
+            $progress = [
+                'hari_terisi' => $hariTerisi,
+                'total_hari' => $totalHari,
+                'persentase' => $persentase,
+            ];
 
             // ===========================
             // Aktivitas Terbaru
@@ -92,6 +96,14 @@ class DashboardController extends Controller
                 ->latest('tanggal')
                 ->latest('created_at')
                 ->limit(5)
+                ->get();
+
+            $aktivitasKalender = LogAktivitas::where('mahasiswa_id', $user->id)
+                ->whereBetween('tanggal', [
+                    $periode->tanggal_mulai,
+                    $periode->tanggal_selesai,
+                ])
+                ->orderBy('tanggal')
                 ->get();
 
             // ===========================
@@ -126,6 +138,8 @@ class DashboardController extends Controller
                     ],
 
                     'aktivitas_terbaru' => $aktivitasTerbaru,
+
+                    'aktivitas_kalender' => $aktivitasKalender,
 
                 ])
 
