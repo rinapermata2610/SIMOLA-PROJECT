@@ -10,7 +10,8 @@ function CalendarDay({
     const disabled =
         !currentMonth ||
         status === "outside" ||
-        status === "upcoming";
+        status === "upcoming" ||
+        status === "filled";
 
     const statusStyle = {
         outside: "bg-gray-200 border-gray-300 text-gray-500",

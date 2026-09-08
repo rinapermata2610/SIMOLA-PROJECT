@@ -4,6 +4,11 @@
 
 import CalendarDay from "./CalendarDay";
 
+const normalizeDate = (value) => {
+    if (!value) return null;
+    return String(value).slice(0, 10);
+};
+
 function CalendarGrid({
     currentDate,
     selectedDate,
@@ -47,7 +52,7 @@ function CalendarGrid({
     const activityDates = new Set(
         activities
             .filter((activity) => activity?.tanggal)
-            .map((activity) => activity.tanggal)
+            .map((activity) => normalizeDate(activity.tanggal))
     );
 
     const calendar = [];
@@ -84,8 +89,10 @@ function CalendarGrid({
             date.toDateString() ===
                 selectedDate.toDateString();
 
-        const isOutsidePeriod = periode?.tanggal_mulai && periode?.tanggal_selesai
-            ? dateKey < periode.tanggal_mulai || dateKey > periode.tanggal_selesai
+        const periodStart = normalizeDate(periode?.tanggal_mulai);
+        const periodEnd = normalizeDate(periode?.tanggal_selesai);
+        const isOutsidePeriod = periodStart && periodEnd
+            ? dateKey < periodStart || dateKey > periodEnd
             : false;
         const isFilled = activityDates.has(dateKey);
         const status = isOutsidePeriod

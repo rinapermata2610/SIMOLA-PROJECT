@@ -100,6 +100,17 @@ class LogAktivitasController extends Controller
 
             $data = $request->validated();
 
+            $alreadyExists = LogAktivitas::where('mahasiswa_id', $user->id)
+                ->whereDate('tanggal', $data['tanggal'])
+                ->exists();
+
+            if ($alreadyExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aktivitas pada tanggal tersebut sudah diisi. Silakan gunakan menu edit pada halaman log aktivitas.',
+                ], 422);
+            }
+
             // 1. Simpan Data Log Aktivitas
             $logAktivitas = LogAktivitas::create([
                 'mahasiswa_id' => $user->id,

@@ -28,20 +28,37 @@ function Dashboard() {
 
     useEffect(() => {
         const loadCalendarData = async () => {
-            try {
-                const response = await api.get("/mahasiswa/dashboard");
-                const data = response.data?.data;
+            const [dashboardResult, activityResult] = await Promise.allSettled([
+                api.get("/mahasiswa/dashboard"),
+                api.get("/mahasiswa/log-aktivitas", {
+                    params: { per_page: 1000 },
+                }),
+            ]);
 
-                setCalendarData({
-                    periode: data?.periode_magang ?? null,
-                    activities: data?.aktivitas_kalender ?? [],
-                });
-            } catch (error) {
-                console.error("Gagal memuat status kalender:", error);
+            const dashboardData = dashboardResult.status === "fulfilled"
+                ? dashboardResult.value.data?.data
+                : null;
+            const activityData = activityResult.status === "fulfilled"
+                ? activityResult.value.data?.data
+                : null;
+
+            if (!dashboardData && !activityData) {
+                console.error("Gagal memuat data kalender mahasiswa.");
+                return;
             }
+
+            setCalendarData({
+                periode: dashboardData?.periode_magang ?? null,
+                activities: Array.isArray(activityData)
+                    ? activityData
+                    : dashboardData?.aktivitas_kalender ?? [],
+            });
         };
 
-        loadCalendarData();
+        loadCalendarData().catch((error) => {
+                console.error("Gagal memuat status kalender:", error);
+        });
+
     }, []);
 
     const {
@@ -61,6 +78,15 @@ function Dashboard() {
     };
 
     const handleAddToday = () => {
+        const today = getLocalDateString(new Date());
+        const alreadyFilled = calendarData.activities.some(
+            (activity) => String(activity?.tanggal).slice(0, 10) === today
+        );
+
+        if (alreadyFilled) {
+            return;
+        }
+
         setSelectedDate(new Date());
         setShowModal(true);
     };
