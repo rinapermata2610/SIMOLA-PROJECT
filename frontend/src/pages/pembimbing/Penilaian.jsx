@@ -8,6 +8,7 @@ import {
     FaUserTie,
 } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
 import PembimbingLayout from "../../layout/pembimbing/PembimbingLayout";
 import pembimbingService from "../../services/pembimbingService";
 
@@ -36,18 +37,48 @@ const formatReadableDate = (dateStr) => {
 
 export default function Penilaian() {
     const { user } = useAuth();
+    const { studentId } = useParams();
+    const navigate = useNavigate();
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [students, setStudents] = useState([]);
+    const [selectedStudentId, setSelectedStudentId] = useState(null);
     const [activities, setActivities] = useState([]);
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [comment, setComment] = useState("");
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        const fetchStudents = async () => {
+            try {
+                const response = await pembimbingService.getDashboard();
+                const list = response?.data ?? [];
+                const studentList = Array.isArray(list) ? list : [];
+                setStudents(studentList);
+                setSelectedStudentId((previous) => previous ?? studentId ?? studentList[0]?.id ?? null);
+            } catch (error) {
+                console.error("Gagal memuat mahasiswa bimbingan:", error);
+                setStudents([]);
+            }
+        };
+
+        fetchStudents();
+    }, [studentId]);
+
     const fetchActivities = async () => {
+        if (!selectedStudentId) {
+            setActivities([]);
+            setSelectedActivity(null);
+            setComment("");
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
             const response = await pembimbingService.getActivities({
                 ...getMonthRange(currentMonth),
+                mahasiswa_id: studentId || selectedStudentId,
                 per_page: 100,
             });
             const list = response?.data ?? [];
@@ -71,7 +102,7 @@ export default function Penilaian() {
     useEffect(() => {
         setSelectedActivity(null);
         fetchActivities();
-    }, [currentMonth]);
+    }, [currentMonth, selectedStudentId, studentId]);
 
     const handleDecision = async (status) => {
         if (!selectedActivity) return;
@@ -112,6 +143,15 @@ export default function Penilaian() {
                 <header className="rounded-3xl bg-gradient-to-r from-indigo-700 via-violet-600 to-sky-500 p-6 text-white shadow-lg shadow-indigo-200">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
+                            {studentId && (
+                                <button
+                                    type="button"
+                                    onClick={() => navigate("/pembimbing/penilaian")}
+                                    className="mb-3 text-sm font-semibold text-indigo-100 hover:text-white"
+                                >
+                                    ← Kembali ke daftar mahasiswa
+                                </button>
+                            )}
                             <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-100">Pembimbing</p>
                             <h1 className="mt-2 text-2xl font-bold md:text-4xl">Penilaian Mahasiswa</h1>
                             <p className="mt-2 text-sm text-indigo-50 md:text-base">
@@ -135,10 +175,46 @@ export default function Penilaian() {
 
                 <section className="grid gap-6 xl:grid-cols-[1.2fr_1.5fr]">
                     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        {!studentId && <div className="mb-6 border-b border-slate-200 pb-5">
+                            <div className="mb-3">
+                                <h2 className="text-xl font-bold text-slate-800">Mahasiswa Bimbingan</h2>
+                                <p className="text-sm text-slate-500">Pilih mahasiswa untuk melihat dan menilai aktivitasnya</p>
+                            </div>
+
+                            {students.length > 0 ? (
+                                <div className="space-y-2">
+                                    {students.map((student) => (
+                                        <button
+                                            key={student.id}
+                                            type="button"
+                                            onClick={() => {
+                                                setSelectedStudentId(student.id);
+                                                setSelectedActivity(null);
+                                                setComment("");
+                                            }}
+                                            className={`flex w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition ${selectedStudentId === student.id ? "border-violet-300 bg-violet-50" : "border-slate-200 bg-slate-50 hover:border-violet-200 hover:bg-white"}`}
+                                        >
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-bold text-slate-800">{student.nama}</p>
+                                                <p className="text-xs text-slate-500">{student.nim || student.username || "NIM belum tersedia"}</p>
+                                            </div>
+                                            <span className="shrink-0 rounded-full bg-sky-100 px-2 py-1 text-[10px] font-bold text-sky-700">
+                                                Pilih
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">Belum ada mahasiswa bimbingan.</p>
+                            )}
+                        </div>}
+
                         <div className="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h2 className="text-xl font-bold text-slate-800">Aktivitas Bulanan</h2>
-                                <p className="text-sm text-slate-500">Pilih satu aktivitas untuk diperiksa dan dinilai</p>
+                                <p className="text-sm text-slate-500">
+                                    {students.find((student) => student.id === selectedStudentId)?.nama || "Pilih mahasiswa terlebih dahulu"}
+                                </p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
