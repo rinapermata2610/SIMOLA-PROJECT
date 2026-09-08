@@ -2,13 +2,10 @@
 // File : src/components/admin/PeriodeTable.jsx
 // =============================================
 
-import { useState } from "react";
-import { FaEllipsisV } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { getPeriodeStatus } from "../../utils/periodeStatus";
 
 function PeriodeTable({ data = [] }) {
-    const [openMenu, setOpenMenu] = useState(null);
-
     const formatDate = (value) => {
         if (!value) return "-";
 
@@ -23,11 +20,6 @@ function PeriodeTable({ data = [] }) {
             month: "short",
             year: "numeric",
         });
-    };
-
-    const statusClassMap = {
-        aktif: "bg-emerald-100 text-emerald-700",
-        selesai: "bg-gray-100 text-gray-600",
     };
 
     return (
@@ -69,21 +61,25 @@ function PeriodeTable({ data = [] }) {
                                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                                     Status
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                                    Aksi
-                                </th>
                             </tr>
                         </thead>
 
                         <tbody className="divide-y divide-gray-200">
-                            {data.map((item, index) => (
+                            {data.map((item, index) => {
+                                const status = getPeriodeStatus(
+                                    item.tanggal_mulai,
+                                    item.tanggal_selesai,
+                                    item.status,
+                                );
+
+                                return (
                                 <tr key={`${item.instansi}-${item.tanggal_mulai}-${index}`}>
                                     <td className="px-4 py-4">
                                         <p className="font-semibold text-gray-800">
                                             {item.instansi}
                                         </p>
                                         <p className="text-xs text-gray-500 mt-1">
-                                            {formatDate(item.tanggal_mulai)} • {item.status}
+                                            {formatDate(item.tanggal_mulai)} • {status.label}
                                         </p>
                                     </td>
 
@@ -98,33 +94,13 @@ function PeriodeTable({ data = [] }) {
                                     </td>
 
                                     <td className="px-4 py-4">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${statusClassMap[item.status] ?? "bg-gray-100 text-gray-600"}`}> 
-                                            {item.status === "aktif" ? "BERJALAN" : item.status === "selesai" ? "SELESAI" : item.status}
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${status.className}`}>
+                                            {status.label.toUpperCase()}
                                         </span>
                                     </td>
-
-                                    <td className="px-4 py-4 relative">
-                                        <button
-                                            aria-label="Opsi lain untuk periode"
-                                            onClick={() => setOpenMenu(openMenu === index ? null : index)}
-                                            className="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-600"
-                                        >
-                                            <FaEllipsisV />
-                                        </button>
-
-                                        {openMenu === index && (
-                                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
-                                                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                    Detail
-                                                </button>
-                                                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                    Edit
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

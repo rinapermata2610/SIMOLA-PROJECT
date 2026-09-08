@@ -7,6 +7,7 @@ import { FaTimes, FaTrashAlt } from "react-icons/fa";
 
 import akunService from "../../services/akunService";
 import periodeBatchService from "../../services/periodeBatchService";
+import { getPeriodeStatus } from "../../utils/periodeStatus";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
@@ -96,6 +97,12 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
 
     if (!batchId) return null;
 
+    const periodeStatus = getPeriodeStatus(
+        batch?.tanggal_mulai,
+        batch?.tanggal_selesai,
+        batch?.status,
+    );
+
     return (
         <>
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={onClose} />
@@ -137,8 +144,8 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
                                 </div>
                                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                                     <p className="text-xs uppercase tracking-wide text-gray-500">Status</p>
-                                    <p className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-                                        {batch?.status === "aktif" ? "Berjalan" : "Selesai"}
+                                    <p className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${periodeStatus.className}`}>
+                                        {periodeStatus.label}
                                     </p>
                                 </div>
                             </div>

@@ -3,6 +3,7 @@
 // =============================================
 
 import { FaCalendarAlt, FaEye, FaTasks } from "react-icons/fa";
+import { getPeriodeStatus } from "../../utils/periodeStatus";
 
 function PeriodeBatchTable({ data = [], meta = null, loading = false, onView, onManage, onPageChange }) {
     const formatDate = (value) => {
@@ -16,14 +17,6 @@ function PeriodeBatchTable({ data = [], meta = null, loading = false, onView, on
             month: "short",
             year: "numeric",
         });
-    };
-
-    const badgeStatus = (status) => {
-        if (status === "aktif") {
-            return "bg-emerald-100 text-emerald-700";
-        }
-
-        return "bg-gray-100 text-gray-600";
     };
 
     if (loading) {
@@ -78,9 +71,9 @@ function PeriodeBatchTable({ data = [], meta = null, loading = false, onView, on
                                     </td>
 
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${badgeStatus(batch.status)}`}>
+                                        <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${getPeriodeStatus(batch.tanggal_mulai, batch.tanggal_selesai, batch.status).className}`}>
                                             <span className="inline-block w-2 h-2 rounded-full bg-current" />
-                                            {batch.status === "aktif" ? "Berjalan" : "Selesai"}
+                                            {getPeriodeStatus(batch.tanggal_mulai, batch.tanggal_selesai, batch.status).label}
                                         </span>
                                     </td>
 
