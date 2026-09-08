@@ -23,10 +23,10 @@ function PeriodeTable({ data = [] }) {
     };
 
     return (
-        <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 mt-6">
+        <section className="bg-white border border-slate-200 rounded-2xl shadow-[0_4px_18px_rgba(15,23,42,0.06)] p-5 md:p-6 mt-6">
             <div className="flex items-center justify-between mb-4">
                 <div>
-                    <h2 className="text-xl font-bold text-gray-800">
+                    <h2 className="text-xl font-extrabold text-slate-800">
                         Periode Magang Berjalan
                     </h2>
                 </div>
@@ -34,7 +34,7 @@ function PeriodeTable({ data = [] }) {
                 <Link
                     aria-label="Lihat semua periode"
                     to="/admin/periode"
-                    className="text-sky-600 text-sm hover:underline"
+                    className="text-sky-600 text-sm font-bold hover:text-cyan-600 hover:underline"
                 >
                     Lihat Semua →
                 </Link>
@@ -46,25 +46,25 @@ function PeriodeTable({ data = [] }) {
                 </div>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table className="min-w-full divide-y divide-slate-200">
                         <thead>
                             <tr>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Nama Instansi
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Tanggal
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Peserta
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Status
                                 </th>
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-slate-100">
                             {data.map((item, index) => {
                                 const status = getPeriodeStatus(
                                     item.tanggal_mulai,
@@ -75,20 +75,20 @@ function PeriodeTable({ data = [] }) {
                                 return (
                                 <tr key={`${item.instansi}-${item.tanggal_mulai}-${index}`}>
                                     <td className="px-4 py-4">
-                                        <p className="font-semibold text-gray-800">
+                                        <p className="font-bold text-slate-800">
                                             {item.instansi}
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-1">
+                                        <p className="text-xs text-slate-500 mt-1">
                                             {formatDate(item.tanggal_mulai)} • {status.label}
                                         </p>
                                     </td>
 
-                                    <td className="px-4 py-4 text-sm text-gray-600">
+                                    <td className="px-4 py-4 text-sm text-slate-600">
                                         {formatDate(item.tanggal_mulai)} - {formatDate(item.tanggal_selesai)}
                                     </td>
 
                                     <td className="px-4 py-4">
-                                        <span className="font-bold text-gray-800">
+                                        <span className="font-extrabold text-slate-800">
                                             {Number(item.jumlah_peserta ?? 0).toLocaleString("id-ID")}
                                         </span>
                                     </td>

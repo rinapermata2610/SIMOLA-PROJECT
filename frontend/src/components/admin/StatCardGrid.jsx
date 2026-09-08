@@ -47,7 +47,7 @@ function StatCardGrid({ data = {} }) {
                 icon={<FaExclamationTriangle />}
                 color="amber"
                 highlight={true}
-                helperText="Tugaskan Sekarang →"
+                // helperText="Tugaskan Sekarang →"
                 helperColor="text-amber-600"
             />
 

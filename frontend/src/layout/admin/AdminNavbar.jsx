@@ -13,12 +13,12 @@ function AdminNavbar({ onMenuClick }) {
     const { user } = useAuth();
 
     return (
-        <header className="bg-white border-b border-gray-200 h-16 px-6 flex items-center justify-between sticky top-0 z-30">
+        <header className="bg-white/95 backdrop-blur border-b border-slate-200 h-20 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
             <div className="flex items-center gap-4 flex-1">
                 <button
                     aria-label="Buka sidebar"
                     onClick={onMenuClick}
-                    className="lg:hidden p-2 rounded-xl hover:bg-gray-100 text-gray-700"
+                        className="lg:hidden p-2 rounded-xl hover:bg-sky-50 text-slate-700"
                 >
                     <FaBars size={20} />
                 </button>
@@ -35,7 +35,7 @@ function AdminNavbar({ onMenuClick }) {
 
             <div className="flex items-center gap-5">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 text-white flex items-center justify-center font-bold shadow-md shadow-sky-200">
                         {(user?.nama ?? "A")
                             .split(" ")
                             .map((item) => item[0])
@@ -45,8 +45,8 @@ function AdminNavbar({ onMenuClick }) {
                     </div>
 
                     <div className="hidden md:block">
-                        <p className="font-semibold text-gray-800">{user?.nama ?? "Admin"}</p>
-                        <p className="text-[11px] font-medium text-gray-500 uppercase">
+                        <p className="font-bold text-slate-800">{user?.nama ?? "Admin"}</p>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                             {user?.role ?? "ADMIN"}
                         </p>
                     </div>

@@ -61,8 +61,8 @@ function AdminSidebar({ isOpen, onClose }) {
                     h-screen
                     bg-white
                     border-r
-                    border-gray-200
-                    shadow-xl
+                    border-slate-200
+                    shadow-[8px_0_30px_rgba(15,23,42,0.05)]
                     transform
                     transition-transform
                     duration-300
@@ -70,20 +70,20 @@ function AdminSidebar({ isOpen, onClose }) {
                     ${isOpen ? "translate-x-0" : "-translate-x-full"}
                 `}
             >
-                <div className="h-16 px-6 flex items-center justify-between border-b border-gray-200">
+                <div className="h-20 px-5 flex items-center justify-between border-b border-slate-200">
                     <div className="flex items-center gap-3">
                         <img
                             src={Logo}
                             alt="SIMOLA"
-                            className="w-11 h-11 object-contain"
+                            className="w-12 h-12 object-contain"
                         />
 
                         <div>
-                            <h2 className="font-bold text-xl text-sky-600">
+                            <h2 className="font-extrabold text-xl text-sky-600 tracking-tight">
                                 SIMOLA
                             </h2>
-                            <p className="text-xs text-gray-500">
-                                Admin Panel
+                            <p className="text-xs text-slate-500">
+                                Sistem Monitoring & Layanan Magang
                             </p>
                         </div>
                     </div>
@@ -98,7 +98,7 @@ function AdminSidebar({ isOpen, onClose }) {
                 </div>
 
                 <div className="p-5">
-                    <p className="text-xs font-semibold text-gray-400 uppercase mb-3">
+                    <p className="text-xs font-bold tracking-[0.16em] text-slate-400 uppercase mb-3">
                         Menu Utama
                     </p>
 
@@ -111,8 +111,8 @@ function AdminSidebar({ isOpen, onClose }) {
                                 className={({ isActive }) =>
                                     `flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
                                         isActive
-                                            ? "bg-sky-600 text-white shadow-md"
-                                            : "text-gray-700 hover:bg-sky-50 hover:text-sky-600"
+                                            ? "bg-gradient-to-r from-sky-600 to-cyan-500 text-white shadow-lg shadow-sky-200"
+                                            : "text-slate-600 hover:bg-sky-50 hover:text-sky-600"
                                     }`
                                 }
                             >
@@ -123,12 +123,12 @@ function AdminSidebar({ isOpen, onClose }) {
                     </nav>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 border-t p-5 bg-white">
+                <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-5 bg-white">
                     <div className="mb-4">
-                        <p className="font-semibold text-gray-800">
+                        <p className="font-bold text-slate-800">
                             {user?.nama ?? "Administrator"}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-slate-500">
                             Administrator
                         </p>
                     </div>
@@ -136,7 +136,7 @@ function AdminSidebar({ isOpen, onClose }) {
                     <button
                         aria-label="Keluar dari akun admin"
                         onClick={handleLogout}
-                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition"
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 transition"
                     >
                         <FaSignOutAlt />
                         Keluar
