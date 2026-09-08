@@ -17,6 +17,18 @@ class LogAktivitasResource extends JsonResource
             'hasil'        => $this->hasil,
             'status'       => $this->status,
             'submitted_at' => $this->submitted_at ? $this->submitted_at->format('Y-m-d H:i:s') : null,
+            'penilaian'    => $this->whenLoaded('penilaian', function () {
+                if (!$this->penilaian) {
+                    return null;
+                }
+
+                return [
+                    'id' => $this->penilaian->id,
+                    'status' => $this->penilaian->status,
+                    'komentar' => $this->penilaian->komentar,
+                    'verified_at' => $this->penilaian->verified_at?->format('Y-m-d H:i:s'),
+                ];
+            }),
             'periode'      => $this->whenLoaded('periode', function () {
                 return [
                     'id'   => $this->periode->id,

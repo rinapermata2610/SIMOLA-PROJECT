@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Throwable;
 
 class LogAktivitasController extends Controller
@@ -47,7 +47,8 @@ class LogAktivitasController extends Controller
                 ]);
             }
 
-            $logs = $query->latest('tanggal')->latest('updated_at')->paginate(15);
+            $perPage = min(max($request->integer('per_page', 15), 1), 100);
+            $logs = $query->latest('tanggal')->latest('updated_at')->paginate($perPage);
 
             return response()->json([
                 'success' => true,

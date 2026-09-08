@@ -26,7 +26,7 @@ class LogAktivitasController extends Controller
         try {
             $user = Auth::user();
 
-            $query = LogAktivitas::with(['periode', 'lampiran'])
+            $query = LogAktivitas::with(['periode', 'lampiran', 'penilaian'])
                 ->where('mahasiswa_id', $user->id);
 
             if ($request->filled('search')) {

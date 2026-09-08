@@ -256,6 +256,17 @@ function DetailLog() {
 
                     </div>
 
+                    {activity.penilaian?.komentar && (
+                        <div>
+                            <h3 className="mb-3 text-base font-extrabold text-slate-800">
+                                Catatan Pembimbing
+                            </h3>
+                            <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm leading-7 text-amber-900">
+                                {activity.penilaian.komentar}
+                            </div>
+                        </div>
+                    )}
+
                 </div>
 
             </div>

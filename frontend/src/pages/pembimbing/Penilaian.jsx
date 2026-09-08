@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     FaCalendarAlt,
     FaCheckCircle,
@@ -11,36 +11,17 @@ import { useAuth } from "../../context/AuthContext";
 import PembimbingLayout from "../../layout/pembimbing/PembimbingLayout";
 import pembimbingService from "../../services/pembimbingService";
 
-const getMonthDays = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startOffset = (firstDay.getDay() + 6) % 7;
-    const totalDays = lastDay.getDate();
-
-    const days = [];
-    for (let i = 0; i < startOffset; i += 1) {
-        days.push(null);
-    }
-
-    for (let day = 1; day <= totalDays; day += 1) {
-        days.push(new Date(year, month, day));
-    }
-
-    while (days.length % 7 !== 0) {
-        days.push(null);
-    }
-
-    return days;
-};
-
 const formatDateStr = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 };
+
+const getMonthRange = (date) => ({
+    tanggal_mulai: formatDateStr(new Date(date.getFullYear(), date.getMonth(), 1)),
+    tanggal_selesai: formatDateStr(new Date(date.getFullYear(), date.getMonth() + 1, 0)),
+});
 
 const formatReadableDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -57,7 +38,6 @@ export default function Penilaian() {
     const { user } = useAuth();
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [activities, setActivities] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(null);
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [comment, setComment] = useState("");
     const [saving, setSaving] = useState(false);
@@ -66,14 +46,19 @@ export default function Penilaian() {
     const fetchActivities = async () => {
         try {
             setLoading(true);
-            const response = await pembimbingService.getActivities();
+            const response = await pembimbingService.getActivities({
+                ...getMonthRange(currentMonth),
+                per_page: 100,
+            });
             const list = response?.data ?? [];
             setActivities(Array.isArray(list) ? list : []);
 
             if (list.length > 0) {
-                setSelectedDate(list[0].tanggal || null);
-                setSelectedActivity(list[0]);
-                setComment(list[0]?.penilaian?.komentar ?? "");
+                setSelectedActivity((previous) => previous || list[0]);
+                setComment((previous) => previous || list[0]?.penilaian?.komentar || "");
+            } else {
+                setSelectedActivity(null);
+                setComment("");
             }
         } catch (error) {
             console.error(error);
@@ -84,29 +69,9 @@ export default function Penilaian() {
     };
 
     useEffect(() => {
+        setSelectedActivity(null);
         fetchActivities();
-    }, []);
-
-    const dayMap = useMemo(() => {
-        const map = {};
-        activities.forEach((item) => {
-            if (item?.tanggal) {
-                map[item.tanggal] = item;
-            }
-        });
-        return map;
-    }, [activities]);
-
-    const monthDays = useMemo(() => getMonthDays(currentMonth), [currentMonth]);
-
-    const handleDateClick = (date) => {
-        if (!date) return;
-        const key = formatDateStr(date);
-        const activity = dayMap[key];
-        setSelectedDate(key);
-        setSelectedActivity(activity || null);
-        setComment(activity?.penilaian?.komentar ?? "");
-    };
+    }, [currentMonth]);
 
     const handleDecision = async (status) => {
         if (!selectedActivity) return;
@@ -170,23 +135,25 @@ export default function Penilaian() {
 
                 <section className="grid gap-6 xl:grid-cols-[1.2fr_1.5fr]">
                     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <div className="mb-5 flex items-center justify-between">
+                        <div className="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h2 className="text-xl font-bold text-slate-800">Kalender Aktivitas</h2>
-                                <p className="text-sm text-slate-500">Klik tanggal untuk melihat detail kegiatan</p>
+                                <h2 className="text-xl font-bold text-slate-800">Aktivitas Bulanan</h2>
+                                <p className="text-sm text-slate-500">Pilih satu aktivitas untuk diperiksa dan dinilai</p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+                                    aria-label="Bulan sebelumnya"
                                     className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                                 >
                                     ←
                                 </button>
-                                <span className="min-w-[150px] text-center text-sm font-bold text-slate-700">{monthLabel}</span>
+                                <span className="min-w-[150px] text-center text-sm font-bold capitalize text-slate-700">{monthLabel}</span>
                                 <button
                                     type="button"
                                     onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+                                    aria-label="Bulan berikutnya"
                                     className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                                 >
                                     →
@@ -194,50 +161,34 @@ export default function Penilaian() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
-                            {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day) => (
-                                <div key={day} className="py-2">{day}</div>
-                            ))}
-                        </div>
-
-                        <div className="mt-2 grid grid-cols-7 gap-2">
-                            {monthDays.map((date, index) => {
-                                const key = date ? formatDateStr(date) : null;
-                                const activity = key ? dayMap[key] : null;
-                                const isSelected = key && selectedDate === key;
-                                const isToday = date && formatDateStr(date) === formatDateStr(new Date());
-
-                                return (
+                        {loading ? (
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-10 text-center text-slate-500">Memuat aktivitas bulan ini...</div>
+                        ) : activities.length > 0 ? (
+                            <div className="max-h-[620px] space-y-3 overflow-y-auto pr-1">
+                                {activities.map((activity) => (
                                     <button
-                                        key={index}
+                                        key={activity.id}
                                         type="button"
-                                        onClick={() => handleDateClick(date)}
-                                        disabled={!date}
-                                        className={`relative min-h-[88px] rounded-2xl border p-2 text-left transition ${
-                                            !date
-                                                ? "cursor-default border-transparent bg-transparent"
-                                                : isSelected
-                                                    ? "border-violet-400 bg-violet-50 shadow-sm"
-                                                    : "border-slate-200 bg-slate-50 hover:border-violet-200 hover:bg-white"
-                                        }`}
+                                        onClick={() => {
+                                            setSelectedActivity(activity);
+                                            setComment(activity?.penilaian?.komentar ?? "");
+                                        }}
+                                        className={`flex w-full items-center justify-between gap-3 rounded-xl border p-4 text-left transition ${selectedActivity?.id === activity.id ? "border-violet-300 bg-violet-50 shadow-sm" : "border-slate-200 bg-slate-50 hover:border-violet-200 hover:bg-white"}`}
                                     >
-                                        {date && (
-                                            <>
-                                                <div className={`text-sm font-semibold ${isToday ? 'text-violet-600' : 'text-slate-700'}`}>
-                                                    {date.getDate()}
-                                                </div>
-                                                {activity && (
-                                                    <div className="mt-2 flex items-center gap-1 text-[10px] font-semibold text-emerald-700">
-                                                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                                                        {activity.judul}
-                                                    </div>
-                                                )}
-                                            </>
-                                        )}
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-bold text-slate-500">{formatReadableDate(activity.tanggal)}</p>
+                                            <p className="mt-1 truncate text-sm font-semibold text-slate-800">{activity.judul}</p>
+                                            <p className="mt-1 truncate text-xs text-slate-500">{activity.mahasiswa?.nama ?? "Mahasiswa"} • {activity.mahasiswa?.nim ?? "-"}</p>
+                                        </div>
+                                        <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${activity.status === "approved" ? "bg-emerald-100 text-emerald-700" : activity.status === "revision" ? "bg-amber-100 text-amber-700" : "bg-sky-100 text-sky-700"}`}>
+                                            {activity.status}
+                                        </span>
                                     </button>
-                                );
-                            })}
-                        </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center text-slate-500">Belum ada aktivitas pada bulan ini.</div>
+                        )}
                     </div>
 
                     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
