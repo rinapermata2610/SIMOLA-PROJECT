@@ -29,7 +29,7 @@ export default function DaftarPenilaian() {
     return (
         <PembimbingLayout>
             <div className="mx-auto max-w-6xl space-y-6 p-4 lg:p-6">
-                <header className="rounded-3xl bg-gradient-to-r from-indigo-700 via-violet-600 to-sky-500 p-6 text-white shadow-lg shadow-indigo-200">
+                <header className="rounded-3xl bg-gradient-to-r from-sky-700 via-sky-600 to-cyan-500 p-6 text-white shadow-lg shadow-sky-200">
                     <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-100">Pembimbing</p>
                     <h1 className="mt-2 text-2xl font-bold md:text-4xl">Penilaian Mahasiswa</h1>
                     <p className="mt-2 text-sm text-indigo-50 md:text-base">Pilih mahasiswa bimbingan untuk membuka halaman penilaian.</p>

@@ -9,8 +9,8 @@ export default function PembimbingLayout({ children }) {
         <div className="min-h-screen bg-slate-100">
             <PembimbingSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
             <div className="lg:ml-72">
-                <Navbar onMenuClick={() => setSidebarOpen(true)} />
-                <main className="min-h-screen bg-slate-100 p-6 pt-20 lg:p-8">{children}</main>
+                <div className="print:hidden"><Navbar onMenuClick={() => setSidebarOpen(true)} /></div>
+                <main className="min-h-screen bg-slate-100 p-6 pt-20 lg:p-8 print:bg-white print:p-0">{children}</main>
             </div>
         </div>
     );

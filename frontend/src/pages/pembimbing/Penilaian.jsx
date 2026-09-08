@@ -140,7 +140,7 @@ export default function Penilaian() {
     return (
         <PembimbingLayout>
             <div className="mx-auto max-w-7xl space-y-6 p-4 lg:p-6">
-                <header className="rounded-3xl bg-gradient-to-r from-indigo-700 via-violet-600 to-sky-500 p-6 text-white shadow-lg shadow-indigo-200">
+                <header className="rounded-3xl bg-gradient-to-r from-sky-700 via-sky-600 to-cyan-500 p-6 text-white shadow-lg shadow-sky-200">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
                             {studentId && (

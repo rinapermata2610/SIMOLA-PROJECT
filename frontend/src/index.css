@@ -29,3 +29,19 @@ button:focus-visible {
     outline: 3px solid rgb(14 165 233 / 30%);
     outline-offset: 2px;
 }
+
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 14mm;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .report-paper {
+        width: 100% !important;
+        min-height: 0 !important;
+    }
+}

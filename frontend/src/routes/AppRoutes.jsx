@@ -25,6 +25,7 @@ import DaftarPenilaian from "../pages/pembimbing/DaftarPenilaian";
 import PembimbingModulePage from "../pages/pembimbing/ModulePage";
 import DaftarKehadiran from "../pages/pembimbing/DaftarKehadiran";
 import RekapKehadiran from "../pages/pembimbing/RekapKehadiran";
+import Laporan from "../pages/pembimbing/Laporan";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -119,7 +120,7 @@ function AppRoutes() {
             <Route path="/pembimbing/kehadiran/:studentId" element={<ProtectedRoute allowedRoles={["pembimbing"]}><RekapKehadiran /></ProtectedRoute>} />
             <Route path="/pembimbing/penilaian" element={<ProtectedRoute allowedRoles={["pembimbing"]}><DaftarPenilaian /></ProtectedRoute>} />
             <Route path="/pembimbing/penilaian/:studentId" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingPenilaian /></ProtectedRoute>} />
-            <Route path="/pembimbing/laporan" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingModulePage title="Laporan" description="Akses laporan kegiatan mahasiswa bimbingan." /></ProtectedRoute>} />
+            <Route path="/pembimbing/laporan" element={<ProtectedRoute allowedRoles={["pembimbing"]}><Laporan /></ProtectedRoute>} />
 
             <Route
                 path="/admin/dashboard"

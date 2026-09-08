@@ -71,7 +71,7 @@ function Profile() {
 					<div className="grid gap-4 p-6 md:grid-cols-2">
 						<InfoItem icon={<FaIdCard />} label="NIM" value={profile.nim} />
 						<InfoItem icon={<FaEnvelope />} label="Email" value={profile.email} />
-						<InfoItem icon={<FaGraduationCap />} label="Asal Universitas" value={periode?.instansi} />
+						<InfoItem icon={<FaGraduationCap />} label="Asal Universitas" value="Politeknik Negeri Bandung" />
 						<InfoItem icon={<FaCalendarAlt />} label="Periode Magang" value={periode ? `${periode.tanggal_mulai} sampai ${periode.tanggal_selesai}` : null} />
 						<InfoItem icon={<FaUserTie />} label="Nama Pembimbing" value={namaPembimbing} />
 						<InfoItem icon={<FaUserTie />} label="Role" value={profile.role} />
