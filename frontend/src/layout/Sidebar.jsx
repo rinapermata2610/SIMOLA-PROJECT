@@ -7,6 +7,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
     FaHome,
     FaClipboardList,
+    FaCalendarCheck,
     FaUserGraduate,
     FaUserCircle,
     FaSignOutAlt,
@@ -30,6 +31,11 @@ function Sidebar({ isOpen, onClose }) {
             title: "Dashboard",
             icon: <FaHome />,
             path: "/dashboard",
+        },
+        {
+            title: "Absensi",
+            icon: <FaCalendarCheck />,
+            path: "/absensi",
         },
         {
             title: "Log Aktivitas",

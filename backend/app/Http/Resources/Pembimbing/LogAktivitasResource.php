@@ -39,6 +39,17 @@ class LogAktivitasResource extends JsonResource
                 : null,
             'status' => $this->status,
             'submitted_at' => $this->submitted_at,
+            'lampiran' => $this->whenLoaded('lampiran', function () {
+                return $this->lampiran->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'nama_file' => $item->nama_file,
+                        'file_path' => $item->file_path,
+                        'tipe_file' => $item->file_type,
+                        'ukuran_file' => $item->file_size,
+                    ];
+                })->values();
+            }) ?? [],
             'penilaian' => $this->whenLoaded('penilaian', function () {
                 if (!$this->penilaian) {
                     return null;

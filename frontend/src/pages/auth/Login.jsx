@@ -66,6 +66,8 @@ function Login() {
 
             if (role === "admin") {
                 navigate("/admin/dashboard", { replace: true });
+            } else if (role === "pembimbing") {
+                navigate("/pembimbing/dashboard", { replace: true });
             } else {
                 navigate("/dashboard", { replace: true });
             }

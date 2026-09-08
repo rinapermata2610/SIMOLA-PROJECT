@@ -7,8 +7,10 @@ use App\Http\Controllers\Api\Mahasiswa\FormAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Api\Mahasiswa\LampiranBuktiController;
 use App\Http\Controllers\Api\Mahasiswa\ProfilController;
+use App\Http\Controllers\Api\Mahasiswa\AbsensiController;
 use App\Http\Controllers\Api\Pembimbing\DashboardController as PembimbingDashboardController;
 use App\Http\Controllers\Api\Pembimbing\LogAktivitasController as PembimbingLogAktivitasController;
+use App\Http\Controllers\Api\Pembimbing\AbsensiController as PembimbingAbsensiController;
 use App\Http\Controllers\Api\Admin\AkunController as AdminAkunController;
 use App\Http\Controllers\Api\Admin\ImportAkunController as AdminImportAkunController;
 use App\Http\Controllers\Api\Admin\PeriodeBatchController as AdminPeriodeBatchController;
@@ -45,6 +47,14 @@ Route::middleware(['auth:sanctum'])
     |--------------------------------------------------------------------------
     */
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    Route::controller(AbsensiController::class)
+        ->prefix('absensi')
+        ->middleware('role:mahasiswa')
+        ->group(function () {
+            Route::get('/', 'today');
+            Route::post('/{type}', 'store');
+        });
 
     /*
     |--------------------------------------------------------------------------
@@ -116,11 +126,13 @@ Route::middleware(['auth:sanctum', 'role:pembimbing'])
     ->group(function () {
 
         Route::get('/dashboard', [PembimbingDashboardController::class, 'index']);
+        Route::get('/kehadiran/{mahasiswaId}', [PembimbingAbsensiController::class, 'index']);
 
         Route::controller(PembimbingLogAktivitasController::class)
             ->prefix('log-aktivitas')
             ->group(function () {
                 Route::get('/', 'index');
+                Route::get('/lampiran/{id}/view', 'viewAttachment');
                 Route::get('/{id}', 'show');
                 Route::put('/{id}/verify', 'verify');
             });

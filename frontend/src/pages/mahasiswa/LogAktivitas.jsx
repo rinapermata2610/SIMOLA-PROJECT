@@ -190,6 +190,11 @@ export default function LogAktivitas() {
                                         <td className="px-6 py-4">
                                             <p className="font-bold text-slate-800">{item.judul}</p>
                                             <p className="text-slate-400 line-clamp-1">{item.deskripsi}</p>
+                                            {item.penilaian?.komentar && (
+                                                <p className="mt-1 line-clamp-2 text-xs font-medium text-amber-700">
+                                                    Catatan pembimbing: {item.penilaian.komentar}
+                                                </p>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4">
                                             {item.lampiran && item.lampiran.length > 0 ? (

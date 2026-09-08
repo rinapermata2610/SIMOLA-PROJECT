@@ -5,7 +5,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
     FaCalendarAlt,
-    FaHistory,
     FaSignOutAlt,
     FaThLarge,
     FaTimes,
@@ -34,11 +33,6 @@ function AdminSidebar({ isOpen, onClose }) {
             title: "Manajemen Periode",
             icon: <FaCalendarAlt />,
             path: "/admin/periode",
-        },
-        {
-            title: "Log Aktivitas",
-            icon: <FaHistory />,
-            path: "/admin/log-aktivitas",
         },
     ];
 
