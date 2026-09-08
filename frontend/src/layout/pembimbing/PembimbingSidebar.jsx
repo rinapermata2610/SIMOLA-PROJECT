@@ -8,9 +8,9 @@ export default function PembimbingSidebar({ isOpen, onClose }) {
     const navigate = useNavigate();
     const menus = [
         { title: "Dashboard monitoring", path: "/pembimbing/dashboard", icon: <FaChartLine /> },
-        { title: "Rekapan Kehadiran", path: "/pembimbing/kehadiran", icon: <FaHistory /> },
         { title: "Penilaian", path: "/pembimbing/penilaian", icon: <FaClipboardCheck /> },
         { title: "Laporan", path: "/pembimbing/laporan", icon: <FaFileAlt /> },
+        { title: "Rekapan Kehadiran", path: "/pembimbing/kehadiran", icon: <FaHistory /> },
     ];
     const handleLogout = async () => { await logout(); navigate("/login", { replace: true }); };
 

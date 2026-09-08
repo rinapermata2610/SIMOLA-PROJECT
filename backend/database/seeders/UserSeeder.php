@@ -34,19 +34,6 @@ class UserSeeder extends Seeder
         // ==========================
         User::updateOrCreate(
             [
-                'username' => 'budisantoso',
-            ],
-            [
-                'nama'     => 'Budi Santoso, M.Kom',
-                'email'    => 'budi.santoso@simola.id',
-                'password' => Hash::make('password123'),
-                'nim'      => null,
-                'role'     => 'pembimbing',
-            ]
-        );
-
-        User::updateOrCreate(
-            [
                 'username' => 'rinapermata',
             ],
             [
