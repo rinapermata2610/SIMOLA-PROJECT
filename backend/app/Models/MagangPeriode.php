@@ -14,6 +14,8 @@ class MagangPeriode extends Model
     protected $fillable = [
         'periode_batch_id',
         'mahasiswa_id',
+        'pembimbing_id',
+        'instansi',
         'tanggal_mulai',
         'tanggal_selesai',
         'status',
