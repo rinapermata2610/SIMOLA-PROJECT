@@ -45,9 +45,8 @@ class LogAktivitasResource extends JsonResource
                         'id' => $item->id,
                         'nama_file' => $item->nama_file,
                         'file_path' => $item->file_path,
-                        'file_url' => $item->file_path ? \Illuminate\Support\Facades\Storage::disk('public')->url($item->file_path) : null,
-                        'tipe_file' => $item->tipe_file,
-                        'ukuran_file' => $item->ukuran_file,
+                        'tipe_file' => $item->file_type,
+                        'ukuran_file' => $item->file_size,
                     ];
                 })->values();
             }) ?? [],

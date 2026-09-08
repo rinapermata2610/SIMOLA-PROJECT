@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api\Pembimbing;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pembimbing\VerifikasiLogAktivitasRequest;
 use App\Http\Resources\Pembimbing\LogAktivitasResource;
+use App\Models\LampiranBukti;
 use App\Models\LogAktivitas;
 use App\Models\PenilaianBulanan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon\Carbon;
 use Throwable;
 
@@ -103,6 +105,35 @@ class LogAktivitasController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
+    }
+
+    /**
+     * Tampilkan file lampiran untuk pembimbing yang menangani mahasiswa terkait.
+     *
+     * GET /api/pembimbing/lampiran/{id}/view
+     */
+    public function viewAttachment(int $id)
+    {
+        $user = Auth::user();
+
+        $lampiran = LampiranBukti::with('logAktivitas.periode')
+            ->whereHas('logAktivitas.periode', function ($query) use ($user) {
+                $query->where('pembimbing_id', $user->id);
+            })
+            ->findOrFail($id);
+
+        abort_unless(
+            $lampiran->file_path && Storage::disk('public')->exists($lampiran->file_path),
+            404,
+            'File lampiran tidak ditemukan.'
+        );
+
+        return response()->file(
+            Storage::disk('public')->path($lampiran->file_path),
+            [
+                'Content-Disposition' => 'inline; filename="' . addslashes($lampiran->nama_file) . '"',
+            ]
+        );
     }
 
     /**

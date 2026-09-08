@@ -129,6 +129,7 @@ Route::middleware(['auth:sanctum', 'role:pembimbing'])
             ->prefix('log-aktivitas')
             ->group(function () {
                 Route::get('/', 'index');
+                Route::get('/lampiran/{id}/view', 'viewAttachment');
                 Route::get('/{id}', 'show');
                 Route::put('/{id}/verify', 'verify');
             });

@@ -94,6 +94,14 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get();
 
+            $aktivitasKalender = LogAktivitas::where('mahasiswa_id', $user->id)
+                ->whereBetween('tanggal', [
+                    $periode->tanggal_mulai,
+                    $periode->tanggal_selesai,
+                ])
+                ->orderBy('tanggal')
+                ->get();
+
             // ===========================
             // Response
             // ===========================
@@ -126,6 +134,8 @@ class DashboardController extends Controller
                     ],
 
                     'aktivitas_terbaru' => $aktivitasTerbaru,
+
+                    'aktivitas_kalender' => $aktivitasKalender,
 
                 ])
 

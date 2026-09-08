@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import MainLayout from "../../layout/MainLayout";
 
@@ -10,11 +9,40 @@ import CalendarCard from "../../components/dashboard/CalendarCard";
 import ActivityModal from "../../components/dashboard/ActivityModal";
 
 import useFormAktivitas from "../../hooks/useFormAktivitas";
+import api from "../../services/api";
+
+const getLocalDateString = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
 
 function Dashboard() {
-    const navigate = useNavigate();
     const [selectedDate, setSelectedDate] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [calendarData, setCalendarData] = useState({
+        periode: null,
+        activities: [],
+    });
+
+    useEffect(() => {
+        const loadCalendarData = async () => {
+            try {
+                const response = await api.get("/mahasiswa/dashboard");
+                const data = response.data?.data;
+
+                setCalendarData({
+                    periode: data?.periode_magang ?? null,
+                    activities: data?.aktivitas_kalender ?? [],
+                });
+            } catch (error) {
+                console.error("Gagal memuat status kalender:", error);
+            }
+        };
+
+        loadCalendarData();
+    }, []);
 
     const {
         form,
@@ -44,15 +72,27 @@ function Dashboard() {
     };
 
     const handleSubmit = async (statusType = "submitted") => {
-        const dateStr = selectedDate 
-            ? selectedDate.toISOString().split("T")[0] 
-            : null;
+        const dateStr = selectedDate ? getLocalDateString(selectedDate) : null;
         
         const saved = await submitForm(statusType, dateStr);
         if (saved) {
+            setCalendarData((previous) => {
+                const alreadyExists = previous.activities.some(
+                    (activity) => activity?.tanggal === dateStr
+                );
+
+                return alreadyExists
+                    ? previous
+                    : {
+                        ...previous,
+                        activities: [
+                            ...previous.activities,
+                            { tanggal: dateStr, status: statusType },
+                        ],
+                    };
+            });
             setShowModal(false);
             setSelectedDate(null);
-            navigate("/log-aktivitas");
         }
     };
 
@@ -73,6 +113,8 @@ function Dashboard() {
                     selectedDate={selectedDate}
                     onDateClick={handleDateClick}
                     onAddToday={handleAddToday}
+                    periode={calendarData.periode}
+                    activities={calendarData.activities}
                 />
 
                 {/* Modal Form Aktivitas */}

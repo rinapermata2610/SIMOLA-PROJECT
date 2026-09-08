@@ -124,6 +124,18 @@ export default function Penilaian() {
         }
     };
 
+    const handleViewAttachment = async (file) => {
+        try {
+            const response = await pembimbingService.viewAttachment(file.id);
+            const fileUrl = URL.createObjectURL(response.data);
+            window.open(fileUrl, "_blank", "noopener,noreferrer");
+            window.setTimeout(() => URL.revokeObjectURL(fileUrl), 60_000);
+        } catch (error) {
+            console.error(error);
+            alert("File lampiran tidak dapat dibuka.");
+        }
+    };
+
     const monthLabel = new Intl.DateTimeFormat("id-ID", {
         month: "long",
         year: "numeric",
@@ -283,17 +295,14 @@ export default function Penilaian() {
                                                                 <p className="text-xs text-slate-500">{file.tipe_file || "Dokumen"}</p>
                                                             </div>
                                                         </div>
-                                                        {file.file_url && (
-                                                            <a
-                                                                href={file.file_url}
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-3 py-2 text-xs font-bold text-white hover:bg-sky-700"
-                                                            >
-                                                                <FaDownload />
-                                                                Lihat
-                                                            </a>
-                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleViewAttachment(file)}
+                                                            className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-3 py-2 text-xs font-bold text-white hover:bg-sky-700"
+                                                        >
+                                                            <FaDownload />
+                                                            Lihat
+                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>
