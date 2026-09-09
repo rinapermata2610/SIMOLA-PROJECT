@@ -22,7 +22,7 @@ import AdminLayout from "../layout/admin/AdminLayout";
 import PembimbingDashboard from "../pages/pembimbing/Dashboard";
 import PembimbingPenilaian from "../pages/pembimbing/Penilaian";
 import DaftarPenilaian from "../pages/pembimbing/DaftarPenilaian";
-import PembimbingModulePage from "../pages/pembimbing/ModulePage";
+import PenilaianAkhir from "../pages/pembimbing/PenilaianAkhir";
 import DaftarKehadiran from "../pages/pembimbing/DaftarKehadiran";
 import RekapKehadiran from "../pages/pembimbing/RekapKehadiran";
 import Laporan from "../pages/pembimbing/Laporan";
@@ -120,6 +120,8 @@ function AppRoutes() {
             <Route path="/pembimbing/kehadiran/:studentId" element={<ProtectedRoute allowedRoles={["pembimbing"]}><RekapKehadiran /></ProtectedRoute>} />
             <Route path="/pembimbing/penilaian" element={<ProtectedRoute allowedRoles={["pembimbing"]}><DaftarPenilaian /></ProtectedRoute>} />
             <Route path="/pembimbing/penilaian/:studentId" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PembimbingPenilaian /></ProtectedRoute>} />
+            <Route path="/pembimbing/penilaian-akhir" element={<ProtectedRoute allowedRoles={["pembimbing"]}><DaftarPenilaian title="Penilaian Akhir Magang" description="Pilih mahasiswa bimbingan untuk membuka penilaian akhir magang." detailPath="/pembimbing/penilaian-akhir" /></ProtectedRoute>} />
+            <Route path="/pembimbing/penilaian-akhir/:studentId" element={<ProtectedRoute allowedRoles={["pembimbing"]}><PenilaianAkhir /></ProtectedRoute>} />
             <Route path="/pembimbing/laporan" element={<ProtectedRoute allowedRoles={["pembimbing"]}><Laporan /></ProtectedRoute>} />
 
             <Route

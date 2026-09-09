@@ -8,7 +8,8 @@ export default function PembimbingSidebar({ isOpen, onClose }) {
     const navigate = useNavigate();
     const menus = [
         { title: "Dashboard monitoring", path: "/pembimbing/dashboard", icon: <FaChartLine /> },
-        { title: "Penilaian", path: "/pembimbing/penilaian", icon: <FaClipboardCheck /> },
+        { title: "Penilaian Harian", path: "/pembimbing/penilaian", icon: <FaClipboardCheck /> },
+        { title: "Penilaian Akhir Magang", path: "/pembimbing/penilaian-akhir", icon: <FaClipboardCheck /> },
         { title: "Rekapan Kehadiran", path: "/pembimbing/kehadiran", icon: <FaHistory /> },
         { title: "Laporan", path: "/pembimbing/laporan", icon: <FaFileAlt /> },
     ];
