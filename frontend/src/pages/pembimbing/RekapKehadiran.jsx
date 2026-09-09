@@ -1,10 +1,57 @@
 import { useEffect, useState } from "react";
-import { FaCalendarAlt, FaClock, FaSignOutAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaClock, FaFileExcel, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import PembimbingLayout from "../../layout/pembimbing/PembimbingLayout";
 import pembimbingService from "../../services/pembimbingService";
 
 const monthLabel = (value) => new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(new Date(`${value}-01`));
+
+const escapeCell = (value) => String(value ?? "-").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+}[character]));
+
+const exportAttendance = ({ student, month, records, summary }) => {
+    const rows = records.map((record) => `
+        <tr>
+            <td>${escapeCell(record.tanggal)}</td>
+            <td>${escapeCell(record.jam_masuk || "-")}</td>
+            <td>${escapeCell(record.status_masuk || "-")}</td>
+            <td>${escapeCell(record.jam_keluar || "-")}</td>
+            <td>${escapeCell(record.status_keluar || "-")}</td>
+        </tr>`).join("");
+    const workbook = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta charset="UTF-8"><style>td, th { border: 1px solid #999; padding: 6px; } th { background: #dbeafe; font-weight: bold; } .title { font-size: 16px; font-weight: bold; }</style></head>
+            <body>
+                <table>
+                    <tr><td class="title" colspan="5">Rekap Kehadiran Mahasiswa</td></tr>
+                    <tr><td>Nama</td><td colspan="4">${escapeCell(student?.nama || "-")}</td></tr>
+                    <tr><td>NIM</td><td colspan="4">${escapeCell(student?.nim || "-")}</td></tr>
+                    <tr><td>Periode</td><td colspan="4">${escapeCell(monthLabel(month))}</td></tr>
+                    <tr><td>Hari Absen</td><td>${escapeCell(summary.hari_absen ?? 0)}</td><td>Masuk</td><td>${escapeCell(summary.hadir_masuk ?? 0)}</td><td>Terlambat: ${escapeCell(summary.terlambat_masuk ?? 0)}</td></tr>
+                </table>
+                <br>
+                <table>
+                    <thead><tr><th>Tanggal</th><th>Jam Masuk</th><th>Status Masuk</th><th>Jam Keluar</th><th>Status Keluar</th></tr></thead>
+                    <tbody>${rows || "<tr><td colspan=\"5\">Belum ada data kehadiran</td></tr>"}</tbody>
+                </table>
+            </body>
+        </html>`;
+    const blob = new Blob(["\ufeff", workbook], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const safeName = (student?.nama || "mahasiswa").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+    link.href = url;
+    link.download = `rekap-kehadiran-${safeName || "mahasiswa"}-${month}.xls`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+};
 
 export default function RekapKehadiran() {
     const navigate = useNavigate();
@@ -57,11 +104,16 @@ export default function RekapKehadiran() {
                             <span className="text-sm font-semibold capitalize text-slate-600">{monthLabel(month)}</span>
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div className="flex flex-col gap-3 sm:items-end">
+                        <button type="button" onClick={() => exportAttendance({ student, month, records, summary })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700">
+                            <FaFileExcel /> Export Excel
+                        </button>
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                         <div className="rounded-xl bg-sky-50 px-4 py-3"><p className="text-xs text-sky-600">Hari absen</p><p className="text-xl font-bold text-sky-800">{summary.hari_absen ?? 0}</p></div>
                         <div className="rounded-xl bg-emerald-50 px-4 py-3"><p className="text-xs text-emerald-600">Masuk</p><p className="text-xl font-bold text-emerald-800">{summary.hadir_masuk ?? 0}</p></div>
                         <div className="rounded-xl bg-indigo-50 px-4 py-3"><p className="text-xs text-indigo-600">Keluar</p><p className="text-xl font-bold text-indigo-800">{summary.hadir_keluar ?? 0}</p></div>
                         <div className="rounded-xl bg-amber-50 px-4 py-3"><p className="text-xs text-amber-600">Terlambat</p><p className="text-xl font-bold text-amber-800">{summary.terlambat_masuk ?? 0}</p></div>
+                        </div>
                     </div>
                 </section>
 
