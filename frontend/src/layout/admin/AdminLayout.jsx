@@ -11,7 +11,7 @@ function AdminLayout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#f3f7fb]">
             <AdminSidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
@@ -20,7 +20,7 @@ function AdminLayout({ children }) {
             <div className="lg:ml-72 min-h-screen">
                 <AdminNavbar onMenuClick={() => setIsSidebarOpen(true)} />
 
-                <main className="bg-gray-50 min-h-screen px-4 py-6 md:px-6 lg:px-8">
+                <main className="min-h-screen bg-[#f3f7fb] px-4 py-6 md:px-6 lg:px-8">
                     {children}
                 </main>
             </div>

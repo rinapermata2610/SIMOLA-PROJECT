@@ -43,7 +43,7 @@ function Dashboard() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+            <div className="min-h-screen bg-[#f3f7fb] flex items-center justify-center px-6">
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 text-center">
                     <h1 className="text-2xl font-bold text-gray-800">Dashboard tidak dapat dimuat</h1>
                     <p className="text-gray-600 mt-2">Terjadi kesalahan saat mengambil data overview admin.</p>
@@ -61,13 +61,16 @@ function Dashboard() {
 
     return (
         <div className="space-y-6">
-            <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <section className="overflow-hidden rounded-3xl bg-gradient-to-r from-sky-600 via-sky-500 to-cyan-500 p-6 md:p-8 text-white shadow-lg shadow-sky-100">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-100">
+                        SIMOLA / RUANG ADMIN
+                    </p>
+                    <h1 className="mt-2 text-2xl md:text-4xl font-extrabold">
                         Dashboard Overview
                     </h1>
-                    <p className="mt-2 text-gray-600">
-                        Selamat datang kembali, <span className="font-semibold text-sky-600">{user?.nama}</span>. Berikut ringkasan operasional SIMOLA hari ini.
+                    <p className="mt-2 text-sky-50">
+                        Selamat datang kembali, <span className="font-bold">{user?.nama}</span>. Berikut ringkasan operasional SIMOLA hari ini.
                     </p>
                 </div>
 

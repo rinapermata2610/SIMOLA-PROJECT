@@ -21,6 +21,7 @@ function ManajemenAkun() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
+    const [pembimbingList, setPembimbingList] = useState([]);
     const [meta, setMeta] = useState(null);
 
     const [targetPage, setTargetPage] = useState(1);
@@ -47,8 +48,13 @@ function ManajemenAkun() {
                 q: filters.q || undefined,
             };
 
-            const response = await akunService.getAll(params);
+            const [response, pembimbingResponse] = await Promise.all([
+                akunService.getAll(params),
+                akunService.getAll({ role: "pembimbing", status: "active" }),
+            ]);
+
             setData(response.data ?? []);
+            setPembimbingList(pembimbingResponse.data ?? []);
             setMeta(response.meta ?? null);
         } catch (err) {
             setError(err);
@@ -248,6 +254,7 @@ function ManajemenAkun() {
                         onResetPassword={handleResetPassword}
                         onDelete={handleDelete}
                         onAssignPembimbing={handleAssignPembimbing}
+                        pembimbingList={pembimbingList}
                     />
 
                     {meta && (

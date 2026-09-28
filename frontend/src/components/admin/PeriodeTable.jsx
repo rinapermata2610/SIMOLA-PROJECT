@@ -2,13 +2,10 @@
 // File : src/components/admin/PeriodeTable.jsx
 // =============================================
 
-import { useState } from "react";
-import { FaEllipsisV } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { getPeriodeStatus } from "../../utils/periodeStatus";
 
 function PeriodeTable({ data = [] }) {
-    const [openMenu, setOpenMenu] = useState(null);
-
     const formatDate = (value) => {
         if (!value) return "-";
 
@@ -25,16 +22,11 @@ function PeriodeTable({ data = [] }) {
         });
     };
 
-    const statusClassMap = {
-        aktif: "bg-emerald-100 text-emerald-700",
-        selesai: "bg-gray-100 text-gray-600",
-    };
-
     return (
-        <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 mt-6">
+        <section className="bg-white border border-slate-200 rounded-2xl shadow-[0_4px_18px_rgba(15,23,42,0.06)] p-5 md:p-6 mt-6">
             <div className="flex items-center justify-between mb-4">
                 <div>
-                    <h2 className="text-xl font-bold text-gray-800">
+                    <h2 className="text-xl font-extrabold text-slate-800">
                         Periode Magang Berjalan
                     </h2>
                 </div>
@@ -42,7 +34,7 @@ function PeriodeTable({ data = [] }) {
                 <Link
                     aria-label="Lihat semua periode"
                     to="/admin/periode"
-                    className="text-sky-600 text-sm hover:underline"
+                    className="text-sky-600 text-sm font-bold hover:text-cyan-600 hover:underline"
                 >
                     Lihat Semua →
                 </Link>
@@ -54,77 +46,61 @@ function PeriodeTable({ data = [] }) {
                 </div>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table className="min-w-full divide-y divide-slate-200">
                         <thead>
                             <tr>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Nama Instansi
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Tanggal
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Peserta
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Status
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                                    Aksi
                                 </th>
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y divide-gray-200">
-                            {data.map((item, index) => (
+                        <tbody className="divide-y divide-slate-100">
+                            {data.map((item, index) => {
+                                const status = getPeriodeStatus(
+                                    item.tanggal_mulai,
+                                    item.tanggal_selesai,
+                                    item.status,
+                                );
+
+                                return (
                                 <tr key={`${item.instansi}-${item.tanggal_mulai}-${index}`}>
                                     <td className="px-4 py-4">
-                                        <p className="font-semibold text-gray-800">
+                                        <p className="font-bold text-slate-800">
                                             {item.instansi}
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            {formatDate(item.tanggal_mulai)} • {item.status}
+                                        <p className="text-xs text-slate-500 mt-1">
+                                            {formatDate(item.tanggal_mulai)} • {status.label}
                                         </p>
                                     </td>
 
-                                    <td className="px-4 py-4 text-sm text-gray-600">
+                                    <td className="px-4 py-4 text-sm text-slate-600">
                                         {formatDate(item.tanggal_mulai)} - {formatDate(item.tanggal_selesai)}
                                     </td>
 
                                     <td className="px-4 py-4">
-                                        <span className="font-bold text-gray-800">
+                                        <span className="font-extrabold text-slate-800">
                                             {Number(item.jumlah_peserta ?? 0).toLocaleString("id-ID")}
                                         </span>
                                     </td>
 
                                     <td className="px-4 py-4">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${statusClassMap[item.status] ?? "bg-gray-100 text-gray-600"}`}> 
-                                            {item.status === "aktif" ? "BERJALAN" : item.status === "selesai" ? "SELESAI" : item.status}
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${status.className}`}>
+                                            {status.label.toUpperCase()}
                                         </span>
                                     </td>
-
-                                    <td className="px-4 py-4 relative">
-                                        <button
-                                            aria-label="Opsi lain untuk periode"
-                                            onClick={() => setOpenMenu(openMenu === index ? null : index)}
-                                            className="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-600"
-                                        >
-                                            <FaEllipsisV />
-                                        </button>
-
-                                        {openMenu === index && (
-                                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
-                                                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                    Detail
-                                                </button>
-                                                <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                    Edit
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
