@@ -41,7 +41,32 @@ button:focus-visible {
     }
 
     .report-paper {
+        page: activity-report;
         width: 100% !important;
         min-height: 0 !important;
+    }
+
+    @page activity-report {
+        size: A4 landscape;
+        margin: 14mm;
+    }
+
+    @page final-assessment {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+
+    .final-assessment-paper {
+        page: final-assessment;
+        width: 100% !important;
+        min-height: 0 !important;
+        page-break-before: avoid;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    .final-assessment-paper table,
+    .final-assessment-paper footer {
+        page-break-inside: avoid;
     }
 }

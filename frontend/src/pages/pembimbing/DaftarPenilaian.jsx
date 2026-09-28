@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PembimbingLayout from "../../layout/pembimbing/PembimbingLayout";
 import pembimbingService from "../../services/pembimbingService";
 
-export default function DaftarPenilaian() {
+export default function DaftarPenilaian({ title = "Penilaian Mahasiswa", description = "Pilih mahasiswa bimbingan untuk membuka halaman penilaian.", detailPath = "/pembimbing/penilaian" }) {
     const navigate = useNavigate();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -31,8 +31,8 @@ export default function DaftarPenilaian() {
             <div className="mx-auto max-w-6xl space-y-6 p-4 lg:p-6">
                 <header className="rounded-3xl bg-gradient-to-r from-sky-700 via-sky-600 to-cyan-500 p-6 text-white shadow-lg shadow-sky-200">
                     <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-100">Pembimbing</p>
-                    <h1 className="mt-2 text-2xl font-bold md:text-4xl">Penilaian Mahasiswa</h1>
-                    <p className="mt-2 text-sm text-indigo-50 md:text-base">Pilih mahasiswa bimbingan untuk membuka halaman penilaian.</p>
+                    <h1 className="mt-2 text-2xl font-bold md:text-4xl">{title}</h1>
+                    <p className="mt-2 text-sm text-indigo-50 md:text-base">{description}</p>
                 </header>
 
                 <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -56,7 +56,7 @@ export default function DaftarPenilaian() {
                                 <button
                                     key={student.id}
                                     type="button"
-                                    onClick={() => navigate(`/pembimbing/penilaian/${student.id}`)}
+                                    onClick={() => navigate(`${detailPath}/${student.id}`)}
                                     className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:border-violet-300 hover:bg-violet-50 hover:shadow-sm"
                                 >
                                     <div className="min-w-0">
