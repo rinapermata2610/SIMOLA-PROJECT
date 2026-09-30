@@ -13,6 +13,8 @@ class MagangPeriode extends Model
 
     protected $fillable = [
         'mahasiswa_id',
+        'pembimbing_id',
+        'instansi',
         'tanggal_mulai',
         'tanggal_selesai',
         'status',
@@ -31,5 +33,10 @@ class MagangPeriode extends Model
     public function logAktivitas()
     {
         return $this->hasMany(LogAktivitas::class, 'periode_id');
+    }
+
+    public function penilaianAkhir()
+    {
+        return $this->hasOne(PenilaianAkhir::class, 'periode_id');
     }
 }

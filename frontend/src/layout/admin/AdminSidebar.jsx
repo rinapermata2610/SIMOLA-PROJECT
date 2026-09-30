@@ -5,7 +5,9 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
     FaCalendarAlt,
+    FaCog,
     FaHistory,
+    FaClipboardCheck,
     FaSignOutAlt,
     FaThLarge,
     FaTimes,
@@ -36,9 +38,19 @@ function AdminSidebar({ isOpen, onClose }) {
             path: "/admin/periode",
         },
         {
+            title: "Jadwal WFH",
+            icon: <FaCog />,
+            path: "/admin/pengaturan-absensi",
+        },
+        {
             title: "Log Aktivitas",
             icon: <FaHistory />,
             path: "/admin/log-aktivitas",
+        },
+        {
+            title: "Hasil Penilaian Akhir",
+            icon: <FaClipboardCheck />,
+            path: "/admin/penilaian-akhir",
         },
     ];
 

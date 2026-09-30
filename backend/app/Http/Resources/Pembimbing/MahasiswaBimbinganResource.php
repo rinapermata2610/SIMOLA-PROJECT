@@ -27,6 +27,7 @@ class MahasiswaBimbinganResource extends JsonResource
             'username' => $this->username,
             'email' => $this->email,
             'nim' => $this->nim,
+            'universitas' => $this->universitas,
             'role' => $this->role,
             'periode' => $this->periodeMagang()->where('status', 'aktif')->first()?->only([
                 'id',

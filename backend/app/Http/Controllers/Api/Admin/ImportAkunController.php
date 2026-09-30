@@ -24,16 +24,24 @@ class ImportAkunController extends Controller
             $username = $r['username'] ?? explode('@', $email)[0];
             $password = Str::random(10);
 
-            User::updateOrCreate([
-                'email' => $email,
-            ], [
+            $userData = [
                 'nama' => $r['nama'] ?? $username,
                 'username' => $username,
                 'password' => Hash::make($password),
                 'nim' => $r['nim'] ?? null,
                 'role' => $r['role'] ?? 'mahasiswa',
                 'is_active' => true,
-            ]);
+            ];
+
+            if (array_key_exists('universitas', $r)) {
+                $userData['universitas'] = $r['universitas'];
+            }
+
+            if (array_key_exists('nip', $r)) {
+                $userData['nip'] = $r['nip'];
+            }
+
+            User::updateOrCreate(['email' => $email], $userData);
 
             $created++;
         }

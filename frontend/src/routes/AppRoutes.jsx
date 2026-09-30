@@ -18,6 +18,8 @@ import Profile from "../pages/mahasiswa/Profile";
 import Attendance from "../pages/mahasiswa/Attendance";
 import AdminDashboard from "../pages/admin/Dashboard";
 import ManajemenAkun from "../pages/admin/ManajemenAkun";
+import HasilPenilaianAkhir from "../pages/admin/HasilPenilaianAkhir";
+import PengaturanWFH from "../pages/admin/PengaturanWFH";
 import AdminLayout from "../layout/admin/AdminLayout";
 import PembimbingDashboard from "../pages/pembimbing/Dashboard";
 import PembimbingPenilaian from "../pages/pembimbing/Penilaian";
@@ -70,6 +72,28 @@ function AppRoutes() {
                     <ProtectedRoute allowedRoles={["admin"]}>
                         <AdminLayout>
                             <ManajemenAkun />
+                        </AdminLayout>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/admin/penilaian-akhir"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout>
+                            <HasilPenilaianAkhir />
+                        </AdminLayout>
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/admin/pengaturan-absensi"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout>
+                            <PengaturanWFH />
                         </AdminLayout>
                     </ProtectedRoute>
                 }
