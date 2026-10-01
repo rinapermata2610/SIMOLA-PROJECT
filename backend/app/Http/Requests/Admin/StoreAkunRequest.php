@@ -18,6 +18,8 @@ class StoreAkunRequest extends FormRequest
             'email' => 'required|email|unique:users,email,' . ($this->route('id') ?? 'NULL'),
             'username' => 'nullable|string|unique:users,username,' . ($this->route('id') ?? 'NULL'),
             'nim' => 'nullable|string|unique:users,nim,' . ($this->route('id') ?? 'NULL'),
+            'universitas' => 'nullable|string|max:255',
+            'nip' => 'nullable|string|max:30',
             'role' => 'required|in:mahasiswa,pembimbing,admin',
             'password' => 'nullable|string|min:6',
         ];
