@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MagangPeriode;
+use App\Models\PeriodeBatch;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -20,17 +20,17 @@ class DashboardController extends Controller
                 $q->where('status','aktif');
             })->count();
 
-        $periodeBerjalan = MagangPeriode::where('status','aktif')->count();
-        $periodeSelesai = MagangPeriode::where('status','selesai')->count();
+        $periodeBerjalan = PeriodeBatch::where('status', 'aktif')->count();
+        $periodeSelesai = PeriodeBatch::where('status', 'selesai')->count();
 
-        $periodeTerbaru = MagangPeriode::select(
+        $periodeTerbaru = PeriodeBatch::withCount(['mahasiswaPeriode as jumlah_peserta'])
+            ->select(
+                'id',
                 'instansi',
                 'tanggal_mulai',
                 'tanggal_selesai',
                 'status',
-                DB::raw('COUNT(mahasiswa_id) as jumlah_peserta')
             )
-            ->groupBy('instansi', 'tanggal_mulai', 'tanggal_selesai', 'status')
             ->orderByDesc('tanggal_mulai')
             ->limit(5)
             ->get();
