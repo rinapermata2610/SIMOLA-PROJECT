@@ -18,6 +18,24 @@ class AkunResource extends JsonResource
             'role' => $this->role,
             'is_active' => (bool) $this->is_active,
             'created_at' => optional($this->created_at)->toDateTimeString(),
+            'has_active_period' => $this->whenLoaded(
+                'periodeMagang',
+                fn () => $this->periodeMagang->isNotEmpty(),
+            ),
+            'periode_aktif' => $this->whenLoaded('periodeMagang', function () {
+                $period = $this->periodeMagang->first();
+
+                if (! $period) {
+                    return null;
+                }
+
+                return [
+                    'id' => $period->id,
+                    'pembimbing_id' => $period->pembimbing_id,
+                    'periode_batch_id' => $period->periode_batch_id,
+                    'pembimbing' => $period->pembimbing?->only(['id', 'nama']),
+                ];
+            }),
         ];
     }
 }

@@ -3,13 +3,12 @@
 // =============================================
 
 import {
-    FaChalkboardTeacher,
     FaKey,
     FaPencilAlt,
     FaTrashAlt,
 } from "react-icons/fa";
 
-function AkunTableRow({ user, onEdit, onToggleStatus, onResetPassword, onDelete, onAssignPembimbing, pembimbingList = [] }) {
+function AkunTableRow({ user, onEdit, onResetPassword, onDelete }) {
     const roleClasses = {
         mahasiswa: "bg-sky-100 text-sky-700",
         pembimbing: "bg-amber-100 text-amber-700",
@@ -49,35 +48,10 @@ function AkunTableRow({ user, onEdit, onToggleStatus, onResetPassword, onDelete,
             </td>
 
             <td className="px-6 py-5">
-                <button
-                    aria-label={user.is_active ? "Nonaktifkan akun" : "Aktifkan akun"}
-                    onClick={() => onToggleStatus(user)}
-                    className="flex items-center gap-2"
-                >
-                    <span className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${user.is_active ? "bg-emerald-500" : "bg-gray-300"}`}>
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${user.is_active ? "translate-x-6" : "translate-x-1"}`}></span>
-                    </span>
-                    <span className="text-xs font-semibold uppercase text-gray-600">
-                        {user.is_active ? "Aktif" : "Nonaktif"}
-                    </span>
-                </button>
-            </td>
-
-            <td className="px-6 py-5">
                 {user.role === "mahasiswa" ? (
-                    <select
-                        aria-label="Pilih pembimbing terkait"
-                        className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 bg-white"
-                        value={user.pembimbing_id ?? ""}
-                        onChange={(e) => onAssignPembimbing(user, e.target.value)}
-                    >
-                        <option value="">Pilih Pembimbing</option>
-                        {pembimbingList.map((pembimbing) => (
-                            <option key={pembimbing.id} value={pembimbing.id}>
-                                {pembimbing.nama}
-                            </option>
-                        ))}
-                    </select>
+                    <span className="text-sm text-gray-600">
+                        {user.periode_aktif?.pembimbing?.nama ?? "Belum ditentukan"}
+                    </span>
                 ) : (
                     <span className="text-gray-400">—</span>
                 )}
