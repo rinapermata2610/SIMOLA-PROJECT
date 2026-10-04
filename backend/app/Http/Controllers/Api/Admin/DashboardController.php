@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\MagangPeriode;
+use App\Http\Resources\Admin\PeriodeBatchResource;
 use App\Models\PeriodeBatch;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -23,14 +23,7 @@ class DashboardController extends Controller
         $periodeBerjalan = PeriodeBatch::where('status', 'aktif')->count();
         $periodeSelesai = PeriodeBatch::where('status', 'selesai')->count();
 
-        $periodeTerbaru = PeriodeBatch::withCount(['mahasiswaPeriode as jumlah_peserta'])
-            ->select(
-                'id',
-                'instansi',
-                'tanggal_mulai',
-                'tanggal_selesai',
-                'status',
-            )
+        $periodeTerbaru = PeriodeBatch::withCount('mahasiswaPeriode')
             ->orderByDesc('tanggal_mulai')
             ->limit(5)
             ->get();
@@ -43,7 +36,7 @@ class DashboardController extends Controller
                 'relasi_belum' => $relasiBelum,
                 'periode_berjalan' => $periodeBerjalan,
                 'periode_selesai' => $periodeSelesai,
-                'periode_terbaru' => $periodeTerbaru,
+                'periode_terbaru' => PeriodeBatchResource::collection($periodeTerbaru),
             ],
         ]);
     }
