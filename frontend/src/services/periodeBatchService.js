@@ -25,6 +25,10 @@ const periodeBatchService = {
         const response = await api.post(`/admin/periode-batch/${id}/mahasiswa`, payload);
         return response.data;
     },
+    updateMahasiswaPembimbing: async (id, periodeId, payload) => {
+        const response = await api.put(`/admin/periode-batch/${id}/mahasiswa/${periodeId}`, payload);
+        return response.data;
+    },
     removeMahasiswa: async (id, periodeId) => {
         const response = await api.delete(`/admin/periode-batch/${id}/mahasiswa/${periodeId}`);
         return response.data;

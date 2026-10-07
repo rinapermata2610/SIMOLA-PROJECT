@@ -76,10 +76,10 @@ function PeriodeTable({ data = [] }) {
                                 <tr key={`${item.instansi}-${item.tanggal_mulai}-${index}`}>
                                     <td className="px-4 py-4">
                                         <p className="font-bold text-slate-800">
-                                            {item.instansi}
+                                            {item.nama_batch}
                                         </p>
                                         <p className="text-xs text-slate-500 mt-1">
-                                            {formatDate(item.tanggal_mulai)} • {status.label}
+                                            {item.instansi} • {formatDate(item.tanggal_mulai)}
                                         </p>
                                     </td>
 
@@ -89,7 +89,7 @@ function PeriodeTable({ data = [] }) {
 
                                     <td className="px-4 py-4">
                                         <span className="font-extrabold text-slate-800">
-                                            {Number(item.jumlah_peserta ?? 0).toLocaleString("id-ID")}
+                                            {Number(item.jumlah_mahasiswa ?? 0).toLocaleString("id-ID")}
                                         </span>
                                     </td>
 

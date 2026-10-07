@@ -7,7 +7,6 @@ import { FaTimes, FaTrashAlt } from "react-icons/fa";
 
 import akunService from "../../services/akunService";
 import periodeBatchService from "../../services/periodeBatchService";
-import { getPeriodeStatus } from "../../utils/periodeStatus";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
@@ -19,6 +18,7 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
     const [selectedPembimbingId, setSelectedPembimbingId] = useState("");
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [updatingPeriodeId, setUpdatingPeriodeId] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(null);
 
     const loadData = async () => {
@@ -33,7 +33,9 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
             const mahasiswaResponse = await akunService.getAll({ role: "mahasiswa" });
             const pembimbingResponse = await akunService.getAll({ role: "pembimbing" });
 
-            setMahasiswaList(mahasiswaResponse.data ?? []);
+            setMahasiswaList((mahasiswaResponse.data ?? []).filter((item) => (
+                !item.has_active_period || !item.periode_aktif?.periode_batch_id
+            )));
             setPembimbingList(pembimbingResponse.data ?? []);
         } catch (error) {
             console.error(error);
@@ -82,6 +84,23 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
         }
     };
 
+    const handleUpdatePembimbing = async (periode, pembimbingId) => {
+        if (!pembimbingId || Number(pembimbingId) === Number(periode.pembimbing?.id)) return;
+        if (!window.confirm(`Ganti pembimbing untuk ${periode.mahasiswa?.nama ?? "mahasiswa ini"}?`)) return;
+
+        try {
+            setUpdatingPeriodeId(periode.id);
+            await periodeBatchService.updateMahasiswaPembimbing(batchId, periode.id, {
+                pembimbing_id: Number(pembimbingId),
+            });
+            await loadData();
+        } catch (error) {
+            alert(error?.response?.data?.message ?? "Gagal mengubah pembimbing");
+        } finally {
+            setUpdatingPeriodeId(null);
+        }
+    };
+
     const handleDelete = async () => {
         if (!confirmDelete) return;
 
@@ -97,19 +116,13 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
 
     if (!batchId) return null;
 
-    const periodeStatus = getPeriodeStatus(
-        batch?.tanggal_mulai,
-        batch?.tanggal_selesai,
-        batch?.status,
-    );
-
     return (
         <>
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={onClose} />
 
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-                    <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
+                <div className="w-full max-w-5xl max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden bg-white rounded-2xl shadow-2xl border border-gray-200">
+                    <div className="shrink-0 flex items-center justify-between px-6 py-5 border-b border-gray-200 bg-white">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800">
                                 {mode === "manage" ? "Kelola Mahasiswa Batch" : "Detail Periode Batch"}
@@ -129,11 +142,12 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
                         </button>
                     </div>
 
-                    {loading ? (
-                        <div className="p-6 text-center text-gray-600">Memuat detail batch...</div>
-                    ) : (
-                        <div className="p-6 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                        {loading ? (
+                            <div className="p-6 text-center text-gray-600">Memuat detail batch...</div>
+                        ) : (
+                            <div className="p-6 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                                     <p className="text-xs uppercase tracking-wide text-gray-500">Nama Batch</p>
                                     <p className="mt-2 font-semibold text-gray-800">{batch?.nama_batch}</p>
@@ -141,12 +155,6 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
                                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                                     <p className="text-xs uppercase tracking-wide text-gray-500">Instansi</p>
                                     <p className="mt-2 font-semibold text-gray-800">{batch?.instansi}</p>
-                                </div>
-                                <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                                    <p className="text-xs uppercase tracking-wide text-gray-500">Status</p>
-                                    <p className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${periodeStatus.className}`}>
-                                        {periodeStatus.label}
-                                    </p>
                                 </div>
                             </div>
 
@@ -166,7 +174,14 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
                                         <select
                                             aria-label="Pilih mahasiswa"
                                             value={selectedMahasiswaId}
-                                            onChange={(e) => setSelectedMahasiswaId(e.target.value)}
+                                            onChange={(e) => {
+                                                const nextId = e.target.value;
+                                                const selected = mahasiswaList.find((item) => String(item.id) === nextId);
+                                                setSelectedMahasiswaId(nextId);
+                                                setSelectedPembimbingId(selected?.periode_aktif?.pembimbing_id
+                                                    ? String(selected.periode_aktif.pembimbing_id)
+                                                    : "");
+                                            }}
                                             className="border border-gray-200 rounded-xl px-3 py-2.5 bg-white text-gray-700"
                                         >
                                             <option value="">Pilih Mahasiswa</option>
@@ -206,14 +221,13 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
                                         <tr>
                                             <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Nama Mahasiswa</th>
                                             <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Pembimbing</th>
-                                            <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Status</th>
                                             {mode === "manage" && <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Aksi</th>}
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
                                         {mahasiswa.length === 0 ? (
                                             <tr>
-                                                <td colSpan={mode === "manage" ? 4 : 3} className="px-4 py-8 text-center text-gray-500">
+                                                <td colSpan={mode === "manage" ? 3 : 2} className="px-4 py-8 text-center text-gray-500">
                                                     Belum ada mahasiswa dalam batch ini.
                                                 </td>
                                             </tr>
@@ -221,11 +235,22 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
                                             mahasiswa.map((item) => (
                                                 <tr key={item.id}>
                                                     <td className="px-4 py-3 text-gray-800 font-medium">{item.mahasiswa?.nama ?? "-"}</td>
-                                                    <td className="px-4 py-3 text-gray-600">{item.pembimbing?.nama ?? "-"}</td>
-                                                    <td className="px-4 py-3">
-                                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${item.status === "aktif" ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-600"}`}>
-                                                            {item.status === "aktif" ? "Berjalan" : "Selesai"}
-                                                        </span>
+                                                    <td className="px-4 py-3 text-gray-600">
+                                                        {mode === "manage" && item.status === "aktif" ? (
+                                                            <select
+                                                                aria-label={`Ubah pembimbing ${item.mahasiswa?.nama ?? "mahasiswa"}`}
+                                                                value={item.pembimbing?.id ?? ""}
+                                                                disabled={updatingPeriodeId === item.id}
+                                                                onChange={(e) => handleUpdatePembimbing(item, e.target.value)}
+                                                                className="border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-sm text-gray-700 disabled:opacity-60"
+                                                            >
+                                                                {pembimbingList.map((pembimbing) => (
+                                                                    <option key={pembimbing.id} value={pembimbing.id}>{pembimbing.nama}</option>
+                                                                ))}
+                                                            </select>
+                                                        ) : (
+                                                            item.pembimbing?.nama ?? "-"
+                                                        )}
                                                     </td>
                                                     {mode === "manage" && (
                                                         <td className="px-4 py-3">
@@ -244,8 +269,9 @@ function PeriodeBatchDetailModal({ batchId, mode = "view", onClose }) {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

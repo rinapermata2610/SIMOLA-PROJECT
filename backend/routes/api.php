@@ -169,6 +169,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])
         Route::put('/periode-batch/{id}', [AdminPeriodeBatchController::class, 'update']);
         Route::get('/periode-batch/{id}', [AdminPeriodeBatchController::class, 'show']);
         Route::post('/periode-batch/{id}/mahasiswa', [AdminPeriodeBatchController::class, 'addMahasiswa']);
+        Route::put('/periode-batch/{id}/mahasiswa/{periodeId}', [AdminPeriodeBatchController::class, 'updateMahasiswaPembimbing']);
         Route::delete('/periode-batch/{id}/mahasiswa/{periodeId}', [AdminPeriodeBatchController::class, 'removeMahasiswa']);
 
         // Penugasan

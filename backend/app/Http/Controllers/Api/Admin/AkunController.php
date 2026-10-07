@@ -16,7 +16,11 @@ class AkunController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = User::query();
+        $query = User::query()->with([
+            'periodeMagang' => fn ($periods) => $periods
+                ->where('status', 'aktif')
+                ->with('pembimbing:id,nama'),
+        ]);
 
         if ($request->filled('role')) {
             $query->where('role', $request->input('role'));
@@ -35,11 +39,24 @@ class AkunController extends Controller
             });
         }
 
+        $stats = [
+            'total' => (clone $query)->count(),
+            'mahasiswaAktif' => (clone $query)
+                ->where('role', 'mahasiswa')
+                ->where('is_active', true)
+                ->count(),
+            'pembimbingAktif' => (clone $query)
+                ->where('role', 'pembimbing')
+                ->where('is_active', true)
+                ->count(),
+        ];
+
         $users = $query->paginate(20);
 
         return response()->json([
             'success' => true,
             'data' => AkunResource::collection($users),
+            'stats' => $stats,
             'meta' => [
                 'current_page' => $users->currentPage(),
                 'last_page' => $users->lastPage(),

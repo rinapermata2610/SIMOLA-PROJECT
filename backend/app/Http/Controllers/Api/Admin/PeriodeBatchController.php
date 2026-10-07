@@ -98,20 +98,38 @@ class PeriodeBatchController extends Controller
         $batch = PeriodeBatch::findOrFail($id);
 
         $validated = $request->validate([
-            'mahasiswa_id' => 'required|exists:users,id',
-            'pembimbing_id' => 'required|exists:users,id',
+            'mahasiswa_id' => 'required|exists:users,id,role,mahasiswa',
+            'pembimbing_id' => 'required|exists:users,id,role,pembimbing',
         ]);
 
+        $activePeriod = MagangPeriode::where('mahasiswa_id', $validated['mahasiswa_id'])
+            ->where('status', 'aktif')
+            ->first();
+
+        if ($activePeriod?->periode_batch_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mahasiswa sudah terdaftar pada periode batch aktif.',
+            ], 422);
+        }
+
+        $periodData = [
+            'periode_batch_id' => $batch->id,
+            'mahasiswa_id' => $validated['mahasiswa_id'],
+            'pembimbing_id' => $validated['pembimbing_id'],
+            'instansi' => $batch->instansi,
+            'tanggal_mulai' => $batch->tanggal_mulai,
+            'tanggal_selesai' => $batch->tanggal_selesai,
+            'status' => $batch->status,
+        ];
+
         try {
-            $periode = MagangPeriode::create([
-                'periode_batch_id' => $batch->id,
-                'mahasiswa_id' => $validated['mahasiswa_id'],
-                'pembimbing_id' => $validated['pembimbing_id'],
-                'instansi' => $batch->instansi,
-                'tanggal_mulai' => $batch->tanggal_mulai,
-                'tanggal_selesai' => $batch->tanggal_selesai,
-                'status' => $batch->status,
-            ]);
+            if ($activePeriod) {
+                $activePeriod->update($periodData);
+                $periode = $activePeriod;
+            } else {
+                $periode = MagangPeriode::create($periodData);
+            }
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
@@ -124,6 +142,25 @@ class PeriodeBatchController extends Controller
             'message' => 'Mahasiswa ditambahkan ke batch.',
             'data' => new \App\Http\Resources\Admin\PeriodeMagangResource($periode),
         ], 201);
+    }
+
+    public function updateMahasiswaPembimbing(Request $request, int $id, int $periodeId): JsonResponse
+    {
+        $validated = $request->validate([
+            'pembimbing_id' => 'required|exists:users,id,role,pembimbing',
+        ]);
+
+        $periode = MagangPeriode::where('periode_batch_id', $id)
+            ->where('status', 'aktif')
+            ->findOrFail($periodeId);
+
+        $periode->update(['pembimbing_id' => $validated['pembimbing_id']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pembimbing mahasiswa diperbarui.',
+            'data' => new \App\Http\Resources\Admin\PeriodeMagangResource($periode->load(['mahasiswa', 'pembimbing'])),
+        ]);
     }
 
     public function removeMahasiswa(int $id, int $periodeId): JsonResponse

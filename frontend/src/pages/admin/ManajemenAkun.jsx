@@ -2,13 +2,10 @@
 // File : src/pages/admin/ManajemenAkun.jsx
 // =============================================
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 import akunService from "../../services/akunService";
-import penugasanService from "../../services/penugasanService";
-import { useAuth } from "../../context/AuthContext";
-import Loading from "../../components/common/Loading";
 import AkunStatCard from "../../components/admin/AkunStatCard";
 import AkunFilterBar from "../../components/admin/AkunFilterBar";
 import AkunTable from "../../components/admin/AkunTable";
@@ -16,13 +13,11 @@ import AkunFormModal from "../../components/admin/AkunFormModal";
 import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 
 function ManajemenAkun() {
-    const { user } = useAuth();
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
-    const [pembimbingList, setPembimbingList] = useState([]);
     const [meta, setMeta] = useState(null);
+    const [stats, setStats] = useState({ total: 0, mahasiswaAktif: 0, pembimbingAktif: 0 });
 
     const [targetPage, setTargetPage] = useState(1);
     const [filters, setFilters] = useState({
@@ -48,13 +43,10 @@ function ManajemenAkun() {
                 q: filters.q || undefined,
             };
 
-            const [response, pembimbingResponse] = await Promise.all([
-                akunService.getAll(params),
-                akunService.getAll({ role: "pembimbing", status: "active" }),
-            ]);
+            const response = await akunService.getAll(params);
 
             setData(response.data ?? []);
-            setPembimbingList(pembimbingResponse.data ?? []);
+            setStats(response.stats ?? { total: 0, mahasiswaAktif: 0, pembimbingAktif: 0 });
             setMeta(response.meta ?? null);
         } catch (err) {
             setError(err);
@@ -66,20 +58,6 @@ function ManajemenAkun() {
     useEffect(() => {
         fetchData(targetPage);
     }, [filters.role, filters.status, filters.q, targetPage]);
-
-    const stats = useMemo(() => {
-        const total = data.length;
-        const mahasiswaAktif = data.filter((item) => item.role === "mahasiswa" && item.is_active).length;
-        const pembimbingAktif = data.filter((item) => item.role === "pembimbing" && item.is_active).length;
-        const nonaktif = data.filter((item) => item.is_active === false).length;
-
-        return {
-            total,
-            mahasiswaAktif,
-            pembimbingAktif,
-            nonaktif,
-        };
-    }, [data]);
 
     const openCreateModal = () => {
         setMode("create");
@@ -125,21 +103,6 @@ function ManajemenAkun() {
         }
     };
 
-    const handleToggleStatus = async (user) => {
-        try {
-            if (user.is_active) {
-                await akunService.deactivate(user.id);
-            } else {
-                await akunService.activate(user.id);
-            }
-
-            Swal.fire({ icon: "success", title: "Berhasil", text: "Status akun diperbarui." });
-            fetchData(targetPage);
-        } catch (err) {
-            Swal.fire({ icon: "error", title: "Gagal", text: err?.response?.data?.message ?? "Gagal ubah status akun." });
-        }
-    };
-
     const handleResetPassword = async (user) => {
         try {
             const response = await akunService.resetPassword(user.id);
@@ -174,28 +137,6 @@ function ManajemenAkun() {
             });
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleAssignPembimbing = async (user, pembimbingId) => {
-        if (!user || user.role !== "mahasiswa") return;
-
-        try {
-            const payload = {
-                mahasiswa_id: user.id,
-                pembimbing_id: pembimbingId,
-            };
-
-            if (user.has_active_period) {
-                await penugasanService.reassign(payload);
-            } else {
-                await penugasanService.assign(payload);
-            }
-
-            Swal.fire({ icon: "success", title: "Berhasil", text: "Pembimbing terkait diperbarui." });
-            fetchData(targetPage);
-        } catch (err) {
-            Swal.fire({ icon: "error", title: "Gagal", text: err?.response?.data?.message ?? "Gagal mengubah pembimbing." });
         }
     };
 
@@ -250,11 +191,8 @@ function ManajemenAkun() {
                         data={data}
                         loading={loading}
                         onEdit={openEditModal}
-                        onToggleStatus={handleToggleStatus}
                         onResetPassword={handleResetPassword}
                         onDelete={handleDelete}
-                        onAssignPembimbing={handleAssignPembimbing}
-                        pembimbingList={pembimbingList}
                     />
 
                     {meta && (

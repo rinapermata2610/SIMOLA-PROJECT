@@ -6,7 +6,6 @@ import {
     FaChalkboardTeacher,
     FaUserGraduate,
     FaUsers,
-    FaUserSlash,
 } from "react-icons/fa";
 
 import StatCard from "./StatCard";
@@ -34,17 +33,10 @@ function AkunStatCard({ stats = {} }) {
             color: "emerald",
             helperText: "Pembimbing aktif",
         },
-        {
-            title: "Akun Nonaktif",
-            value: Number(stats.nonaktif ?? 0),
-            icon: <FaUserSlash />,
-            color: "red",
-            helperText: "Belum aktif",
-        },
     ];
 
     return (
-        <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {cards.map((item) => (
                 <StatCard
                     key={item.title}
