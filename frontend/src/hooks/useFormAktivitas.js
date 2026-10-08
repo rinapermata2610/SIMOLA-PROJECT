@@ -101,7 +101,7 @@ export default function useFormAktivitas() {
         }
     };
 
-    const updateForm = async (id) => {
+    const updateForm = async (id, status = form.status || "draft") => {
         setLoading(true);
         setErrorMessage("");
 
@@ -111,7 +111,7 @@ export default function useFormAktivitas() {
             formData.append("judul", form.judul || "");
             formData.append("deskripsi", form.deskripsi || "");
             formData.append("hasil", form.hasil || "");
-            formData.append("status", form.status || "draft");
+            formData.append("status", status);
             formData.append("_method", "PUT");
 
             if (form.lampiran && form.lampiran.length > 0) {

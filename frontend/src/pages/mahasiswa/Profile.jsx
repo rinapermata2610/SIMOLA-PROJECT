@@ -13,6 +13,19 @@ const InfoItem = ({ icon, label, value }) => (
 	</div>
 );
 
+const formatDate = (value) => {
+	if (!value) return "-";
+
+	const date = new Date(`${String(value).slice(0, 10)}T00:00:00`);
+	if (Number.isNaN(date.getTime())) return value;
+
+	return new Intl.DateTimeFormat("id-ID", {
+		day: "numeric",
+		month: "long",
+		year: "numeric",
+	}).format(date);
+};
+
 function Profile() {
 	const [profile, setProfile] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -46,7 +59,11 @@ function Profile() {
 
 	const periode = profile.periode_magang;
 	const pembimbing = profile.pembimbing;
-	const namaPembimbing = pembimbing?.nama || "Ahmad Fauzi";
+	const finalAssessment = profile.penilaian_akhir;
+	const namaPembimbing = pembimbing?.nama;
+	const periodeMagang = periode
+		? `${formatDate(periode.tanggal_mulai)} sampai ${formatDate(periode.tanggal_selesai)}`
+		: null;
 
 	return (
 		<MainLayout>
@@ -71,11 +88,29 @@ function Profile() {
 					<div className="grid gap-4 p-6 md:grid-cols-2">
 						<InfoItem icon={<FaIdCard />} label="NIM" value={profile.nim} />
 						<InfoItem icon={<FaEnvelope />} label="Email" value={profile.email} />
-						<InfoItem icon={<FaGraduationCap />} label="Asal Universitas" value="Politeknik Negeri Bandung" />
-						<InfoItem icon={<FaCalendarAlt />} label="Periode Magang" value={periode ? `${periode.tanggal_mulai} sampai ${periode.tanggal_selesai}` : null} />
+						<InfoItem icon={<FaGraduationCap />} label="Universitas" value={profile.universitas} />
+						<InfoItem icon={<FaCalendarAlt />} label="Periode Magang" value={periodeMagang} />
 						<InfoItem icon={<FaUserTie />} label="Nama Pembimbing" value={namaPembimbing} />
 						<InfoItem icon={<FaUserTie />} label="Role" value={profile.role} />
 					</div>
+				</section>
+
+				<section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+					<h2 className="text-lg font-bold text-slate-800">Hasil Penilaian Akhir</h2>
+					{finalAssessment ? (
+						<div className="mt-4 flex flex-wrap items-end gap-8">
+							<div>
+								<p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Nilai akhir</p>
+								<p className="mt-1 text-3xl font-extrabold text-sky-700">{Number(finalAssessment.nilai_akhir).toFixed(2)}</p>
+							</div>
+							<div>
+								<p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Nilai huruf</p>
+								<p className="mt-1 text-3xl font-extrabold text-slate-800">{finalAssessment.nilai_huruf}</p>
+							</div>
+						</div>
+					) : (
+						<p className="mt-2 text-sm text-slate-500">Belum ada penilaian akhir untuk periode ini.</p>
+					)}
 				</section>
 			</div>
 		</MainLayout>

@@ -15,6 +15,8 @@ class AkunResource extends JsonResource
             'username' => $this->username,
             'email' => $this->email,
             'nim' => $this->nim,
+            'universitas' => $this->universitas,
+            'nip' => $this->nip,
             'role' => $this->role,
             'is_active' => (bool) $this->is_active,
             'created_at' => optional($this->created_at)->toDateTimeString(),
