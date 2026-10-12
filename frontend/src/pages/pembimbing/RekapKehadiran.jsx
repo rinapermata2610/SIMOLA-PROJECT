@@ -101,7 +101,6 @@ export default function RekapKehadiran() {
                         <div className="flex items-center gap-3">
                             <FaCalendarAlt className="text-sky-600" />
                             <input id="attendance-month" type="month" value={month} onChange={(event) => setMonth(event.target.value)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-sky-500" />
-                            <span className="text-sm font-semibold capitalize text-slate-600">{monthLabel(month)}</span>
                         </div>
                     </div>
                     <div className="flex flex-col gap-3 sm:items-end">

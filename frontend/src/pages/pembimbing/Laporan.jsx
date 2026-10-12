@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { FaPrint, FaFilePdf, FaArrowLeft } from "react-icons/fa";
+import { FaPrint, FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import PembimbingLayout from "../../layout/pembimbing/PembimbingLayout";
+import { useAuth } from "../../context/AuthContext";
 import pembimbingService from "../../services/pembimbingService";
 
 const getLocalMonth = () => {
@@ -37,6 +38,7 @@ const formatDate = (value) => {
 
 export default function Laporan() {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [students, setStudents] = useState([]);
     const [studentId, setStudentId] = useState("");
     const [month, setMonth] = useState(getLocalMonth());
@@ -48,6 +50,9 @@ export default function Laporan() {
         () => students.find((student) => String(student.id) === String(studentId)),
         [students, studentId],
     );
+    const internshipPeriod = selectedStudent?.periode
+        ? `${formatDate(selectedStudent.periode.tanggal_mulai)} - ${formatDate(selectedStudent.periode.tanggal_selesai)}`
+        : "-";
 
     useEffect(() => {
         const loadStudents = async () => {
@@ -146,13 +151,15 @@ export default function Laporan() {
                 <article className="report-paper bg-white px-8 py-10 text-black shadow-sm print:p-0 print:shadow-none">
                     <header className="text-center font-serif">
                         <h2 className="text-xl font-bold uppercase leading-tight">Lembar Evaluasi Hasil Pekerjaan Kegiatan Magang</h2>
-                        <h3 className="text-xl font-bold uppercase leading-tight">Balai Bahasa Provinsi Jawa Barat</h3>
+                        <h3 className="text-xl font-bold uppercase leading-tight">{selectedStudent?.periode?.instansi || "-"}</h3>
                     </header>
 
                     <div className="mt-10 grid max-w-xl grid-cols-[150px_20px_1fr] gap-y-3 font-serif text-base">
                         <span className="font-bold">Nama</span><span>:</span><span>{selectedStudent?.nama || "-"}</span>
-                        <span className="font-bold">Asal Universitas</span><span>:</span><span>Politeknik Negeri Bandung</span>
-                        <span className="font-bold">Periode</span><span>:</span><span className="capitalize">{formatMonth(month)}</span>
+                        <span className="font-bold">Instansi</span><span>:</span><span>{selectedStudent?.periode?.instansi || "-"}</span>
+                        <span className="font-bold">Periode Magang</span><span>:</span><span>{internshipPeriod}</span>
+                        <span className="font-bold">Periode Laporan</span><span>:</span><span className="capitalize">{formatMonth(month)}</span>
+                        <span className="font-bold">Pembimbing</span><span>:</span><span>{user?.nama || "-"}</span>
                     </div>
 
                     <div className="mt-8 overflow-hidden border border-black">
@@ -191,7 +198,7 @@ export default function Laporan() {
 
                     <footer className="mt-12 grid grid-cols-2 gap-16 text-center font-serif text-sm">
                         <div><p>Peserta Magang</p><div className="h-20" /><p className="font-bold underline">{selectedStudent?.nama || "-"}</p></div>
-                        <div><p>Pembimbing</p><div className="h-20" /><p className="font-bold underline">{"Pembimbing"}</p></div>
+                        <div><p>Pembimbing</p><div className="h-20" /><p className="font-bold underline">{user?.nama || "-"}</p></div>
                     </footer>
                 </article>
             </div>

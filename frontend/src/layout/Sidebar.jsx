@@ -201,7 +201,7 @@ function Sidebar({ isOpen, onClose }) {
                         <FaUserCircle className="shrink-0 text-sky-600" size={38} />
                         <div>
                             <p className="text-base font-extrabold text-slate-800">
-                                {user?.nama ?? "Ahmad Fauzi"}
+                                {user?.nama ?? "Mahasiswa"}
                             </p>
 
                             <p className="mt-0.5 text-sm font-medium text-slate-500">

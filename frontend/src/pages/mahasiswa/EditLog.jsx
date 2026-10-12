@@ -63,11 +63,11 @@ function EditLog() {
         }
     };
 
-    const handleUpdate = async (e) => {
-        e.preventDefault();
+    const handleUpdate = async (e, status = form.status || "draft") => {
+        e?.preventDefault();
 
         try {
-            await updateForm(id);
+            await updateForm(id, status);
 
             Swal.fire({
                 icon: "success",
@@ -142,7 +142,8 @@ function EditLog() {
                         form={form}
                         loading={loading}
                         onChange={handleChange}
-                        onSubmit={handleUpdate}
+                        onSaveDraft={() => handleUpdate(null, "draft")}
+                        onSubmit={(e) => handleUpdate(e, "submitted")}
                     />
                 </div>
 

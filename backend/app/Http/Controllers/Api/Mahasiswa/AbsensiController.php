@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Mahasiswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
+use App\Models\PengaturanAbsensi;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,11 @@ class AbsensiController extends Controller
     public function today(): JsonResponse
     {
         $today = Carbon::today();
+        $wfhDays = PengaturanAbsensi::wfhDays();
+        $isWfh = in_array($today->dayOfWeekIso, $wfhDays, true);
+        $requiresOfficeLocation = $today->dayOfWeekIso >= 1
+            && $today->dayOfWeekIso <= 5
+            && !$isWfh;
         $attendance = Absensi::where('mahasiswa_id', Auth::id())
             ->whereDate('tanggal', $today)
             ->first();
@@ -40,7 +46,7 @@ class AbsensiController extends Controller
                 'latitude' => self::OFFICE_LATITUDE,
                 'longitude' => self::OFFICE_LONGITUDE,
                 'radius_meters' => self::ALLOWED_RADIUS_METERS,
-                'required' => $today->dayOfWeekIso >= 1 && $today->dayOfWeekIso <= 4,
+                'required' => $requiresOfficeLocation,
             ],
             'schedule' => [
                 'masuk' => [self::CLOCK_IN_START, self::CLOCK_IN_END],
@@ -48,8 +54,9 @@ class AbsensiController extends Controller
             ],
             'workday' => [
                 'day' => $today->dayName,
-                'is_wfh' => $today->dayOfWeekIso === 5,
-                'requires_office_location' => $today->dayOfWeekIso >= 1 && $today->dayOfWeekIso <= 4,
+                'is_wfh' => $isWfh,
+                'wfh_days' => $wfhDays,
+                'requires_office_location' => $requiresOfficeLocation,
             ],
         ]);
     }
@@ -65,6 +72,22 @@ class AbsensiController extends Controller
             return response()->json(['success' => false, 'message' => 'Absensi hanya tersedia pada hari Senin sampai Jumat.'], 422);
         }
 
+        $wfhDays = PengaturanAbsensi::wfhDays();
+        $requiresOfficeLocation = !in_array($now->dayOfWeekIso, $wfhDays, true);
+
+        if ($type === 'keluar') {
+            $currentTime = $now->format('H:i:s');
+            $clockOutStart = self::CLOCK_OUT_START . ':00';
+            $clockOutEnd = self::CLOCK_OUT_END . ':00';
+
+            if ($currentTime < $clockOutStart || $currentTime > $clockOutEnd) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Absen keluar hanya dapat dilakukan pukul 16.00 sampai 18.00 WIB.',
+                ], 422);
+            }
+        }
+
         $currentMinutes = ((int) $now->format('H') * 60) + (int) $now->format('i');
         [$startTime, $endTime] = $type === 'masuk'
             ? [self::CLOCK_IN_START, self::CLOCK_IN_END]
@@ -73,8 +96,6 @@ class AbsensiController extends Controller
         $endMinutes = $this->timeToMinutes($endTime);
         $isOnTime = $currentMinutes >= $startMinutes && $currentMinutes <= $endMinutes;
         $latenessMinutes = $isOnTime ? 0 : min(abs($currentMinutes - $startMinutes), abs($currentMinutes - $endMinutes));
-        $requiresOfficeLocation = $now->dayOfWeekIso >= 1 && $now->dayOfWeekIso <= 4;
-
         $validated = Validator::make($request->all(), [
             'latitude' => [$requiresOfficeLocation ? 'required' : 'nullable', 'numeric', 'between:-90,90'],
             'longitude' => [$requiresOfficeLocation ? 'required' : 'nullable', 'numeric', 'between:-180,180'],
@@ -85,7 +106,7 @@ class AbsensiController extends Controller
             if ($distance > self::ALLOWED_RADIUS_METERS) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Absensi Senin sampai Kamis hanya dapat dilakukan di area Balai Bahasa Provinsi Jawa Barat.',
+                    'message' => 'Absensi pada hari non-WFH hanya dapat dilakukan di area Balai Bahasa Provinsi Jawa Barat.',
                     'distance_meters' => round($distance),
                 ], 422);
             }
@@ -120,8 +141,8 @@ class AbsensiController extends Controller
             $column => $now,
             $statusColumn => $isOnTime ? 'tepat_waktu' : 'terlambat',
             $latenessColumn => $latenessMinutes,
-            $latitudeColumn => $validated['latitude'],
-            $longitudeColumn => $validated['longitude'],
+            $latitudeColumn => $validated['latitude'] ?? null,
+            $longitudeColumn => $validated['longitude'] ?? null,
         ]);
 
         return response()->json([

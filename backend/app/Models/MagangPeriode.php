@@ -40,4 +40,9 @@ class MagangPeriode extends Model
     {
         return $this->hasMany(LogAktivitas::class, 'periode_id');
     }
+
+    public function penilaianAkhir()
+    {
+        return $this->hasOne(PenilaianAkhir::class, 'periode_id');
+    }
 }

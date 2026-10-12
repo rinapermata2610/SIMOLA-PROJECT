@@ -11,6 +11,8 @@ function AkunFormModal({ open, mode = "create", initialData = null, loading = fa
         email: "",
         username: "",
         nim: "",
+        universitas: "",
+        nip: "",
         role: "mahasiswa",
         password: "",
     });
@@ -22,6 +24,8 @@ function AkunFormModal({ open, mode = "create", initialData = null, loading = fa
                 email: initialData.email ?? "",
                 username: initialData.username ?? "",
                 nim: initialData.nim ?? "",
+                universitas: initialData.universitas ?? "",
+                nip: initialData.nip ?? "",
                 role: initialData.role ?? "mahasiswa",
                 password: "",
             });
@@ -31,6 +35,8 @@ function AkunFormModal({ open, mode = "create", initialData = null, loading = fa
                 email: "",
                 username: "",
                 nim: "",
+                universitas: "",
+                nip: "",
                 role: "mahasiswa",
                 password: "",
             });
@@ -147,6 +153,30 @@ function AkunFormModal({ open, mode = "create", initialData = null, loading = fa
                                 />
                             </label>
                         </div>
+
+                        {form.role === "mahasiswa" && (
+                            <label className="block">
+                                <span className="text-sm font-semibold text-gray-600">Universitas</span>
+                                <input
+                                    aria-label="Universitas mahasiswa"
+                                    value={form.universitas}
+                                    onChange={(e) => handleChange("universitas", e.target.value)}
+                                    className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-sky-500"
+                                />
+                            </label>
+                        )}
+
+                        {form.role === "pembimbing" && (
+                            <label className="block">
+                                <span className="text-sm font-semibold text-gray-600">NIP Pembimbing</span>
+                                <input
+                                    aria-label="NIP pembimbing"
+                                    value={form.nip}
+                                    onChange={(e) => handleChange("nip", e.target.value)}
+                                    className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-sky-500"
+                                />
+                            </label>
+                        )}
 
                         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
                             <button

@@ -3,17 +3,21 @@ import { FaMapMarkerAlt, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import absensiService from "../../services/absensiService";
 
+const weekdayNames = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
+
 function AttendanceCard({ onAttendanceChange }) {
     const [attendance, setAttendance] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState("");
     const [requiresOfficeLocation, setRequiresOfficeLocation] = useState(true);
+    const [wfhDays, setWfhDays] = useState([5]);
 
     const loadAttendance = async () => {
         try {
             const response = await absensiService.getToday();
             setAttendance(response.data);
             setRequiresOfficeLocation(response.workday?.requires_office_location ?? true);
+            setWfhDays(response.workday?.wfh_days ?? [5]);
         } catch (error) {
             Swal.fire("Gagal", error.response?.data?.message || "Data absensi gagal dimuat.", "error");
         } finally {
@@ -77,8 +81,9 @@ function AttendanceCard({ onAttendanceChange }) {
                     <h2 className="mt-1 text-xl font-bold text-slate-800">Balai Bahasa Provinsi Jawa Barat</h2>
                     <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
                         <FaMapMarkerAlt className="text-rose-500" />
-                        Senin–Kamis wajib berada di area kantor · Jumat WFH
+                        Hari kerja non-WFH wajib berada di area kantor
                     </p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">WFH: {wfhDays.map((day) => weekdayNames[day]).filter(Boolean).join(", ")} · Hari kerja lainnya wajib di area kantor</p>
                     <p className="mt-1 text-xs font-semibold text-slate-500">Masuk 06.00–07.30 WIB · Keluar 16.00–18.00 WIB</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-center">

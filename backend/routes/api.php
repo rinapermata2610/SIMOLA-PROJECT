@@ -17,6 +17,9 @@ use App\Http\Controllers\Api\Admin\PeriodeBatchController as AdminPeriodeBatchCo
 use App\Http\Controllers\Api\Admin\PeriodeMagangController as AdminPeriodeController;
 use App\Http\Controllers\Api\Admin\PenugasanController as AdminPenugasanController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Api\Admin\PengaturanAbsensiController as AdminPengaturanAbsensiController;
+use App\Http\Controllers\Api\Admin\PenilaianAkhirController as AdminPenilaianAkhirController;
+use App\Http\Controllers\Api\Pembimbing\PenilaianAkhirController as PembimbingPenilaianAkhirController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +128,9 @@ Route::middleware(['auth:sanctum', 'role:pembimbing'])
     ->prefix('pembimbing')
     ->group(function () {
 
+    Route::get('/penilaian-akhir/{mahasiswaId}', [PembimbingPenilaianAkhirController::class, 'show']);
+    Route::put('/penilaian-akhir/{mahasiswaId}', [PembimbingPenilaianAkhirController::class, 'update']);
+
         Route::get('/dashboard', [PembimbingDashboardController::class, 'index']);
         Route::get('/kehadiran/{mahasiswaId}', [PembimbingAbsensiController::class, 'index']);
 
@@ -157,6 +163,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])
         Route::delete('/akun/{id}', [AdminAkunController::class, 'destroy']);
 
         Route::post('/akun/import', [AdminImportAkunController::class, 'import']);
+        Route::get('/penilaian-akhir', [AdminPenilaianAkhirController::class, 'index']);
+
+        // Pengaturan absensi
+        Route::get('/pengaturan-absensi', [AdminPengaturanAbsensiController::class, 'show']);
+        Route::put('/pengaturan-absensi', [AdminPengaturanAbsensiController::class, 'update']);
 
         // Periode
         Route::get('/periode', [AdminPeriodeController::class, 'index']);

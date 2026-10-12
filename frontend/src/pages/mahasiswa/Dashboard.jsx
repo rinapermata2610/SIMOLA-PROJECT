@@ -130,7 +130,7 @@ function Dashboard() {
                 <DashboardHeader />
 
                 {/* Summary */}
-                <SummaryCards />
+                <SummaryCards periode={calendarData.periode} />
 
                 <AttendanceCard />
 

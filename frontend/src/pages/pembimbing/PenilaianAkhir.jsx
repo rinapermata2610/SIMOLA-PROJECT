@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaArrowLeft, FaFilePdf, FaSave, FaUserTie } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import PembimbingLayout from "../../layout/pembimbing/PembimbingLayout";
 import pembimbingService from "../../services/pembimbingService";
 import logoKemendikdasmen from "../../assets/images/logo-kemendikdasmen.png";
@@ -26,25 +27,30 @@ export default function PenilaianAkhir() {
     const { studentId } = useParams();
     const navigate = useNavigate();
     const [student, setStudent] = useState(null);
-    const [scores, setScores] = useState(() => {
-        const storedScores = window.localStorage.getItem(`penilaian-akhir-scores-${studentId}`);
-        return storedScores ? JSON.parse(storedScores) : assessmentAspects.map(() => "");
-    });
+    const [supervisor, setSupervisor] = useState(null);
+    const [period, setPeriod] = useState(null);
+    const [scores, setScores] = useState(() => assessmentAspects.map(() => ""));
     const [saving, setSaving] = useState(false);
-    const [saved, setSaved] = useState(() => window.localStorage.getItem(`penilaian-akhir-${studentId}`) === "tersimpan");
+    const [loading, setLoading] = useState(true);
+    const [saved, setSaved] = useState(false);
 
     useEffect(() => {
-        const loadStudent = async () => {
+        const loadAssessment = async () => {
             try {
-                const response = await pembimbingService.getDashboard();
-                const students = Array.isArray(response?.data) ? response.data : [];
-                setStudent(students.find((item) => String(item.id) === String(studentId)) ?? null);
+                const response = await pembimbingService.getFinalAssessment(studentId);
+                setStudent(response.student ?? null);
+                setSupervisor(response.supervisor ?? null);
+                setPeriod(response.period ?? null);
+                setScores(response.data?.scores?.map(String) ?? assessmentAspects.map(() => ""));
+                setSaved(Boolean(response.data));
             } catch (error) {
-                console.error("Gagal memuat mahasiswa:", error);
+                Swal.fire("Gagal", error.response?.data?.message || "Data penilaian gagal dimuat.", "error");
+            } finally {
+                setLoading(false);
             }
         };
 
-        loadStudent();
+        loadAssessment();
     }, [studentId]);
 
     const weightedTotal = useMemo(() => assessmentAspects.reduce((total, aspect, index) => {
@@ -58,23 +64,25 @@ export default function PenilaianAkhir() {
     const isComplete = scores.every((score) => score !== "");
 
     const handleScoreChange = (index, value) => {
-        if (saved) return;
-        setSaved(false);
         if (value === "" || (Number(value) >= 0 && Number(value) <= 100)) {
             setScores((previous) => previous.map((score, scoreIndex) => scoreIndex === index ? value : score));
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!isComplete || saved) return;
+        if (!isComplete) return;
         setSaving(true);
-        window.setTimeout(() => {
-            setSaving(false);
+        try {
+            const response = await pembimbingService.saveFinalAssessment(studentId, scores);
+            setScores(response.data.scores.map(String));
             setSaved(true);
-            window.localStorage.setItem(`penilaian-akhir-scores-${studentId}`, JSON.stringify(scores));
-            window.localStorage.setItem(`penilaian-akhir-${studentId}`, "tersimpan");
-        }, 400);
+            Swal.fire({ icon: "success", title: "Tersimpan", text: response.message });
+        } catch (error) {
+            Swal.fire("Gagal", error.response?.data?.message || "Penilaian gagal disimpan.", "error");
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleExportPdf = () => {
@@ -134,7 +142,7 @@ export default function PenilaianAkhir() {
                                                     step="1"
                                                     value={scores[index]}
                                                     onChange={(event) => handleScoreChange(index, event.target.value)}
-                                                    disabled={saved || saving}
+                                                    disabled={loading || saving}
                                                     aria-label={`Skor ${aspect.label}`}
                                                     className="w-20 rounded-lg border border-slate-300 px-2 py-2 text-center outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
                                                     required
@@ -185,8 +193,8 @@ export default function PenilaianAkhir() {
                             <p className="mt-1 text-sm font-bold text-slate-700">Nilai Standar 4: {standardFourScore.toFixed(2)}</p>
                             <p className="mt-1 text-sm font-bold text-slate-700">Nilai Huruf: {grade}</p>
                             <div className="mt-4 grid gap-2">
-                                <button type="submit" disabled={!isComplete || saving || saved} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold text-white hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50">
-                                    <FaSave /> {saving ? "Menyimpan..." : saved ? "Penilaian Terkunci" : "Simpan Penilaian"}
+                                <button type="submit" disabled={!isComplete || saving || loading} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold text-white hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50">
+                                    <FaSave /> {saving ? "Menyimpan..." : saved ? "Perbarui Penilaian" : "Simpan Penilaian"}
                                 </button>
                                 <button type="button" onClick={handleExportPdf} disabled={!isComplete} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
                                     <FaFilePdf className="text-red-600" /> Export PDF
@@ -206,10 +214,7 @@ export default function PenilaianAkhir() {
                             <div className="flex-1 text-center leading-tight">
                                 <p className="text-[17px]">KEMENTERIAN PENDIDIKAN DASAR</p>
                                 <p className="text-[17px]">DAN MENENGAH</p>
-                                <p className="mt-1 text-[18px] font-bold">BALAI BAHASA PROVINSI JAWA BARAT</p>
-                                <p className="mt-1 text-[11px]">Jalan Sumbawa Nomor 11, Kota Bandung, 40113</p>
-                                <p className="text-[11px]">Telepon (022) 4205468; Pos-el balaibahasa.jabar@kemendikdasmen.go.id</p>
-                                <p className="text-[11px]">Laman www.balaibahasajabar.kemendikdasmen.go.id</p>
+                                <p className="mt-1 text-[18px] font-bold">{period?.instansi || "-"}</p>
                             </div>
                         </div>
                     </header>
@@ -217,23 +222,22 @@ export default function PenilaianAkhir() {
                     <section className="mt-5 text-[11px] leading-[1.45]">
                         <div className="text-center">
                             <h1 className="text-[13px] font-bold underline">SURAT KETERANGAN</h1>
-                            <p>Nomor: 0099/005.199/PP.07.02/2026</p>
                         </div>
                         <p className="mt-4">Saya yang bertanda tangan di bawah ini:</p>
                         <div className="mt-1 grid grid-cols-[105px_12px_1fr]">
-                            <span>nama</span><span>:</span><span>Pembimbing Magang</span>
-                            <span>NIP</span><span>:</span><span>-</span>
+                            <span>nama</span><span>:</span><span>{supervisor?.nama || "-"}</span>
+                            <span>NIP</span><span>:</span><span>{supervisor?.nip || "-"}</span>
                             <span>jabatan</span><span>:</span><span>Pembimbing</span>
-                            <span>unit kerja</span><span>:</span><span>Balai Bahasa Provinsi Jawa Barat</span>
+                            <span>unit kerja</span><span>:</span><span>{period?.instansi || "-"}</span>
                         </div>
                         <p className="mt-3">dengan ini menerangkan bahwa siswa:</p>
                         <div className="mt-1 grid grid-cols-[105px_12px_1fr]">
                             <span>nama</span><span>:</span><span>{student?.nama || "-"}</span>
                             <span>NIM</span><span>:</span><span>{student?.nim || "-"}</span>
-                            <span>universitas</span><span>:</span><span>Politeknik Negeri Bandung</span>
+                            <span>universitas</span><span>:</span><span>{student?.universitas || "-"}</span>
                             <span>jurusan</span><span>:</span><span>-</span>
                         </div>
-                        <p className="mt-3">telah melaksanakan program magang di Balai Bahasa Provinsi Jawa Barat dengan hasil penilaian sebagai berikut:</p>
+                        <p className="mt-3">telah melaksanakan program magang di {period?.instansi || "-"} dengan hasil penilaian sebagai berikut:</p>
                     </section>
 
                     <table className="mt-3 w-full border-collapse text-[10px]">
@@ -286,10 +290,10 @@ export default function PenilaianAkhir() {
                     <footer className="mt-5 flex justify-end text-center text-[10px]">
                         <div className="w-[210px]">
                             <p>Bandung, {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}</p>
-                            <p>Kepala,</p>
+                            <p>Pembimbing,</p>
                             <div className="h-12" />
-                            <p className="font-bold underline">Dr. Hermawan, S.S., M.A.</p>
-                            <p>NIP 197102211997031005</p>
+                            <p className="font-bold underline">{supervisor?.nama || "-"}</p>
+                            <p>NIP {supervisor?.nip || "-"}</p>
                         </div>
                     </footer>
                 </article>

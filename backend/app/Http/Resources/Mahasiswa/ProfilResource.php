@@ -29,6 +29,8 @@ class ProfilResource extends JsonResource
 
             'nim' => $this->nim,
 
+            'universitas' => $this->universitas,
+
             'role' => $this->role,
 
             'periode_magang' => $this->when($periode, function () use ($periode) {
@@ -61,6 +63,15 @@ class ProfilResource extends JsonResource
 
                 ];
 
+            }),
+
+            'penilaian_akhir' => $this->when($periode?->penilaianAkhir, function () use ($periode) {
+                return [
+                    'scores' => $periode->penilaianAkhir->scores,
+                    'nilai_akhir' => (float) $periode->penilaianAkhir->nilai_akhir,
+                    'nilai_huruf' => $periode->penilaianAkhir->nilai_huruf,
+                    'updated_at' => $periode->penilaianAkhir->updated_at?->toDateTimeString(),
+                ];
             }),
 
             'created_at' => optional($this->created_at)

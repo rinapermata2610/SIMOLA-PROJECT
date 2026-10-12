@@ -3,13 +3,10 @@
 // =============================================
 
 import { FaRegCalendarAlt } from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext";
 
 function DashboardHeader() {
-    // Sementara masih statis.
-    // Nanti akan diganti dengan data dari API.
-    const user = {
-        nama: "Ahmad Fauzi",
-    };
+    const { user } = useAuth();
 
     const today = new Date();
 
@@ -37,7 +34,7 @@ function DashboardHeader() {
                         Selamat datang kembali,
                         <span className="font-bold text-white">
                             {" "}
-                            {user.nama}
+                            {user?.nama || "Mahasiswa"}
                         </span>
                     </p>
 

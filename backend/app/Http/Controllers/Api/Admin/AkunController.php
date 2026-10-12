@@ -77,6 +77,8 @@ class AkunController extends Controller
                 'username' => $request->input('username') ?? explode('@', $request->input('email'))[0],
                 'password' => Hash::make($password),
                 'nim' => $request->input('nim'),
+                'universitas' => $request->input('universitas'),
+                'nip' => $request->input('nip'),
                 'role' => $request->input('role'),
                 'is_active' => true,
             ]);
@@ -100,7 +102,7 @@ class AkunController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $user->fill($request->only(['nama','email','username','nim','role']));
+        $user->fill($request->only(['nama','email','username','nim','universitas','nip','role']));
         $user->save();
 
         return response()->json([
