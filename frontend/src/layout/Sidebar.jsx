@@ -14,7 +14,7 @@ import {
     FaTimes,
 } from "react-icons/fa";
 
-import Logo from "../assets/images/logo-kemendikdasmen.png";
+import Logo from "../assets/images/logo-kemendikdasmen.jpg";
 import { useAuth } from "../context/AuthContext";
 
 function Sidebar({ isOpen, onClose }) {
@@ -107,7 +107,7 @@ function Sidebar({ isOpen, onClose }) {
                         <img
                             src={Logo}
                             alt="SIMOLA"
-                            className="w-11 h-11 object-contain"
+                            className="h-14 w-14 object-contain"
                         />
 
                         <div>
