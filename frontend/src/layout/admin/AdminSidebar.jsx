@@ -14,7 +14,7 @@ import {
     FaUsersCog,
 } from "react-icons/fa";
 
-import Logo from "../../assets/images/logo-kemendikdasmen.png";
+import Logo from "../../assets/images/logo-kemendikdasmen.jpg";
 import { useAuth } from "../../context/AuthContext";
 
 function AdminSidebar({ isOpen, onClose }) {
@@ -93,7 +93,7 @@ function AdminSidebar({ isOpen, onClose }) {
                         <img
                             src={Logo}
                             alt="SIMOLA"
-                            className="w-12 h-12 object-contain"
+                            className="h-14 w-14 object-contain"
                         />
 
                         <div>

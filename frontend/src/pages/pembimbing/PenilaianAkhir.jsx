@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import PembimbingLayout from "../../layout/pembimbing/PembimbingLayout";
 import pembimbingService from "../../services/pembimbingService";
-import logoKemendikdasmen from "../../assets/images/logo-kemendikdasmen.png";
+import logoKemendikdasmen from "../../assets/images/logo-kemendikdasmen.jpg";
 
 const assessmentAspects = [
     { label: "Etika dan Kedisiplinan", weight: 20 },

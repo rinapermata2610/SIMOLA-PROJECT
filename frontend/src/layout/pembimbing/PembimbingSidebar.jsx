@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaChartLine, FaClipboardCheck, FaFileAlt, FaHistory, FaSignOutAlt, FaTimes, FaUserCircle } from "react-icons/fa";
-import Logo from "../../assets/images/logo-kemendikdasmen.png";
+import Logo from "../../assets/images/logo-kemendikdasmen.jpg";
 import { useAuth } from "../../context/AuthContext";
 
 export default function PembimbingSidebar({ isOpen, onClose }) {
@@ -21,7 +21,7 @@ export default function PembimbingSidebar({ isOpen, onClose }) {
             <aside className={`print:hidden fixed left-0 top-0 z-50 h-screen w-72 transform border-r border-gray-200 bg-white shadow-xl transition-transform lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <div className="flex h-20 items-center justify-between border-b border-gray-200 px-6">
                     <div className="flex items-center gap-3">
-                        <img src={Logo} alt="SIMOLA" className="h-11 w-11 object-contain" />
+                        <img src={Logo} alt="SIMOLA" className="h-14 w-14 object-contain" />
                         <div>
                             <h2 className="text-xl font-extrabold tracking-tight text-sky-600">SIMOLA</h2>
                             <p className="max-w-[170px] text-[11px] font-semibold leading-4 text-slate-500">Sistem Monitoring &amp; Layanan Magang</p>

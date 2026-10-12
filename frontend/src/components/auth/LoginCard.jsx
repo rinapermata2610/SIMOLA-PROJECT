@@ -3,7 +3,7 @@ import PasswordField from "./PasswordField";
 import LoginButton from "./LoginButton";
 import Footer from "./Footer";
 
-import Logo from "../../assets/images/logo-kemendikdasmen.png";
+import Logo from "../../assets/images/logo-kemendikdasmen.jpg";
 
 function LoginCard({
     form,
@@ -33,7 +33,7 @@ function LoginCard({
                 <img
                     src={Logo}
                     alt="Logo Kemendikdasmen"
-                    className="mx-auto mb-4 h-20 w-20 object-contain drop-shadow-sm"
+                    className="mx-auto mb-4 h-auto w-48 max-w-full object-contain"
                 />
 
                 <h1 className="text-4xl font-extrabold tracking-tight text-sky-600">
